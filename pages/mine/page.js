@@ -3,6 +3,7 @@ let activation = require('../../common/activation.js');
 let device = require('../../common/device.js');
 let config = require('../../common/config.js');
 let update = require('../../common/update.js');
+let guide = require('../../common/guide.js');
 
 Page({
   data: {
@@ -15,10 +16,8 @@ Page({
     floatBg: '#EEF2F1',
     floatColor: '#667',
     deviceId: '',
-    deviceIdShort: '',
     supportWechat: '',
     toolCode: '',
-    apiHost: '',
     localVersion: '',
     updateHint: '点击检查是否有新版本',
     hasUpdate: false,
@@ -32,12 +31,7 @@ Page({
     updateConfirmText: '立即更新',
     pendingLatest: null,
     guideOpen: false,
-    guideSlides: [
-      { src: 'img/guide1.svg' },
-      { src: 'img/guide2.svg' },
-      { src: 'img/guide3.svg' },
-      { src: 'img/guide4.svg' }
-    ]
+    guideAppName: guide.appName()
   },
 
   tagStyle(ok) {
@@ -101,20 +95,10 @@ Page({
       floatBg: f.bg,
       floatColor: f.color,
       deviceId: device.getDeviceId(),
-      deviceIdShort: this.shortDeviceId(device.getDeviceId()),
       supportWechat: config.supportWechat || 'DeekeScript',
       toolCode: config.toolCode,
-      apiHost: config.apiHost || 'https://app.deeke.cn',
       localVersion: update.currentVersionName() + ' (' + update.currentVersionCode() + ')'
     });
-  },
-
-  shortDeviceId(id) {
-    let s = String(id || '');
-    if (s.length <= 8) {
-      return s;
-    }
-    return '…' + s.substring(s.length - 8);
   },
 
   onLoad() {

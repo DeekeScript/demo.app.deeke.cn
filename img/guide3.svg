@@ -1,7 +1,0 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
-  <rect width="320" height="180" rx="16" fill="#E8F6F4"/>
-  <rect x="70" y="24" width="180" height="120" rx="12" fill="#FFFFFF" stroke="#B7D9D6" stroke-width="2"/>
-  <rect x="190" y="76" width="40" height="22" rx="11" fill="#0B6E6A"/>
-  <circle cx="218" cy="87" r="8" fill="#FFFFFF"/>
-  <text x="160" y="168" text-anchor="middle" font-size="12" fill="#0B6E6A" font-family="sans-serif">3. Turn the switch ON</text>
-</svg>

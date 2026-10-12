@@ -12,7 +12,7 @@
   "body": [
     {
       "type": "card",
-      "style": { "padding": 16, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 16, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         {
           "type": "row",
@@ -31,10 +31,9 @@
         { "type": "notice", "text": "{{statusDetail}}" }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         { "type": "text", "text": "权限", "style": { "fontWeight": "bold", "fontSize": 15 } },
         {
@@ -45,7 +44,7 @@
             { "type": "tag", "text": "{{accessText}}", "style": { "background": "{{accessBg}}", "color": "{{accessColor}}", "radius": 6 } },
             {
               "type": "button",
-              "text": "教程",
+              "text": "去开启",
               "size": "sm",
               "onTap": "onOpenGuide",
               "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
@@ -60,7 +59,7 @@
             { "type": "tag", "text": "{{floatText}}", "style": { "background": "{{floatBg}}", "color": "{{floatColor}}", "radius": 6 } },
             {
               "type": "button",
-              "text": "开启",
+              "text": "去开启",
               "size": "sm",
               "onTap": "onOpenFloat",
               "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
@@ -90,10 +89,9 @@
         }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         {
           "type": "row",
@@ -127,10 +125,9 @@
         }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         { "type": "text", "text": "客服", "style": { "fontWeight": "bold", "fontSize": 15 } },
         {
@@ -140,18 +137,16 @@
             { "type": "text", "text": "微信", "style": { "fontSize": 13, "color": "#667" } },
             { "type": "text", "text": "{{supportWechat}}", "style": { "weight": 1, "fontSize": 14, "color": "#223", "fontWeight": "bold" } },
             {
-              "type": "button",
-              "text": "复制",
-              "size": "sm",
+              "type": "image",
+              "src": "img/copy.svg",
               "onTap": "onCopyWechat",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "width": 22, "height": 22 }
             }
           ]
         },
         { "type": "notice", "text": "添加好友时请备注「D0001咨询」" }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
       "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
@@ -162,7 +157,7 @@
           "style": { "valign": "center", "gap": 8 },
           "children": [
             { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#667" } },
-            { "type": "text", "text": "{{deviceIdShort}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } },
+            { "type": "text", "text": "{{deviceId}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } },
             {
               "type": "image",
               "src": "img/copy.svg",
@@ -171,11 +166,78 @@
             }
           ]
         },
-        { "type": "notice", "text": "{{toolCode}} · {{apiHost}}" }
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "APP代码", "style": { "fontSize": 13, "color": "#667" } },
+            { "type": "text", "text": "{{toolCode}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } }
+          ]
+        }
       ]
     }
   ],
   "popups": [
+    {
+      "showIf": "guideOpen",
+      "position": "center",
+      "width": "88%",
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 12, "gap": 10, "height": "wrap" },
+      "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            { "type": "space", "style": { "width": 22 } },
+            {
+              "type": "text",
+              "text": "如何开启无障碍",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseGuide",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "background": "#FFFFFF", "radius": 10, "padding": 10, "gap": 8, "borderWidth": 1, "borderColor": "#E6EEEE" },
+          "children": [
+            {
+              "type": "text",
+              "text": "已下载的应用",
+              "style": { "fontSize": 14, "fontWeight": "bold", "color": "#223", "align": "left" }
+            },
+            {
+              "type": "row",
+              "style": { "valign": "center", "gap": 8, "background": "#F7FAF9", "radius": 8, "padding": 10 },
+              "children": [
+                {
+                  "type": "text",
+                  "text": "{{guideAppName}}",
+                  "style": { "weight": 1, "fontSize": 14, "fontWeight": "bold", "color": "#223" }
+                },
+                {
+                  "type": "text",
+                  "text": "已关闭 >",
+                  "style": { "fontSize": 13, "color": "#889999" }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "button",
+          "text": "去打开",
+          "size": "sm",
+          "onTap": "onOpenAccessibility",
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+        }
+      ]
+    },
     {
       "showIf": "updateOpen",
       "position": "center",
@@ -206,51 +268,6 @@
               "text": "{{updateConfirmText}}",
               "size": "sm",
               "onTap": "onDoUpdate",
-              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "showIf": "guideOpen",
-      "position": "center",
-      "title": "如何开启无障碍",
-      "width": "88%",
-      "style": { "radius": 14, "background": "#FFFFFF" },
-      "body": [
-        {
-          "type": "swiper",
-          "bind": "guideSlides",
-          "height": 180,
-          "autoplay": true,
-          "interval": 2200,
-          "item": {
-            "type": "image",
-            "src": "{{item.src}}",
-            "fit": "contain",
-            "style": { "width": "100%", "height": 160, "radius": 10 }
-          }
-        },
-        { "type": "space", "height": 8 },
-        { "type": "notice", "text": "看完步骤后点「去开启」。" },
-        { "type": "space", "height": 8 },
-        {
-          "type": "row",
-          "style": { "gap": 8 },
-          "children": [
-            {
-              "type": "button",
-              "text": "关闭",
-              "size": "sm",
-              "onTap": "onCloseGuide",
-              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
-            },
-            {
-              "type": "button",
-              "text": "去开启",
-              "size": "sm",
-              "onTap": "onOpenAccessibility",
               "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
             }
           ]

@@ -89,7 +89,7 @@
           "style": { "padding": 10, "gap": 4, "radius": 10, "background": "#FFFFFF" },
 
           "children": [
-            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款" }
+            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款（需要提供“我的”界面中的“设备号”）" }
           ]
 
         },

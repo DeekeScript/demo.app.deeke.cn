@@ -12,7 +12,7 @@
   "body": [
     {
       "type": "card",
-      "style": { "padding": 12, "paddingBottom": 14, "gap": 10, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 12, "paddingBottom": 14, "gap": 10, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         { "type": "text", "text": "功能开关", "style": { "fontWeight": "bold", "fontSize": 15 } },
         { "type": "switch", "name": "enableLike", "label": "点赞", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } },
@@ -20,10 +20,9 @@
         { "type": "switch", "name": "enableDm", "label": "私信", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         { "type": "text", "text": "触发频率", "style": { "fontWeight": "bold", "fontSize": 15 } },
         { "type": "notice", "text": "遇到目标内容时执行该动作的概率" },
@@ -73,10 +72,9 @@
         }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
       "children": [
         { "type": "text", "text": "单次上限", "style": { "fontWeight": "bold", "fontSize": 15 } },
         {
@@ -114,7 +112,6 @@
         }
       ]
     },
-    { "type": "space", "height": 10 },
     {
       "type": "card",
       "style": { "padding": 14, "gap": 10, "radius": 14, "background": "#FFFFFF" },

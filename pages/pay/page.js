@@ -67,6 +67,7 @@ Page({
   },
 
   loadPricing() {
+    this.showLoading('加载中…');
     let res = api.pricing();
     if (!res.ok) {
       this.setData({
@@ -76,6 +77,7 @@ Page({
         plansEmpty: true,
         showPayActions: false
       });
+      this.hideLoading();
       return;
     }
     let data = res.data || {};
@@ -114,6 +116,7 @@ Page({
         showPayActions: false,
         showMock: false
       });
+      this.hideLoading();
       return;
     }
     let plans = [];
@@ -167,6 +170,7 @@ Page({
       canApp: canApp,
       canQr: canQr
     });
+    this.hideLoading();
   },
 
   onSelectPlan(e) {

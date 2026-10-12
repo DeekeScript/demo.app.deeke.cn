@@ -3,6 +3,7 @@ let activation = require('../../common/activation.js');
 let scripts = require('../../common/scripts.js');
 let params = require('../../common/params.js');
 let update = require('../../common/update.js');
+let guide = require('../../common/guide.js');
 
 Page({
   data: {
@@ -15,16 +16,10 @@ Page({
     scriptSummary: '',
     paramsSummary: '',
     guideOpen: false,
-    guideTip: '按图示在系统设置里找到本应用，打开开关即可。',
-    guideSlides: [
-      { src: 'img/guide1.svg' },
-      { src: 'img/guide2.svg' },
-      { src: 'img/guide3.svg' },
-      { src: 'img/guide4.svg' }
-    ],
+    guideAppName: guide.appName(),
     paramsDialogOpen: false,
     payDialogOpen: false,
-    payDialogText: '尚未开通，开通后才能运行自动化。',
+    payDialogText: '待激活，激活后才能正常使用本APP。',
     updateOpen: false,
     updateTitle: '发现新版本',
     updateVersionLine: '',
@@ -65,8 +60,8 @@ Page({
     let st = result.status;
     let okStyle = this.tagStyle(st.activated);
     this.setData({
-      statusTitle: st.activated ? st.text : '尚未开通',
-      statusDetail: st.detail,
+      statusTitle: st.activated ? st.text : '待激活',
+      statusDetail: st.activated ? st.detail : '激活后，才能正常使用本APP',
       statusTag: st.activated ? '可用' : '待支付',
       statusTagBg: okStyle.bg,
       statusTagColor: okStyle.color,
@@ -132,6 +127,10 @@ Page({
     this.switchTab({ page: 'pages/mine' });
   },
 
+  onCloseGuide() {
+    this.setData({ guideOpen: false });
+  },
+
   onOpenAccessibility() {
     this.setData({ guideOpen: false });
     Access.openAccessibilityServiceSetting();
@@ -165,7 +164,7 @@ Page({
       if (paid.needPay) {
         this.setData({
           payDialogOpen: true,
-          payDialogText: paid.message || '尚未开通，请先支付后再运行'
+          payDialogText: paid.message || '待激活，激活后才能正常使用本APP'
         });
         return;
       }

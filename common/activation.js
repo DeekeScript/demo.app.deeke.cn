@@ -46,7 +46,7 @@ module.exports = {
 
   formatStatus(data) {
     if (!data) {
-      return { activated: false, text: '未开通', detail: '开通后才能运行自动化' };
+      return { activated: false, text: '待激活', detail: '激活后，才能正常使用本APP' };
     }
     if (data.free || data.state === 'free' || (data.activated && data.plan === 'free')) {
       return { activated: true, text: '免费使用', detail: data.freeUntil ? ('限免至 ' + data.freeUntil) : '当前工具免费' };
@@ -62,7 +62,7 @@ module.exports = {
     if (data.state === 'revoked') {
       return { activated: false, text: '已失效', detail: '请联系客服或重新开通' };
     }
-    return { activated: false, text: '未开通', detail: '开通后才能运行自动化' };
+    return { activated: false, text: '待激活', detail: '激活后，才能正常使用本APP' };
   },
 
   checkOnline() {
@@ -82,6 +82,6 @@ module.exports = {
     if (online.status && online.status.activated) {
       return { ok: true, needPay: false, data: online.data, status: online.status };
     }
-    return { ok: false, needPay: true, message: '尚未开通，请先支付后再运行', data: online.data, status: online.status };
+    return { ok: false, needPay: true, message: '待激活，激活后才能正常使用本APP', data: online.data, status: online.status };
   }
 };
