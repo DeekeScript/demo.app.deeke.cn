@@ -1,8 +1,35 @@
 let api = require('./api.js');
 let config = require('./config.js');
 
+// 与后台 Plans 标签一致；接口未带 planName 时兜底
+let PLAN_LABELS = {
+  day: '1 天',
+  month: '30 天',
+  quarter: '90 天',
+  half_year: '180 天',
+  year: '1 年',
+  free: '免费',
+  trial: '体验版',
+  standard: '标准版'
+};
+
 module.exports = {
   cacheKey: config.storagePrefix + 'activation',
+
+  planLabel(data) {
+    if (!data) {
+      return '会员';
+    }
+    let name = data.planName || data.plan_name || '';
+    if (name) {
+      return String(name);
+    }
+    let plan = String(data.plan || '');
+    if (PLAN_LABELS[plan]) {
+      return PLAN_LABELS[plan];
+    }
+    return plan || '会员';
+  },
 
   saveCache(data) {
     if (!data) {
@@ -10,9 +37,12 @@ module.exports = {
     }
     let prev = this.readCache() || {};
     let code = data.activationCode || data.activation_code || prev.activationCode || '';
+    let plan = data.plan || prev.plan || '';
+    let planName = data.planName || data.plan_name || prev.planName || PLAN_LABELS[plan] || '';
     Storage.putObj(this.cacheKey, {
       activated: !!data.activated,
-      plan: data.plan || '',
+      plan: plan,
+      planName: planName ? String(planName) : '',
       state: data.state || '',
       expiresAt: data.expiresAt || null,
       free: !!data.free,
@@ -52,7 +82,7 @@ module.exports = {
       return { activated: true, text: '免费使用', detail: data.freeUntil ? ('限免至 ' + data.freeUntil) : '当前工具免费' };
     }
     if (data.activated) {
-      let planName = data.plan || '会员';
+      let planName = this.planLabel(data);
       let exp = data.expiresAt ? String(data.expiresAt).replace('T', ' ').substring(0, 16) : '长期';
       return { activated: true, text: '已开通 · ' + planName, detail: '到期：' + exp };
     }

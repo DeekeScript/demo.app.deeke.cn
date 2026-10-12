@@ -214,7 +214,12 @@ Page({
     } else {
       activation.checkOnline();
     }
-    this.setData({ qrOpen: false, polling: false, pendingOrderNo: '' });
+    this.setData({
+      qrOpen: false,
+      qrImage: '',
+      polling: false,
+      pendingOrderNo: ''
+    });
     this.toast('开通成功');
     this.loadPricing();
   },
@@ -254,35 +259,54 @@ Page({
     if (!plan) {
       return;
     }
-    // 直接调起支付宝：优先 H5（可拉起支付宝 App）；不可用再试 app 通道拿到 orderString。
-    // 打包版若已集成支付宝 SDK，用 payParams.orderString 调 PayTask 即可。
-    let res = api.createOrder(plan, 'h5');
+    this.showLoading('正在调起支付宝…');
+    let res = api.createOrder(plan, 'app');
     if (!res.ok) {
-      res = api.createOrder(plan, 'app');
-    }
-    if (!res.ok) {
+      this.hideLoading();
       this.toast(res.message || '下单失败');
       return;
     }
     let pay = (res.data && res.data.payParams) || {};
     let orderNo = res.data.orderNo || res.data.order_no || '';
-    if (pay.payUrl) {
-      App.openUrl(pay.payUrl, config.alipayPackage);
-      this.pollOrder(orderNo);
-      this.toast('已调起支付宝');
+    if (!pay.orderString) {
+      this.hideLoading();
+      if (pay.mockPayUrl) {
+        this.toast('当前为模拟通道，请用模拟支付');
+        return;
+      }
+      this.toast('支付参数为空');
       return;
     }
-    if (pay.orderString) {
-      Storage.put(config.storagePrefix + 'lastOrderString', String(pay.orderString));
-      Storage.put(config.storagePrefix + 'lastOrderNo', String(orderNo));
-      this.toast('已拿到支付串，请用扫码或集成 SDK 后支付');
+    Storage.put(config.storagePrefix + 'lastOrderString', String(pay.orderString));
+    Storage.put(config.storagePrefix + 'lastOrderNo', String(orderNo));
+    let payResult = null;
+    try {
+      // 不要对 Java 注入对象用 typeof，Rhino 会报「JavaScript 值无效」
+      payResult = Alipay.pay(String(pay.orderString));
+    } catch (e) {
+      this.hideLoading();
+      this.toast((e && e.message) || '调起支付宝失败');
       return;
     }
-    if (pay.mockPayUrl) {
-      this.toast('当前为模拟通道，请用模拟支付');
+    this.hideLoading();
+    this.pollOrder(orderNo);
+    let ok = false;
+    try {
+      ok = !!(payResult && (payResult.ok === true || String(payResult.resultStatus) === '9000'));
+    } catch (e2) {
+      ok = false;
+    }
+    if (ok) {
+      this.toast('支付完成，正在确认开通…');
       return;
     }
-    this.toast('支付参数为空');
+    let memo = '';
+    try {
+      if (payResult && payResult.memo) {
+        memo = String(payResult.memo);
+      }
+    } catch (e3) {}
+    this.toast(memo || '支付未完成，可稍后点「我已支付」或使用扫码');
   },
 
   onPayQr() {
@@ -290,25 +314,52 @@ Page({
     if (!plan) {
       return;
     }
-    let res = api.createOrder(plan, 'qr');
-    if (!res.ok) {
-      this.toast(res.message || '下单失败');
-      return;
-    }
-    let pay = (res.data && res.data.payParams) || {};
-    let orderNo = res.data.orderNo || res.data.order_no || '';
-    let qr = pay.qrCode || pay.url || '';
-    if (!qr) {
-      this.toast('未返回二维码');
-      return;
-    }
-    this.setData({
-      qrOpen: true,
-      qrImage: api.qrImageUrl(qr),
-      qrStatus: '请扫码，支付后自动确认',
-      pendingOrderNo: orderNo
-    });
-    this.pollOrder(orderNo);
+    // 先用整页 loading，下单完成后再一次性打开弹窗，避免弹窗二次 setData 闪一下
+    this.showLoading('生成二维码…');
+    let self = this;
+    setTimeout(function () {
+      let res = api.createOrder(plan, 'qr');
+      if (!res.ok) {
+        self.hideLoading();
+        self.toast(res.message || '下单失败');
+        return;
+      }
+      let pay = (res.data && res.data.payParams) || {};
+      let orderNo = res.data.orderNo || res.data.order_no || '';
+      let qrText = pay.qrCode || pay.url || '';
+      if (!qrText) {
+        self.hideLoading();
+        self.toast('未返回二维码');
+        return;
+      }
+      // 底座 QrCode 本地生成，不依赖外网或第三方 JS
+      let qrPath = null;
+      try {
+        qrPath = QrCode.toFile(String(qrText), {
+          size: 440,
+          margin: 1,
+          level: 'M',
+          format: 'png'
+        });
+      } catch (e) {
+        self.hideLoading();
+        self.toast((e && e.message) || '二维码生成失败');
+        return;
+      }
+      self.hideLoading();
+      if (!qrPath) {
+        self.toast('二维码生成失败');
+        return;
+      }
+      self.setData({
+        qrOpen: true,
+        qrImage: String(qrPath),
+        qrStatus: '请扫码，支付后自动确认',
+        pendingOrderNo: orderNo,
+        polling: false
+      });
+      self.pollOrder(orderNo);
+    }, 30);
   },
 
   onPayMock() {
@@ -337,7 +388,11 @@ Page({
   },
 
   onCloseQr() {
-    this.setData({ qrOpen: false, polling: false });
+    this.setData({
+      qrOpen: false,
+      qrImage: '',
+      polling: false
+    });
   },
 
   onCheckOrder() {
@@ -346,12 +401,20 @@ Page({
       this.toast('没有待确认订单');
       return;
     }
+    this.showLoading('确认支付中…');
     let res = api.getOrder(orderNo);
+    this.hideLoading();
     if (res.ok && res.data && res.data.status === 'paid') {
       this.afterPaid(orderNo);
       return;
     }
-    this.setData({ qrStatus: '尚未到账，请稍后再试' });
+    // 查单接口成功时 message 常为 "ok"，不能直接 toast 给用户
+    let tip = '尚未到账，请支付完成后稍候再试';
+    if (!res.ok) {
+      tip = (res && res.message) ? String(res.message) : '查询失败，请稍后重试';
+    }
+    this.setData({ qrStatus: tip });
+    this.toast(tip);
     this.pollOrder(orderNo);
   },
 

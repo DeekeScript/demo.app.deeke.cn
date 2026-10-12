@@ -345,81 +345,54 @@
     },
 
     {
-
       "showIf": "qrOpen",
-
       "position": "center",
-
-      "title": "支付宝扫码支付",
-
       "width": "86%",
-
-      "style": { "radius": 14, "background": "#FFFFFF" },
-
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 12, "gap": 10, "height": "wrap", "align": "center" },
       "body": [
-
-        { "type": "notice", "text": "请使用支付宝扫描下方二维码" },
-
-        { "type": "space", "height": 6 },
-
         {
-
-          "type": "image",
-
-          "src": "{{qrImage}}",
-
-          "fit": "contain",
-
-          "style": { "width": 200, "height": 200, "radius": 8 }
-
-        },
-
-        { "type": "space", "height": 6 },
-
-        { "type": "notice", "text": "{{qrStatus}}" },
-
-        {
-
           "type": "row",
-
-          "style": { "gap": 6 },
-
+          "style": { "valign": "center", "width": "100%" },
           "children": [
-
+            { "type": "space", "style": { "width": 22 } },
             {
-
-              "type": "button",
-
-              "text": "关闭",
-
-              "size": "sm",
-
-              "onTap": "onCloseQr",
-
-              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
-
+              "type": "text",
+              "text": "支付宝扫码支付",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
             },
-
             {
-
-              "type": "button",
-
-              "text": "我已支付",
-
-              "size": "sm",
-
-              "onTap": "onCheckOrder",
-
-              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
-
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseQr",
+              "style": { "width": 22, "height": 22 }
             }
-
           ]
-
+        },
+        {
+          "type": "column",
+          "style": { "align": "center", "width": "100%", "gap": 8 },
+          "children": [
+            {
+              "type": "image",
+              "src": "{{qrImage}}",
+              "fit": "contain",
+              "style": { "width": 200, "height": 200, "radius": 8 }
+            },
+            {
+              "type": "notice",
+              "text": "{{qrStatus}}",
+              "style": { "align": "center", "color": "#667" }
+            }
+          ]
+        },
+        {
+          "type": "button",
+          "text": "我已支付",
+          "size": "sm",
+          "onTap": "onCheckOrder",
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
         }
-
       ]
-
     }
 
   ]

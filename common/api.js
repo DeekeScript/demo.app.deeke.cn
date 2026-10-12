@@ -190,7 +190,7 @@ module.exports = {
   },
 
   qrImageUrl(content) {
-    // 优先走可访问的公网二维码服务；失败时可改用浏览器打开 qrCode 文本
+    // 已弃用：请用底座 QrCode.toFile(content, options) 本地生成。
     return 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encode(content || '');
   },
 
