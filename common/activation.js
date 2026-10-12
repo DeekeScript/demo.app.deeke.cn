@@ -112,6 +112,13 @@ module.exports = {
     if (online.status && online.status.activated) {
       return { ok: true, needPay: false, data: online.data, status: online.status };
     }
-    return { ok: false, needPay: true, message: '待激活，激活后才能正常使用本APP', data: online.data, status: online.status };
+    let st = online.status || {};
+    let tip = '待激活，激活后才能正常使用本APP';
+    if (online.data && online.data.state === 'revoked') {
+      tip = '激活已失效，请重新激活后再使用';
+    } else if (st.detail) {
+      tip = st.text ? (st.text + '：' + st.detail) : st.detail;
+    }
+    return { ok: false, needPay: true, message: tip, data: online.data, status: online.status };
   }
 };
