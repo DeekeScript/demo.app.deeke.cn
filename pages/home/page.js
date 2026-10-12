@@ -4,6 +4,7 @@ let scripts = require('../../common/scripts.js');
 let params = require('../../common/params.js');
 let update = require('../../common/update.js');
 let guide = require('../../common/guide.js');
+let protocol = require('../../common/protocol.js');
 
 Page({
   data: {
@@ -17,6 +18,10 @@ Page({
     paramsSummary: '',
     guideOpen: false,
     guideAppName: guide.appName(),
+    agreeProtocol: protocol.readAgreed(),
+    protocolOpen: false,
+    protocolHtml: protocol.html,
+    agreeTipOpen: false,
     paramsDialogOpen: false,
     payDialogOpen: false,
     payDialogText: '待激活，激活后才能正常使用本APP。',
@@ -93,11 +98,13 @@ Page({
   },
 
   onLoad() {
+    this.setData({ agreeProtocol: protocol.readAgreed() });
     this.refresh();
     this.autoCheckUpdate();
   },
 
   onShow() {
+    this.setData({ agreeProtocol: protocol.readAgreed() });
     this.refresh();
   },
 
@@ -154,7 +161,29 @@ Page({
     this.setData({ paramsDialogOpen: false });
   },
 
+  onAgreeChange(e) {
+    let ok = !!(e && e.value);
+    protocol.saveAgreed(ok);
+    this.setData({ agreeProtocol: ok });
+  },
+
+  onOpenProtocol() {
+    this.setData({ protocolOpen: true });
+  },
+
+  onCloseProtocol() {
+    this.setData({ protocolOpen: false });
+  },
+
+  onCloseAgreeTip() {
+    this.setData({ agreeTipOpen: false });
+  },
+
   onRun() {
+    if (!this.data.agreeProtocol) {
+      this.setData({ agreeTipOpen: true });
+      return;
+    }
     if (!params.hasConfigured()) {
       this.setData({ paramsDialogOpen: true });
       return;

@@ -44,10 +44,39 @@
       ]
     },
     {
+      "type": "row",
+      "style": { "valign": "center", "gap": 4, "marginBottom": 8 },
+      "children": [
+        {
+          "type": "checkbox",
+          "name": "agreeProtocol",
+          "label": "我已阅读并同意",
+          "onChange": "onAgreeChange",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "text",
+          "text": "《用户协议》",
+          "onTap": "onOpenProtocol",
+          "style": { "fontSize": 13, "color": "#0B6E6A" }
+        }
+      ]
+    },
+    {
       "type": "button",
       "text": "开始运行",
       "onTap": "onRun",
       "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 12, "width": "100%" }
+    },
+    {
+      "type": "dialog",
+      "showIf": "agreeTipOpen",
+      "title": "提示",
+      "text": "请勾选用户协议",
+      "confirmText": "知道了",
+      "hideCancel": true,
+      "onConfirm": "onCloseAgreeTip",
+      "style": { "color": "#0B6E6A" }
     },
     {
       "type": "dialog",
@@ -73,6 +102,45 @@
     }
   ],
   "popups": [
+    {
+      "showIf": "protocolOpen",
+      "position": "center",
+      "width": "88%",
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 12, "gap": 10, "height": "wrap" },
+      "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            { "type": "space", "style": { "width": 22 } },
+            {
+              "type": "text",
+              "text": "用户协议",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseProtocol",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
+        {
+          "type": "webview",
+          "html": "{{protocolHtml}}",
+          "javascript": false,
+          "style": { "height": 280, "radius": 8 }
+        },
+        {
+          "type": "button",
+          "text": "我已阅读",
+          "size": "sm",
+          "onTap": "onCloseProtocol",
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+        }
+      ]
+    },
     {
       "showIf": "guideOpen",
       "position": "center",
