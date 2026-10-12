@@ -19,7 +19,9 @@ Page({
     selectedPrice: '-',
     activationCode: '',
     activateOpen: false,
+    activateTip: '',
     savedActivationCode: '',
+    activateBoundHint: '当前设备已绑定激活码',
     showActivateCode: false,
     showActivateForm: true,
     qrOpen: false,
@@ -34,7 +36,8 @@ Page({
     this.setData({
       savedActivationCode: code,
       showActivateCode: !!code,
-      showActivateForm: !code
+      showActivateForm: !code,
+      activateBoundHint: code ? '当前设备已绑定激活码' : ''
     });
   },
 
@@ -53,7 +56,7 @@ Page({
 
   onOpenActivate() {
     this.syncActivatePanel();
-    this.setData({ activateOpen: true });
+    this.setData({ activateOpen: true, activateTip: '' });
   },
 
   onCopyActivateCode() {
@@ -419,26 +422,37 @@ Page({
   },
 
   onActivateCode() {
-    let code = (this.data.activationCode || '').trim();
+    let code = String(this.data.activationCode || '').trim();
     if (!code) {
-      this.toast('请输入激活码');
+      this.setData({ activateTip: '请输入激活码' });
+      this.toast({ text: '请输入激活码', duration: 'long' });
       return;
     }
+    this.setData({ activateTip: '正在激活…' });
+    this.showLoading('正在激活…');
     let res = api.activate({ activation_code: code });
+    this.hideLoading();
     if (!res.ok) {
-      this.toast(res.message || '激活失败');
+      let msg = res.message || '激活失败';
+      this.setData({ activateTip: msg });
+      this.toast({ text: msg, duration: 'long' });
       return;
     }
     let payload = res.data || {};
     payload.activationCode = code;
     activation.saveCache(payload);
     activation.saveActivationCode(code);
+    // 弹窗保持打开，立刻切到「已绑定激活码」视图
     this.setData({
       activationCode: '',
-      activateOpen: false
+      activateTip: '',
+      activateOpen: true,
+      savedActivationCode: code,
+      showActivateCode: true,
+      showActivateForm: false,
+      activateBoundHint: '激活成功，当前设备已绑定激活码'
     });
-    this.syncActivatePanel();
-    this.toast('激活成功');
     this.loadPricing();
+    this.toast({ text: '激活成功', duration: 'long' });
   }
 });

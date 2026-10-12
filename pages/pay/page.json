@@ -270,7 +270,7 @@
 
           "children": [
 
-            { "type": "notice", "text": "当前设备已绑定激活码" },
+            { "type": "notice", "text": "{{activateBoundHint}}" },
 
             {
 
@@ -322,6 +322,13 @@
 
               "variant": "box"
 
+            },
+
+            {
+              "type": "notice",
+              "showIf": "activateTip",
+              "text": "{{activateTip}}",
+              "style": { "color": "#B42318" }
             },
 
             {
