@@ -59,7 +59,8 @@ module.exports = {
     if (raw == null || raw === '') {
       return {
         ok: false,
-        message: '网络异常，请检查手机网络或域名 ' + (config.apiHost || 'https://app.deeke.cn'),
+        // 真正连不上时 raw 才为空；业务错误（4xx JSON）应由下方解析 message
+        message: '请求无响应，请检查网络或稍后重试',
         url: url || ''
       };
     }
