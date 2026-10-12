@@ -36,16 +36,22 @@ module.exports = {
       return;
     }
     let prev = this.readCache() || {};
-    let code = data.activationCode || data.activation_code || prev.activationCode || '';
+    let activated = !!data.activated;
+    let free = !!data.free || data.state === 'free';
+    // 失效/过期/未开通：清掉本地绑定的激活码，弹窗回到输入态
+    let code = '';
+    if (activated || free) {
+      code = data.activationCode || data.activation_code || prev.activationCode || '';
+    }
     let plan = data.plan || prev.plan || '';
     let planName = data.planName || data.plan_name || prev.planName || PLAN_LABELS[plan] || '';
     Storage.putObj(this.cacheKey, {
-      activated: !!data.activated,
+      activated: activated,
       plan: plan,
       planName: planName ? String(planName) : '',
       state: data.state || '',
       expiresAt: data.expiresAt || null,
-      free: !!data.free,
+      free: !!free,
       activationCode: code ? String(code) : '',
       checkedAt: Date.now()
     });
@@ -56,9 +62,30 @@ module.exports = {
     if (!text) {
       return;
     }
-    let cur = this.readCache() || {};
-    cur.activationCode = text;
-    Storage.putObj(this.cacheKey, cur);
+    // 必须新建普通对象：getObj 返回的 Java/JSON 对象不能直接改完再 putObj（Rhino NPE）
+    this.writeCache(this.readCache(), { activationCode: text });
+  },
+
+  clearActivationCode() {
+    this.writeCache(this.readCache(), { activationCode: '' });
+  },
+
+  /** 把缓存写成可 JSON 化的纯对象再存盘 */
+  writeCache(prev, patch) {
+    let p = prev || {};
+    let next = patch || {};
+    Storage.putObj(this.cacheKey, {
+      activated: next.activated != null ? !!next.activated : !!p.activated,
+      plan: next.plan != null ? String(next.plan || '') : String(p.plan || ''),
+      planName: next.planName != null ? String(next.planName || '') : String(p.planName || ''),
+      state: next.state != null ? String(next.state || '') : String(p.state || ''),
+      expiresAt: next.expiresAt !== undefined ? next.expiresAt : (p.expiresAt || null),
+      free: next.free != null ? !!next.free : !!p.free,
+      activationCode: next.activationCode != null
+        ? String(next.activationCode || '')
+        : String(p.activationCode || ''),
+      checkedAt: next.checkedAt != null ? next.checkedAt : (p.checkedAt || Date.now())
+    });
   },
 
   readActivationCode() {

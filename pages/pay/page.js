@@ -32,7 +32,13 @@ Page({
   },
 
   syncActivatePanel() {
-    let code = activation.readActivationCode();
+    // 以本地缓存为准（loadPricing / checkOnline 失效时会清掉 activationCode）
+    let cache = activation.readCache() || {};
+    let alive = !!(cache.activated || cache.free);
+    let code = alive ? activation.readActivationCode() : '';
+    if (!alive && activation.readActivationCode()) {
+      activation.clearActivationCode();
+    }
     this.setData({
       savedActivationCode: code,
       showActivateCode: !!code,
@@ -42,7 +48,6 @@ Page({
   },
 
   onLoad() {
-    this.syncActivatePanel();
     this.loadPricing();
   },
 
@@ -55,6 +60,8 @@ Page({
   },
 
   onOpenActivate() {
+    // 打开前再拉一次状态，失效后不再展示旧激活码
+    activation.checkOnline();
     this.syncActivatePanel();
     this.setData({ activateOpen: true, activateTip: '' });
   },
@@ -69,8 +76,13 @@ Page({
     this.toast('已复制激活码');
   },
 
-  loadPricing() {
-    this.showLoading('加载中…');
+  loadPricing(opt) {
+    opt = opt || {};
+    let quiet = !!opt.quiet;
+    let skipActivatePanel = !!opt.skipActivatePanel;
+    if (!quiet) {
+      this.showLoading('加载中…');
+    }
     let res = api.pricing();
     if (!res.ok) {
       this.setData({
@@ -80,7 +92,9 @@ Page({
         plansEmpty: true,
         showPayActions: false
       });
-      this.hideLoading();
+      if (!quiet) {
+        this.hideLoading();
+      }
       return;
     }
     let data = res.data || {};
@@ -119,7 +133,12 @@ Page({
         showPayActions: false,
         showMock: false
       });
-      this.hideLoading();
+      if (!skipActivatePanel) {
+        this.syncActivatePanel();
+      }
+      if (!quiet) {
+        this.hideLoading();
+      }
       return;
     }
     let plans = [];
@@ -173,7 +192,12 @@ Page({
       canApp: canApp,
       canQr: canQr
     });
-    this.hideLoading();
+    if (!skipActivatePanel) {
+      this.syncActivatePanel();
+    }
+    if (!quiet) {
+      this.hideLoading();
+    }
   },
 
   onSelectPlan(e) {
@@ -441,8 +465,8 @@ Page({
     let payload = res.data || {};
     payload.activationCode = code;
     activation.saveCache(payload);
-    activation.saveActivationCode(code);
-    // 弹窗保持打开，立刻切到「已绑定激活码」视图
+    // 先静默刷新价格（不再 sync 弹窗），再一次性切到已绑定视图，避免弹窗刷两次
+    this.loadPricing({ quiet: true, skipActivatePanel: true });
     this.setData({
       activationCode: '',
       activateTip: '',
@@ -452,7 +476,6 @@ Page({
       showActivateForm: false,
       activateBoundHint: '激活成功，当前设备已绑定激活码'
     });
-    this.loadPricing();
     this.toast({ text: '激活成功', duration: 'long' });
   }
 });
