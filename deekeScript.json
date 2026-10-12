@@ -1,0 +1,44 @@
+{
+  "name": "嘀客Demo",
+  "packageName": "cn.deeke.demo.app",
+  "versionCode": "100",
+  "versionName": "1.0.0",
+  "icon": "img/icon.svg",
+  "homePage": "pages/home",
+  "pages": [
+    { "id": "scripts", "file": "pages/scripts", "title": "话术" },
+    { "id": "params", "file": "pages/params", "title": "参数" },
+    { "id": "pay", "file": "pages/pay", "title": "开通" },
+    { "id": "mine", "file": "pages/mine", "title": "我的" }
+  ],
+  "bottomMenus": [
+    { "title": "首页", "icon": "img/home.svg", "page": "pages/home" },
+    { "title": "话术", "icon": "img/scripts.svg", "page": "pages/scripts" },
+    { "title": "参数", "icon": "img/params.svg", "page": "pages/params" },
+    { "title": "我的", "icon": "img/mine.svg", "page": "pages/mine" }
+  ],
+  "window": {
+    "style": {
+      "background": "#F3F6F5",
+      "padding": 12
+    },
+    "title": {
+      "fontSize": 17,
+      "color": "#FFFFFF",
+      "background": "#0B6E6A"
+    },
+    "statusBar": {
+      "background": "#0B6E6A",
+      "color": "light"
+    },
+    "theme": {
+      "primary": "#0B6E6A"
+    },
+    "tabBar": {
+      "color": "#7A8A88",
+      "selectedColor": "#0B6E6A",
+      "background": "#FFFFFF",
+      "borderColor": "#E6EEEE"
+    }
+  }
+}

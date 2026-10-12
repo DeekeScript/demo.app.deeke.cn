@@ -1,0 +1,428 @@
+{
+
+  "title": {
+
+    "hidden": true
+
+  },
+
+  "style": {
+
+    "background": "#F3F6F5",
+
+    "padding": 0
+
+  },
+
+  "body": [
+
+    {
+
+      "type": "column",
+
+      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
+
+      "children": [
+
+        {
+
+          "type": "row",
+
+          "style": { "valign": "center", "gap": 8 },
+
+          "children": [
+
+            {
+
+              "type": "image",
+
+              "src": "img/back.svg",
+
+              "onTap": "onBack",
+
+              "style": { "width": 26, "height": 26 }
+
+            },
+
+            {
+
+              "type": "text",
+
+              "text": "开通会员",
+
+              "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold", "align": "center" }
+
+            },
+
+            {
+
+              "type": "image",
+
+              "src": "img/menu.svg",
+
+              "onTap": "onOpenActivate",
+
+              "style": { "width": 26, "height": 26 }
+
+            }
+
+          ]
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "type": "column",
+
+      "style": { "padding": 8, "gap": 6 },
+
+      "children": [
+
+        {
+
+          "type": "card",
+
+          "style": { "padding": 10, "gap": 4, "radius": 10, "background": "#FFFFFF" },
+
+          "children": [
+            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款" }
+          ]
+
+        },
+
+        {
+
+          "type": "card",
+
+          "showIf": "isFree",
+
+          "style": { "padding": 12, "gap": 4, "radius": 10, "background": "#E8F6F4" },
+
+          "children": [
+
+            { "type": "title", "text": "免费使用", "style": { "color": "#0B6E6A" } },
+
+            { "type": "notice", "text": "{{freeHint}}" }
+
+          ]
+
+        },
+
+        {
+
+          "type": "list",
+
+          "bind": "plans",
+
+          "showIf": "showPlans",
+
+          "item": {
+
+            "type": "card",
+
+            "onTap": "onSelectPlan",
+
+            "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "{{item.cardBg}}", "borderColor": "{{item.borderColor}}", "borderWidth": 1 },
+
+            "children": [
+
+              {
+
+                "type": "row",
+
+                "style": { "valign": "center", "gap": 6 },
+
+                "children": [
+
+                  {
+
+                    "type": "column",
+
+                    "style": { "weight": 1, "gap": 1 },
+
+                    "children": [
+
+                      { "type": "text", "text": "{{item.name}}", "style": { "fontWeight": "bold", "fontSize": 14 } },
+
+                      { "type": "notice", "text": "{{item.sub}}" }
+
+                    ]
+
+                  },
+
+                  { "type": "text", "text": "{{item.priceText}}", "style": { "color": "#0B6E6A", "fontWeight": "bold", "fontSize": 17 } }
+
+                ]
+
+              }
+
+            ]
+
+          }
+
+        },
+
+        { "type": "empty", "text": "暂无可用套餐", "showIf": "plansEmpty" },
+
+        { "type": "space", "height": 8 }
+
+      ]
+
+    },
+
+    {
+
+      "type": "column",
+
+      "showIf": "showPayActions",
+
+      "style": {
+
+        "sticky": "bottom",
+
+        "padding": 10,
+
+        "gap": 8,
+
+        "background": "#FFFFFF",
+
+        "borderTopWidth": 1,
+
+        "borderTopColor": "#E6EEEE"
+
+      },
+
+      "children": [
+
+        { "type": "notice", "text": "已选：{{selectedPlanName}} · ¥{{selectedPrice}}" },
+
+        {
+
+          "type": "button",
+
+          "text": "支付宝支付",
+
+          "onTap": "onPayApp",
+
+          "style": { "background": "#1677FF", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+
+        },
+
+        {
+
+          "type": "button",
+
+          "text": "支付宝扫码支付",
+
+          "onTap": "onPayQr",
+
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+
+        },
+
+        {
+
+          "type": "button",
+
+          "text": "模拟支付（仅开发环境）",
+
+          "size": "sm",
+
+          "showIf": "showMock",
+
+          "onTap": "onPayMock",
+
+          "style": { "background": "#F0F4F3", "color": "#556", "width": "100%" }
+
+        }
+
+      ]
+
+    }
+
+  ],
+
+  "popups": [
+
+    {
+
+      "showIf": "activateOpen",
+
+      "position": "bottom",
+
+      "title": "激活码",
+
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 12 },
+
+      "body": [
+
+        {
+
+          "type": "column",
+
+          "showIf": "showActivateCode",
+
+          "style": { "gap": 8, "paddingTop": 12 },
+
+          "children": [
+
+            { "type": "notice", "text": "当前设备已绑定激活码" },
+
+            {
+
+              "type": "text",
+
+              "text": "{{savedActivationCode}}",
+
+              "style": { "fontSize": 18, "fontWeight": "bold", "color": "#0B6E6A", "align": "center" }
+
+            },
+
+            {
+
+              "type": "button",
+
+              "text": "复制激活码",
+
+              "size": "sm",
+
+              "onTap": "onCopyActivateCode",
+
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+
+            }
+
+          ]
+
+        },
+
+        {
+
+          "type": "column",
+
+          "showIf": "showActivateForm",
+
+          "style": { "gap": 8, "paddingTop": 12 },
+
+          "children": [
+
+            { "type": "notice", "text": "如果你有激活码，可以使用激活码直接激活" },
+
+            {
+
+              "type": "input",
+
+              "name": "activationCode",
+
+              "hint": "请输入激活码",
+
+              "variant": "box"
+
+            },
+
+            {
+
+              "type": "button",
+
+              "text": "立即激活",
+
+              "onTap": "onActivateCode",
+
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+
+            }
+
+          ]
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "showIf": "qrOpen",
+
+      "position": "center",
+
+      "title": "支付宝扫码支付",
+
+      "width": "86%",
+
+      "style": { "radius": 14, "background": "#FFFFFF" },
+
+      "body": [
+
+        { "type": "notice", "text": "请使用支付宝扫描下方二维码" },
+
+        { "type": "space", "height": 6 },
+
+        {
+
+          "type": "image",
+
+          "src": "{{qrImage}}",
+
+          "fit": "contain",
+
+          "style": { "width": 200, "height": 200, "radius": 8 }
+
+        },
+
+        { "type": "space", "height": 6 },
+
+        { "type": "notice", "text": "{{qrStatus}}" },
+
+        {
+
+          "type": "row",
+
+          "style": { "gap": 6 },
+
+          "children": [
+
+            {
+
+              "type": "button",
+
+              "text": "关闭",
+
+              "size": "sm",
+
+              "onTap": "onCloseQr",
+
+              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
+
+            },
+
+            {
+
+              "type": "button",
+
+              "text": "我已支付",
+
+              "size": "sm",
+
+              "onTap": "onCheckOrder",
+
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
+
+            }
+
+          ]
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}
+

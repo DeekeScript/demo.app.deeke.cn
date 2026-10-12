@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "checkJs": true,
+        "target": "ES2022",
+        "baseUrl": ".",
+        "module": "commonjs",
+        "lib": [
+            "es2022"
+        ]
+    },
+    "include": [
+        ".vscode/deekeScriptPro.d.ts",
+        "**/*.js"
+    ]
+}

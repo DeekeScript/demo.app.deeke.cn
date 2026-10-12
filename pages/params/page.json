@@ -1,0 +1,146 @@
+{
+  "title": {
+    "text": "参数",
+    "fontSize": 17,
+    "color": "#FFFFFF",
+    "background": "#0B6E6A"
+  },
+  "style": {
+    "background": "#F3F6F5",
+    "padding": 12
+  },
+  "body": [
+    {
+      "type": "card",
+      "style": { "padding": 12, "paddingBottom": 14, "gap": 10, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "功能开关", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        { "type": "switch", "name": "enableLike", "label": "点赞", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } },
+        { "type": "switch", "name": "enableComment", "label": "评论", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } },
+        { "type": "switch", "name": "enableDm", "label": "私信", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "触发频率", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        { "type": "notice", "text": "遇到目标内容时执行该动作的概率" },
+        {
+          "type": "slider",
+          "name": "likeRate",
+          "label": "点赞概率",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "commentRate",
+          "label": "评论概率",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "dmRate",
+          "label": "私信概率",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "intervalSec",
+          "label": "动作间隔",
+          "min": 1,
+          "max": 30,
+          "step": 1,
+          "unit": "秒",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "单次上限", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        {
+          "type": "slider",
+          "name": "likeMax",
+          "label": "点赞次数",
+          "min": 0,
+          "max": 200,
+          "step": 5,
+          "unit": "次",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "commentMax",
+          "label": "评论次数",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "unit": "次",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "dmMax",
+          "label": "私信次数",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "次",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 10, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "关键词", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        {
+          "type": "textarea",
+          "name": "keywords",
+          "label": "匹配关键词",
+          "hint": "每行一个，命中后才执行动作",
+          "minLines": 3,
+          "variant": "box",
+          "onChange": "onAutoSave",
+          "onBlur": "onAutoSave"
+        },
+        {
+          "type": "textarea",
+          "name": "excludeKeywords",
+          "label": "排除关键词",
+          "hint": "每行一个，命中则跳过",
+          "minLines": 2,
+          "variant": "box",
+          "onChange": "onAutoSave",
+          "onBlur": "onAutoSave"
+        }
+      ]
+    }
+  ]
+}

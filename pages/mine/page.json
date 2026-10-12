@@ -1,0 +1,261 @@
+{
+  "title": {
+    "text": "我的",
+    "fontSize": 17,
+    "color": "#FFFFFF",
+    "background": "#0B6E6A"
+  },
+  "style": {
+    "background": "#F3F6F5",
+    "padding": 12
+  },
+  "body": [
+    {
+      "type": "card",
+      "style": { "padding": 16, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "{{statusTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16 } },
+            {
+              "type": "button",
+              "text": "开通",
+              "size": "sm",
+              "onTap": "onGoPay",
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "{{statusDetail}}" }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "权限", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            { "type": "text", "text": "无障碍", "style": { "weight": 1, "fontSize": 14 } },
+            { "type": "tag", "text": "{{accessText}}", "style": { "background": "{{accessBg}}", "color": "{{accessColor}}", "radius": 6 } },
+            {
+              "type": "button",
+              "text": "教程",
+              "size": "sm",
+              "onTap": "onOpenGuide",
+              "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+            }
+          ]
+        },
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            { "type": "text", "text": "悬浮窗", "style": { "weight": 1, "fontSize": 14 } },
+            { "type": "tag", "text": "{{floatText}}", "style": { "background": "{{floatBg}}", "color": "{{floatColor}}", "radius": 6 } },
+            {
+              "type": "button",
+              "text": "开启",
+              "size": "sm",
+              "onTap": "onOpenFloat",
+              "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+            }
+          ]
+        },
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            {
+              "type": "column",
+              "style": { "weight": 1, "gap": 2 },
+              "children": [
+                { "type": "text", "text": "省电限制", "style": { "fontSize": 14 } },
+                { "type": "notice", "text": "允许高耗电，避免被系统杀掉" }
+              ]
+            },
+            {
+              "type": "button",
+              "text": "去设置",
+              "size": "sm",
+              "onTap": "onBattery",
+              "style": { "background": "#FFF6E8", "color": "#A35B00", "radius": 8 }
+            }
+          ]
+        }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "版本", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "text", "text": "{{localVersion}}", "style": { "fontSize": 13, "color": "#667" } }
+          ]
+        },
+        { "type": "notice", "text": "{{updateHint}}" },
+        {
+          "type": "row",
+          "style": { "gap": 8 },
+          "children": [
+            {
+              "type": "button",
+              "text": "检查更新",
+              "size": "sm",
+              "onTap": "onCheckUpdate",
+              "style": { "weight": 1, "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+            },
+            {
+              "type": "button",
+              "text": "立即更新",
+              "size": "sm",
+              "showIf": "hasUpdate",
+              "onTap": "onDoUpdate",
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+            }
+          ]
+        }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "客服", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "微信", "style": { "fontSize": 13, "color": "#667" } },
+            { "type": "text", "text": "{{supportWechat}}", "style": { "weight": 1, "fontSize": 14, "color": "#223", "fontWeight": "bold" } },
+            {
+              "type": "button",
+              "text": "复制",
+              "size": "sm",
+              "onTap": "onCopyWechat",
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "添加好友时请备注「D0001咨询」" }
+      ]
+    },
+    { "type": "space", "height": 10 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "设备", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#667" } },
+            { "type": "text", "text": "{{deviceIdShort}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } },
+            {
+              "type": "image",
+              "src": "img/copy.svg",
+              "onTap": "onCopyDevice",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "{{toolCode}} · {{apiHost}}" }
+      ]
+    }
+  ],
+  "popups": [
+    {
+      "showIf": "updateOpen",
+      "position": "center",
+      "title": "{{updateTitle}}",
+      "width": "88%",
+      "closeOnMask": false,
+      "style": { "radius": 14, "background": "#FFFFFF" },
+      "body": [
+        { "type": "notice", "text": "{{updateVersionLine}}" },
+        { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },
+        { "type": "space", "height": 6 },
+        { "type": "text", "text": "{{updateChangelog}}", "style": { "fontSize": 13, "color": "#334" } },
+        { "type": "space", "height": 10 },
+        {
+          "type": "row",
+          "style": { "gap": 8 },
+          "children": [
+            {
+              "type": "button",
+              "text": "以后再说",
+              "size": "sm",
+              "showIf": "canSkipUpdate",
+              "onTap": "onSkipUpdate",
+              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
+            },
+            {
+              "type": "button",
+              "text": "{{updateConfirmText}}",
+              "size": "sm",
+              "onTap": "onDoUpdate",
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "showIf": "guideOpen",
+      "position": "center",
+      "title": "如何开启无障碍",
+      "width": "88%",
+      "style": { "radius": 14, "background": "#FFFFFF" },
+      "body": [
+        {
+          "type": "swiper",
+          "bind": "guideSlides",
+          "height": 180,
+          "autoplay": true,
+          "interval": 2200,
+          "item": {
+            "type": "image",
+            "src": "{{item.src}}",
+            "fit": "contain",
+            "style": { "width": "100%", "height": 160, "radius": 10 }
+          }
+        },
+        { "type": "space", "height": 8 },
+        { "type": "notice", "text": "看完步骤后点「去开启」。" },
+        { "type": "space", "height": 8 },
+        {
+          "type": "row",
+          "style": { "gap": 8 },
+          "children": [
+            {
+              "type": "button",
+              "text": "关闭",
+              "size": "sm",
+              "onTap": "onCloseGuide",
+              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
+            },
+            {
+              "type": "button",
+              "text": "去开启",
+              "size": "sm",
+              "onTap": "onOpenAccessibility",
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

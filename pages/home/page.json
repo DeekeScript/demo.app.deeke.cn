@@ -1,0 +1,147 @@
+{
+  "title": {
+    "text": "工作台",
+    "fontSize": 17,
+    "color": "#FFFFFF",
+    "background": "#0B6E6A"
+  },
+  "style": {
+    "background": "#F3F6F5",
+    "padding": 16
+  },
+  "body": [
+    {
+      "type": "card",
+      "style": { "padding": 16, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "{{statusTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 17 } },
+            { "type": "tag", "text": "{{statusTag}}", "style": { "background": "{{statusTagBg}}", "color": "{{statusTagColor}}", "radius": 6 } }
+          ]
+        },
+        { "type": "notice", "text": "{{statusDetail}}" },
+        {
+          "type": "button",
+          "text": "去开通",
+          "showIf": "showPayEntry",
+          "size": "sm",
+          "onTap": "onGoPay",
+          "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 8 }
+        }
+      ]
+    },
+    { "type": "space", "height": 12 },
+    {
+      "type": "card",
+      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "children": [
+        { "type": "text", "text": "话术", "style": { "fontSize": 12, "color": "#7A8A88" } },
+        { "type": "text", "text": "{{scriptSummary}}", "style": { "fontSize": 14, "color": "#223" } },
+        { "type": "text", "text": "参数", "style": { "fontSize": 12, "color": "#7A8A88" } },
+        { "type": "text", "text": "{{paramsSummary}}", "style": { "fontSize": 14, "color": "#223" } }
+      ]
+    },
+    { "type": "space", "height": 28 },
+    {
+      "type": "button",
+      "text": "开始运行",
+      "onTap": "onRun",
+      "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 12, "width": "100%" }
+    },
+    {
+      "type": "dialog",
+      "showIf": "paramsDialogOpen",
+      "title": "请先设置参数",
+      "text": "首次运行前请到「参数」页完成设置并点击保存。",
+      "confirmText": "去设置",
+      "cancelText": "取消",
+      "onConfirm": "onGoParams",
+      "onCancel": "onCloseParamsDialog",
+      "style": { "color": "#0B6E6A" }
+    },
+    {
+      "type": "dialog",
+      "showIf": "payDialogOpen",
+      "title": "需要先开通",
+      "text": "{{payDialogText}}",
+      "confirmText": "去开通",
+      "cancelText": "取消",
+      "onConfirm": "onGoPay",
+      "onCancel": "onClosePayDialog",
+      "style": { "color": "#0B6E6A" }
+    }
+  ],
+  "popups": [
+    {
+      "showIf": "guideOpen",
+      "position": "center",
+      "title": "如何开启无障碍",
+      "width": "88%",
+      "style": { "radius": 14, "background": "#FFFFFF" },
+      "body": [
+        {
+          "type": "swiper",
+          "bind": "guideSlides",
+          "height": 180,
+          "autoplay": true,
+          "interval": 2200,
+          "item": {
+            "type": "image",
+            "src": "{{item.src}}",
+            "fit": "contain",
+            "style": { "width": "100%", "height": 160, "radius": 10 }
+          }
+        },
+        { "type": "space", "height": 8 },
+        { "type": "notice", "text": "{{guideTip}}" },
+        { "type": "space", "height": 8 },
+        {
+          "type": "button",
+          "text": "去开启",
+          "size": "sm",
+          "onTap": "onOpenAccessibility",
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+        }
+      ]
+    },
+    {
+      "showIf": "updateOpen",
+      "position": "center",
+      "title": "{{updateTitle}}",
+      "width": "88%",
+      "closeOnMask": false,
+      "style": { "radius": 14, "background": "#FFFFFF" },
+      "body": [
+        { "type": "notice", "text": "{{updateVersionLine}}" },
+        { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },
+        { "type": "space", "height": 6 },
+        { "type": "text", "text": "{{updateChangelog}}", "style": { "fontSize": 13, "color": "#334" } },
+        { "type": "space", "height": 10 },
+        {
+          "type": "row",
+          "style": { "gap": 8 },
+          "children": [
+            {
+              "type": "button",
+              "text": "以后再说",
+              "size": "sm",
+              "showIf": "canSkipUpdate",
+              "onTap": "onSkipUpdate",
+              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
+            },
+            {
+              "type": "button",
+              "text": "{{updateConfirmText}}",
+              "size": "sm",
+              "onTap": "onDoUpdate",
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

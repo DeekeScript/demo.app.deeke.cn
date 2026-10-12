@@ -1,0 +1,168 @@
+{
+  "title": {
+    "hidden": true
+  },
+  "style": {
+    "background": "#F3F6F5",
+    "padding": 0
+  },
+  "body": [
+    {
+      "type": "column",
+      "style": { "background": "#0B6E6A", "padding": 12 },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            {
+              "type": "text",
+              "text": "话术",
+              "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold" }
+            },
+            {
+              "type": "image",
+              "src": "img/add.svg",
+              "onTap": "onOpenAdd",
+              "style": { "width": 28, "height": 28 }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "column",
+      "style": { "padding": 12 },
+      "children": [
+        {
+          "type": "row",
+          "style": { "gap": 8, "valign": "center" },
+          "children": [
+            {
+              "type": "button",
+              "text": "全部",
+              "size": "sm",
+              "onTap": "onFilterAll",
+              "style": { "background": "{{filterAllBg}}", "color": "{{filterAllColor}}", "radius": 16 }
+            },
+            {
+              "type": "button",
+              "text": "私信",
+              "size": "sm",
+              "onTap": "onFilterDm",
+              "style": { "background": "{{filterDmBg}}", "color": "{{filterDmColor}}", "radius": 16 }
+            },
+            {
+              "type": "button",
+              "text": "评论",
+              "size": "sm",
+              "onTap": "onFilterComment",
+              "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 16 }
+            }
+          ]
+        },
+        { "type": "space", "height": 8 },
+        {
+          "type": "list",
+          "bind": "rows",
+          "item": {
+            "type": "card",
+            "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "#FFFFFF" },
+            "children": [
+              {
+                "type": "row",
+                "style": { "gap": 8, "valign": "center" },
+                "children": [
+                  {
+                    "type": "tag",
+                    "text": "{{item.typeLabel}}",
+                    "style": { "background": "{{item.typeBg}}", "color": "{{item.typeColor}}", "radius": 6 }
+                  },
+                  {
+                    "type": "column",
+                    "style": { "weight": 1, "gap": 2 },
+                    "children": [
+                      { "type": "text", "text": "{{item.content}}", "style": { "fontSize": 14, "color": "#223" } },
+                      { "type": "notice", "text": "{{item.statusText}}" }
+                    ]
+                  },
+                  {
+                    "type": "button",
+                    "text": "⋮",
+                    "size": "sm",
+                    "onTap": "onMore",
+                    "style": { "background": "#F0F4F3", "color": "#445", "radius": 16, "fontSize": 18 }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        { "type": "empty", "text": "暂无话术，点右上角添加", "showIf": "empty" }
+      ]
+    },
+    {
+      "type": "actionSheet",
+      "showIf": "menuOpenEnabled",
+      "title": "话术操作",
+      "items": [
+        { "text": "停用", "value": "disable" },
+        { "text": "删除", "value": "delete" }
+      ],
+      "onChange": "onMenuAction",
+      "cancelText": "取消"
+    },
+    {
+      "type": "actionSheet",
+      "showIf": "menuOpenDisabled",
+      "title": "话术操作",
+      "items": [
+        { "text": "启用", "value": "enable" },
+        { "text": "删除", "value": "delete" }
+      ],
+      "onChange": "onMenuAction",
+      "cancelText": "取消"
+    }
+  ],
+  "popups": [
+    {
+      "showIf": "addOpen",
+      "position": "bottom",
+      "title": "添加话术",
+      "style": { "radius": 16, "background": "#FFFFFF" },
+      "body": [
+        {
+          "type": "radio",
+          "name": "newType",
+          "label": "类型",
+          "options": [
+            { "label": "私信", "value": "dm" },
+            { "label": "评论", "value": "comment" }
+          ],
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "textarea",
+          "name": "newContent",
+          "label": "内容",
+          "hint": "输入一条话术",
+          "minLines": 3,
+          "variant": "box"
+        },
+        {
+          "type": "switch",
+          "name": "newEnabled",
+          "label": "启用",
+          "style": { "color": "#0B6E6A" }
+        },
+        { "type": "space", "height": 8 },
+        {
+          "type": "button",
+          "text": "保存",
+          "onTap": "onAdd",
+          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+        }
+      ]
+    }
+  ]
+}
