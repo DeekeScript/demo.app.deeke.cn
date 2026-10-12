@@ -11,10 +11,14 @@ Page({
     statusDetail: '',
     accessText: '',
     floatText: '',
+    batteryText: '',
     accessBg: '#EEF2F1',
     accessColor: '#667',
     floatBg: '#EEF2F1',
     floatColor: '#667',
+    batteryBg: '#EEF2F1',
+    batteryColor: '#667',
+    showBatteryBtn: true,
     deviceId: '',
     supportWechat: '',
     toolCode: '',
@@ -83,6 +87,7 @@ Page({
     let snap = permission.permissionSnapshot();
     let a = this.tagStyle(snap.accessibility);
     let f = this.tagStyle(snap.floatWindow);
+    let b = this.tagStyle(!!snap.battery);
     let online = activation.checkOnline();
     let st = online.status || activation.formatStatus(activation.readCache());
     this.setData({
@@ -90,10 +95,14 @@ Page({
       statusDetail: online.ok ? st.detail : (online.message || st.detail),
       accessText: snap.accessibilityText,
       floatText: snap.floatText,
+      batteryText: snap.batteryText,
       accessBg: a.bg,
       accessColor: a.color,
       floatBg: f.bg,
       floatColor: f.color,
+      batteryBg: b.bg,
+      batteryColor: b.color,
+      showBatteryBtn: !snap.battery,
       deviceId: device.getDeviceId(),
       supportWechat: config.supportWechat || 'DeekeScript',
       toolCode: config.toolCode,
@@ -132,6 +141,11 @@ Page({
 
   onBattery() {
     permission.ensureBatteryHint();
+    let that = this;
+    // 从系统页返回后 onShow 会刷新；这里稍后再刷一次以覆盖确认框路径
+    setTimeout(function () {
+      that.refresh();
+    }, 1200);
   },
 
   onCopyDevice() {

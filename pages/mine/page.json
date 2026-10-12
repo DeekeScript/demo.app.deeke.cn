@@ -79,10 +79,16 @@
               ]
             },
             {
+              "type": "tag",
+              "text": "{{batteryText}}",
+              "style": { "background": "{{batteryBg}}", "color": "{{batteryColor}}", "radius": 6 }
+            },
+            {
               "type": "button",
               "text": "去设置",
               "size": "sm",
               "onTap": "onBattery",
+              "showIf": "showBatteryBtn",
               "style": { "background": "#FFF6E8", "color": "#A35B00", "radius": 8 }
             }
           ]

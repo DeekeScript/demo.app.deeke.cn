@@ -126,20 +126,34 @@ function ensureRun() {
 
 function openBatteryIgnore() {
   try {
-    App.openAppSetting(App.currentPackageName());
+    Access.openIgnoreBatteryOptimizationSettings();
   } catch (e) {
     try {
-      App.gotoIntent('package:' + App.currentPackageName());
-    } catch (e2) {}
+      App.openAppSetting(App.currentPackageName());
+    } catch (e2) {
+      try {
+        App.gotoIntent('package:' + App.currentPackageName());
+      } catch (e3) {}
+    }
   }
 }
 
 function ensureBatteryHint() {
+  try {
+    if (Access.isIgnoringBatteryOptimizations()) {
+      return true;
+    }
+  } catch (e) {}
   Dialogs.confirm(
     '省电与高耗电',
-    '为避免自动化被系统杀掉，请在应用设置中：关闭省电限制，并允许「高耗电 / 不优化电池」。点确定打开应用设置页。',
+    '为避免自动化被系统杀掉，请允许忽略电池优化（不优化本应用）。点确定将弹出系统确认或打开电池优化设置。',
     function (ok) {
-      if (ok) {
+      if (!ok) {
+        return;
+      }
+      try {
+        Access.requestIgnoreBatteryOptimizations();
+      } catch (e) {
         openBatteryIgnore();
       }
     }
@@ -148,11 +162,19 @@ function ensureBatteryHint() {
 }
 
 function permissionSnapshot() {
+  var batteryOk = false;
+  try {
+    batteryOk = !!Access.isIgnoringBatteryOptimizations();
+  } catch (e) {
+    batteryOk = false;
+  }
   return {
     accessibility: Access.isAccessibilityServiceEnabled(),
     floatWindow: Access.isFloatWindowsEnabled(),
+    battery: batteryOk,
     accessibilityText: Access.isAccessibilityServiceEnabled() ? '已开启' : '未开启',
-    floatText: Access.isFloatWindowsEnabled() ? '已开启' : '未开启'
+    floatText: Access.isFloatWindowsEnabled() ? '已开启' : '未开启',
+    batteryText: batteryOk ? '已关闭限制' : '未设置'
   };
 }
 

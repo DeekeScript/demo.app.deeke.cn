@@ -235,6 +235,23 @@ interface Access {
      * @see {@link https://script.deeke.cn/access/access.html#openwritesettings DeekeScript Pro 文档}
      */
     openWriteSettings(): void;
+    /**
+     * 是否已忽略电池优化（省电白名单 / 不优化本应用）
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/access/access.html#isignoringbatteryoptimizations DeekeScript Pro 文档}
+     */
+    isIgnoringBatteryOptimizations(): boolean;
+    /**
+     * 弹出系统确认框，请求忽略电池优化；已忽略返回 true，失败会打开设置列表并返回 false
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/access/access.html#requestignorebatteryoptimizations DeekeScript Pro 文档}
+     */
+    requestIgnoreBatteryOptimizations(): boolean;
+    /**
+     * 打开系统「电池优化」应用列表（与底座设置页「电池优化豁免」同一入口）
+     * @see {@link https://script.deeke.cn/access/access.html#openignorebatteryoptimizationsettings DeekeScript Pro 文档}
+     */
+    openIgnoreBatteryOptimizationSettings(): void;
 }
 declare var Access: Access;
 
@@ -349,6 +366,35 @@ interface App {
     openUrl(url: string, packageName?: string): void;
 }
 declare var App: App;
+
+/**
+ * 调起支付宝 App 支付（PayTask）。支付串须由服务端签名；不要对 Alipay 使用 typeof。
+ * @see {@link https://script.deeke.cn/base/alipay/alipay.html DeekeScript Pro 文档}
+ */
+interface Alipay {
+    /**
+     * 同步调起支付宝 App 支付
+     * @param {string} orderString 服务端返回的支付串
+     * @returns {{ ok: boolean; resultStatus: string; memo: string; result: string }} { ok, resultStatus, memo, result }
+     * @see {@link https://script.deeke.cn/base/alipay/alipay.html#pay-orderstring DeekeScript Pro 文档}
+     */
+    pay(orderString: string): { ok: boolean; resultStatus: string; memo: string; result: string };
+    /**
+     * 同 pay，对齐 SDK 方法名
+     * @param {string} orderString 服务端返回的支付串
+     * @returns {{ ok: boolean; resultStatus: string; memo: string; result: string }} { ok: boolean; resultStatus: string; memo: string; result: string }
+     * @see {@link https://script.deeke.cn/base/alipay/alipay.html#payv2-orderstring DeekeScript Pro 文档}
+     */
+    payV2(orderString: string): { ok: boolean; resultStatus: string; memo: string; result: string };
+    /**
+     * 判断 pay 返回值是否成功（ok === true 或 resultStatus === "9000"）
+     * @param {any} payResult pay / payV2 的返回值
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/base/alipay/alipay.html#issuccess-payresult DeekeScript Pro 文档}
+     */
+    isSuccess(payResult: any): boolean;
+}
+declare var Alipay: Alipay;
 
 /**
  * @see {@link https://script.deeke.cn/base/audio/audio.html DeekeScript Pro 文档}
@@ -482,343 +528,6 @@ interface Audio {
     getRecordingPath(): string;
 }
 declare var Audio: Audio;
-
-/**
- * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
- */
-interface Console {
-    /**
-     * 记录普通日志信息
-     * @param {any[]} message 要记录的消息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#log-message DeekeScript Pro 文档}
-     */
-    log(...message: any[]): void;
-    /**
-     * 记录警告信息
-     * @param {any[]} message 要记录的警告消息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#warn-message DeekeScript Pro 文档}
-     */
-    warn(...message: any[]): void;
-    /**
-     * 记录错误信息
-     * @param {any[]} message 要记录的错误消息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#error-message DeekeScript Pro 文档}
-     */
-    error(...message: any[]): void;
-    /**
-     * 记录信息，通常用于调试目的
-     * @param {any[]} message 要记录的信息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#info-message DeekeScript Pro 文档}
-     */
-    info(...message: any[]): void;
-    /**
-     * 记录调试信息
-     * @param {any[]} message 要记录的调试信息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#debug-message DeekeScript Pro 文档}
-     */
-    debug(...message: any[]): void;
-    /**
-     * 打印堆栈追踪
-     * @param {any[]} message 堆栈追踪信息（剩余参数）
-     * @see {@link https://script.deeke.cn/base/console/console.html#trace-message DeekeScript Pro 文档}
-     */
-    trace(...message: any[]): void;
-    /**
-     * 显示日志窗口
-     * @see {@link https://script.deeke.cn/base/console/console.html#show DeekeScript Pro 文档}
-     */
-    show(): void;
-    /**
-     * 隐藏日志窗口
-     * @see {@link https://script.deeke.cn/base/console/console.html#hide DeekeScript Pro 文档}
-     */
-    hide(): void;
-    /**
-     * 设置日志窗口的大小
-     * @param {number} width 窗口宽度（像素）
-     * @param {number} height 窗口高度（像素）
-     * @see {@link https://script.deeke.cn/base/console/console.html#setwindowsize-width-height DeekeScript Pro 文档}
-     */
-    setWindowSize(width: number, height: number): void;
-    /**
-     * 设置日志窗口的位置
-     * @param {number} x 窗口左上角X坐标（像素）
-     * @param {number} y 窗口左上角Y坐标（像素）
-     * @see {@link https://script.deeke.cn/base/console/console.html#setwindowposition-x-y DeekeScript Pro 文档}
-     */
-    setWindowPosition(x: number, y: number): void;
-    /**
-     * 设置日志窗口的背景颜色
-     * @param {number} color 颜色值（ARGB格式，如 0xFF000000 表示黑色）
-     * @see {@link https://script.deeke.cn/base/console/console.html#setbackgroundcolor-color DeekeScript Pro 文档}
-     */
-    setBackgroundColor(color: number): void;
-    /**
-     * 设置日志文本的颜色
-     * @param {number} color 颜色值（ARGB格式，如 0xFFFFFFFF 表示白色）
-     * @see {@link https://script.deeke.cn/base/console/console.html#settextcolor-color DeekeScript Pro 文档}
-     */
-    setTextColor(color: number): void;
-    /**
-     * 设置日志文本的字体大小
-     * @param {number} size 字体大小（像素）
-     * @see {@link https://script.deeke.cn/base/console/console.html#settextsize-size DeekeScript Pro 文档}
-     */
-    setTextSize(size: number): void;
-    /**
-     * 设置日志文本的行高
-     * @param {number} lineHeight 行高（像素）
-     * @see {@link https://script.deeke.cn/base/console/console.html#setlineheight-lineheight DeekeScript Pro 文档}
-     */
-    setLineHeight(lineHeight: number): void;
-    /**
-     * 一次性设置两个按钮的颜色（关闭按钮、调整大小按钮）
-     * @param {number} closeColor 关闭按钮颜色（ARGB格式）
-     * @param {number} resizeColor 调整大小按钮颜色（ARGB格式）
-     * @see {@link https://script.deeke.cn/base/console/console.html#setbuttoncolors-closecolor-resizecolor DeekeScript Pro 文档}
-     */
-    setButtonColors(closeColor: number, resizeColor: number): void;
-    /**
-     * 设置标题栏文字的颜色
-     * @param {number} color 颜色值（ARGB格式，如 0xFFFFFFFF 表示白色）
-     * @see {@link https://script.deeke.cn/base/console/console.html#settitletextcolor-color DeekeScript Pro 文档}
-     */
-    setTitleTextColor(color: number): void;
-    /**
-     * 设置标题栏文字的字体大小
-     * @param {number} size 字体大小（sp）
-     * @see {@link https://script.deeke.cn/base/console/console.html#settitletextsize-size DeekeScript Pro 文档}
-     */
-    setTitleTextSize(size: number): void;
-    /**
-     * 设置标题栏的文字内容
-     * @param {string | null} text 标题文字内容。如果传入 null 或空字符串，将使用应用名称作为默认标题
-     * @see {@link https://script.deeke.cn/base/console/console.html#settitletext-text DeekeScript Pro 文档}
-     */
-    setTitleText(text: string | null): void;
-    /**
-     * 设置标题栏的背景颜色
-     * @param {number} color 颜色值（ARGB格式，-1表示自动计算，比背景色深20%）
-     * @see {@link https://script.deeke.cn/base/console/console.html#settitlebarcolor-color DeekeScript Pro 文档}
-     */
-    setTitleBarColor(color: number): void;
-    /**
-     * 设置是否允许窗口移动到顶部
-     * @param {boolean} allow 是否允许移动到顶部
-     * @see {@link https://script.deeke.cn/base/console/console.html#setallowmovetotop-allow DeekeScript Pro 文档}
-     */
-    setAllowMoveToTop(allow: boolean): void;
-    /**
-     * 设置是否允许窗口移动到底部
-     * @param {boolean} allow 是否允许移动到底部
-     * @see {@link https://script.deeke.cn/base/console/console.html#setallowmovetobottom-allow DeekeScript Pro 文档}
-     */
-    setAllowMoveToBottom(allow: boolean): void;
-    /**
-     * 设置日志窗口是否可点击（穿透）
-     * @param {boolean} clickable 是否可点击
-     * @see {@link https://script.deeke.cn/base/console/console.html#setclickable-clickable DeekeScript Pro 文档}
-     */
-    setClickable(clickable: boolean): void;
-    /**
-     * 检查日志窗口是否可点击
-     * @returns {boolean} 是否可点击
-     * @see {@link https://script.deeke.cn/base/console/console.html#isclickable DeekeScript Pro 文档}
-     */
-    isClickable(): boolean;
-    /**
-     * 清空日志窗口中的所有日志
-     * @see {@link https://script.deeke.cn/base/console/console.html#clearlogs DeekeScript Pro 文档}
-     */
-    clearLogs(): void;
-    /**
-     * 设置日志窗口显示的最大行数。超过此数量的旧日志会被自动删除。
-     * @param {number} maxLines 最大行数
-     * @see {@link https://script.deeke.cn/base/console/console.html#setmaxloglines-maxlines DeekeScript Pro 文档}
-     */
-    setMaxLogLines(maxLines: number): void;
-    /**
-     * 获取日志窗口显示的最大行数
-     * @returns {number} 最大行数
-     * @see {@link https://script.deeke.cn/base/console/console.html#getmaxloglines DeekeScript Pro 文档}
-     */
-    getMaxLogLines(): number;
-    /**
-     * 设置是否自动滚动到底部（当有新日志时）
-     * @param {boolean} autoScroll 是否自动滚动
-     * @see {@link https://script.deeke.cn/base/console/console.html#setautoscroll-autoscroll DeekeScript Pro 文档}
-     */
-    setAutoScroll(autoScroll: boolean): void;
-    /**
-     * 一次性设置日志窗口的多个样式属性
-     * @param {{
-        width?: number;
-        height?: number;
-        x?: number;
-        y?: number;
-        backgroundColor?: number;
-        textColor?: number;
-        textSize?: number;
-        lineHeight?: number;
-        closeButtonColor?: number;
-        resizeButtonColor?: number;
-        titleTextColor?: number;
-        titleTextSize?: number;
-        titleText?: string | null;
-        titleBarColor?: number;
-        allowMoveToTop?: boolean;
-        allowMoveToBottom?: boolean;
-        clickable?: boolean;
-    }} config 配置对象
-     * @see {@link https://script.deeke.cn/base/console/console.html#setwindowstyle-config DeekeScript Pro 文档}
-     */
-    setWindowStyle(config: {
-        width?: number;
-        height?: number;
-        x?: number;
-        y?: number;
-        backgroundColor?: number;
-        textColor?: number;
-        textSize?: number;
-        lineHeight?: number;
-        closeButtonColor?: number;
-        resizeButtonColor?: number;
-        titleTextColor?: number;
-        titleTextSize?: number;
-        titleText?: string | null;
-        titleBarColor?: number;
-        allowMoveToTop?: boolean;
-        allowMoveToBottom?: boolean;
-        clickable?: boolean;
-    }): void;
-    /**
-     * 获取当前日志窗口的样式配置
-     * @returns {{
-        width: number;
-        height: number;
-        x: number;
-        y: number;
-        backgroundColor: number;
-        textColor: number;
-        textSize: number;
-        lineHeight: number;
-        closeButtonColor: number;
-        resizeButtonColor: number;
-        titleTextColor: number;
-        titleTextSize: number;
-        titleText: string;
-        titleBarColor: number;
-        allowMoveToTop: boolean;
-        allowMoveToBottom: boolean;
-        clickable: boolean;
-    }} 包含所有样式配置的对象
-     * @see {@link https://script.deeke.cn/base/console/console.html#getwindowstyle DeekeScript Pro 文档}
-     */
-    getWindowStyle(): {
-        width: number;
-        height: number;
-        x: number;
-        y: number;
-        backgroundColor: number;
-        textColor: number;
-        textSize: number;
-        lineHeight: number;
-        closeButtonColor: number;
-        resizeButtonColor: number;
-        titleTextColor: number;
-        titleTextSize: number;
-        titleText: string;
-        titleBarColor: number;
-        allowMoveToTop: boolean;
-        allowMoveToBottom: boolean;
-        clickable: boolean;
-    };
-    /**
-     * width
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    width: number;
-    /**
-     * height
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    height: number;
-    /**
-     * x
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    x: number;
-    /**
-     * y
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    y: number;
-    /**
-     * backgroundColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    backgroundColor: number;
-    /**
-     * textColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    textColor: number;
-    /**
-     * textSize
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    textSize: number;
-    /**
-     * lineHeight
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    lineHeight: number;
-    /**
-     * closeButtonColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    closeButtonColor: number;
-    /**
-     * resizeButtonColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    resizeButtonColor: number;
-    /**
-     * titleTextColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    titleTextColor: number;
-    /**
-     * titleTextSize
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    titleTextSize: number;
-    /**
-     * titleText
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    titleText: string;
-    /**
-     * titleBarColor
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    titleBarColor: number;
-    /**
-     * allowMoveToTop
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    allowMoveToTop: boolean;
-    /**
-     * allowMoveToBottom
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    allowMoveToBottom: boolean;
-    /**
-     * clickable
-     * @see {@link https://script.deeke.cn/base/console/console.html DeekeScript Pro 文档}
-     */
-    clickable: boolean;
-}
 
 /**
  * 基于 OpenCV 的颜色查找（Mat）。日常找色优先用 Images。
@@ -4045,6 +3754,98 @@ interface Packages {
 declare var Packages: Packages;
 
 /**
+ * 本地生成二维码（ZXing）。常用 toFile 得到路径给 image.src。不要对 QrCode 使用 typeof。
+ * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html DeekeScript Pro 文档}
+ */
+interface QrCode {
+    /**
+     * 生成二维码到缓存目录，返回绝对路径（可直接作 image src）
+     * @param {string} content 文本内容
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tofile-content DeekeScript Pro 文档}
+     */
+    toFile(content: string): string | null;
+    /**
+     * 指定边长生成二维码文件
+     * @param {string} content 文本内容
+     * @param {number} size 边长 px
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tofile-content-size DeekeScript Pro 文档}
+     */
+    toFile(content: string, size: number): string | null;
+    /**
+     * 按 options 生成二维码文件。options 支持 size/margin/level/foreground/background/format/quality/path/fileUrl 等
+     * @param {string} content 文本内容
+     * @param {object} options 选项对象
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tofile-content-options DeekeScript Pro 文档}
+     */
+    toFile(content: string, options: object): string | null;
+    /**
+     * 生成二维码 Base64（无 data: 前缀）
+     * @param {string} content 文本内容
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tobase64-content DeekeScript Pro 文档}
+     */
+    toBase64(content: string): string | null;
+    /**
+     * 指定边长生成 Base64
+     * @param {string} content 文本内容
+     * @param {number} size 边长 px
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tobase64-content-size DeekeScript Pro 文档}
+     */
+    toBase64(content: string, size: number): string | null;
+    /**
+     * 按 options 生成 Base64
+     * @param {string} content 文本内容
+     * @param {object} options 选项对象
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tobase64-content-options DeekeScript Pro 文档}
+     */
+    toBase64(content: string, options: object): string | null;
+    /**
+     * 生成 data:image/...;base64,... 字符串
+     * @param {string} content 文本内容
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#todataurl-content DeekeScript Pro 文档}
+     */
+    toDataUrl(content: string): string | null;
+    /**
+     * 指定边长生成 data URL
+     * @param {string} content 文本内容
+     * @param {number} size 边长 px
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#todataurl-content-size DeekeScript Pro 文档}
+     */
+    toDataUrl(content: string, size: number): string | null;
+    /**
+     * 按 options 生成 data URL
+     * @param {string} content 文本内容
+     * @param {object} options 选项对象
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#todataurl-content-options DeekeScript Pro 文档}
+     */
+    toDataUrl(content: string, options: object): string | null;
+    /**
+     * 生成二维码原始图片字节
+     * @param {string} content 文本内容
+     * @returns {byte[] | null} byte[] | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tobytes-content DeekeScript Pro 文档}
+     */
+    toBytes(content: string): byte[] | null;
+    /**
+     * 按 options 生成原始图片字节
+     * @param {string} content 文本内容
+     * @param {object} options 选项对象
+     * @returns {byte[] | null} byte[] | null
+     * @see {@link https://script.deeke.cn/base/qrcode/qrcode.html#tobytes-content-options DeekeScript Pro 文档}
+     */
+    toBytes(content: string, options: object): byte[] | null;
+}
+declare var QrCode: QrCode;
+
+/**
  * @see {@link https://script.deeke.cn/base/point/point.html DeekeScript Pro 文档}
  */
 interface Point {
@@ -5427,249 +5228,52 @@ interface UiSelector {
 }
 
 /**
+ * WebSocket 客户端。用法：const ws = new WebSocket(url)；回调用赋值：ws.onOpen = function () {}
  * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
  */
-interface WebSocket {
+declare class WebSocket {
     /**
+     * 创建 WebSocket 实例
+     * @param {string} url url
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
+     */
+    constructor(url: string);
+    /**
+     * 发送数据
+     * @param {string} data data
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#send-data DeekeScript Pro 文档}
+     */
+    send(data: string): void;
+    /**
+     * 关闭当前连接
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#close DeekeScript Pro 文档}
+     */
+    close(): void;
+    /**
+     * 关闭全部 WebSocket 连接
      * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#closeall DeekeScript Pro 文档}
      */
     closeAll(): void;
-}
-declare var WebSocket: WebSocket;
-
-/**
- * @see {@link https://script.deeke.cn/base/access/access.html DeekeScript Pro 文档}
- */
-interface access {
     /**
-     * 是否开启了无障碍权限
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#isaccessibilityserviceenabled DeekeScript Pro 文档}
+     * 连接成功回调（赋值函数）
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
      */
-    isAccessibilityServiceEnabled(): boolean;
+    onOpen: (() => void) | null;
     /**
-     * 是否开启了悬浮窗权限
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#isfloatwindowsenabled DeekeScript Pro 文档}
+     * 收到消息回调（赋值函数）
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
      */
-    isFloatWindowsEnabled(): boolean;
+    onMessage: ((data: string) => void) | null;
     /**
-     * 是否开启了后台弹窗权限
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#isbackgroundalertenabled DeekeScript Pro 文档}
+     * 连接关闭回调（赋值函数）
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
      */
-    isBackgroundAlertEnabled(): boolean;
+    onClose: ((code: number, reason: string) => void) | null;
     /**
-     * 是否开启了截图录屏权限
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#ismediaprojectionenable DeekeScript Pro 文档}
+     * 连接出错回调（赋值函数）
+     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
      */
-    isMediaProjectionEnable(): boolean;
-    /**
-     * 开启了无障碍权限设置界面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openaccessibilityservicesetting DeekeScript Pro 文档}
-     */
-    openAccessibilityServiceSetting(): void;
-    /**
-     * 开启了悬浮窗权限设置界面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openfloatwindowssetting DeekeScript Pro 文档}
-     */
-    openFloatWindowsSetting(): void;
-    /**
-     * 开启了后台弹窗权限设置界面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openbackgroundalertsetting DeekeScript Pro 文档}
-     */
-    openBackgroundAlertSetting(): void;
-    /**
-     * 开启了截图录屏权限设置界面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openmediaprojectionsetting DeekeScript Pro 文档}
-     */
-    openMediaProjectionSetting(): void;
-    /**
-     * 进入通知权限设置界面（用户可以开启通知权限）
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestnotificationaccess DeekeScript Pro 文档}
-     */
-    requestNotificationAccess(): void;
-    /**
-     * 是否开启读取通知权限
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#hasnotificationaccess DeekeScript Pro 文档}
-     */
-    hasNotificationAccess(): boolean;
-    /**
-     * 检查是否有媒体库读取权限（图片、视频）
-     * @returns {boolean} true 如果有权限
-     * @see {@link https://script.deeke.cn/base/access/access.html#hasmediareadpermission DeekeScript Pro 文档}
-     */
-    hasMediaReadPermission(): boolean;
-    /**
-     * 申请媒体库权限（统一接口，自动处理各Android版本差异）
-     * 权限说明：
-     * - Android 13+: 请求 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO
-     * - Android 10-12: 请求 READ_EXTERNAL_STORAGE
-     * - Android 9-: 请求 READ_EXTERNAL_STORAGE 和 WRITE_EXTERNAL_STORAGE
-     * 注意：这是异步操作，不会阻塞
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestmediapermissions DeekeScript Pro 文档}
-     */
-    requestMediaPermissions(): void;
-    /**
-     * 打开应用权限设置页面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openpermissionsettings DeekeScript Pro 文档}
-     */
-    openPermissionSettings(): void;
-    /**
-     * 检查媒体权限是否被永久拒绝（用户选择了"不再询问"）
-     * 如果返回true，说明用户之前拒绝过权限并选择了"不再询问"，
-     * 系统不会再弹出权限对话框，需要引导用户去设置页面手动开启
-     * @returns {boolean} true 如果权限被永久拒绝
-     * @see {@link https://script.deeke.cn/base/access/access.html#ismediapermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isMediaPermissionPermanentlyDenied(): boolean;
-    /**
-     * 检查是否有文件存储权限（适配Android 8及以上版本）
-     * 权限说明：
-     * - Android 11+: 检查 MANAGE_EXTERNAL_STORAGE 权限（需要用户手动在设置中开启）
-     * - Android 8-10: 检查 READ_EXTERNAL_STORAGE 和 WRITE_EXTERNAL_STORAGE 权限
-     * @returns {boolean} true 如果有权限
-     * @see {@link https://script.deeke.cn/base/access/access.html#hasstoragepermission DeekeScript Pro 文档}
-     */
-    hasStoragePermission(): boolean;
-    /**
-     * 申请文件存储权限（适配Android 8及以上版本）
-     * 权限说明：
-     * - Android 11+: 引导用户去设置页面手动开启 MANAGE_EXTERNAL_STORAGE 权限
-     * - Android 8-10: 请求 READ_EXTERNAL_STORAGE 和 WRITE_EXTERNAL_STORAGE 权限
-     * 注意：这是异步操作，不会阻塞
-     * 如果用户禁用了权限，需要调用 isStoragePermissionPermanentlyDenied() 检查是否被永久拒绝
-     * @see {@link https://script.deeke.cn/base/access/access.html#requeststoragepermission DeekeScript Pro 文档}
-     */
-    requestStoragePermission(): void;
-    /**
-     * 检查文件存储权限是否被永久拒绝（用户选择了"不再询问"或禁用了权限）
-     * 权限说明：
-     * - Android 11+: 检查 MANAGE_EXTERNAL_STORAGE 权限状态
-     * - Android 8-10: 检查 READ_EXTERNAL_STORAGE 和 WRITE_EXTERNAL_STORAGE 是否被永久拒绝
-     * 如果返回true，说明用户之前拒绝过权限并选择了"不再询问"，
-     * 或者用户禁用了权限，系统不会再弹出权限对话框，需要引导用户去设置页面手动开启
-     * @returns {boolean} true 如果权限被永久拒绝或禁用
-     * @see {@link https://script.deeke.cn/base/access/access.html#isstoragepermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isStoragePermissionPermanentlyDenied(): boolean;
-    /**
-     * 检查是否有位置权限
-     * 权限说明：
-     * - 检查 ACCESS_FINE_LOCATION（精确定位）或 ACCESS_COARSE_LOCATION（粗略定位）权限
-     * - 如果授予了 ACCESS_FINE_LOCATION，则自动拥有 ACCESS_COARSE_LOCATION 权限
-     * @returns {boolean} true 如果有权限
-     * @see {@link https://script.deeke.cn/base/access/access.html#haslocationpermission DeekeScript Pro 文档}
-     */
-    hasLocationPermission(): boolean;
-    /**
-     * 申请位置权限
-     * 权限说明：
-     * - 优先请求 ACCESS_FINE_LOCATION（精确定位）
-     * - 如果用户拒绝了精确定位，系统可能降级为 ACCESS_COARSE_LOCATION（粗略定位）
-     * 注意：这是异步操作，不会阻塞
-     * 如果用户禁用了权限，需要调用 isLocationPermissionPermanentlyDenied() 检查是否被永久拒绝
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestlocationpermissions DeekeScript Pro 文档}
-     */
-    requestLocationPermissions(): void;
-    /**
-     * 检查位置权限是否被永久拒绝（用户选择了"不再询问"）
-     * 如果返回true，说明用户之前拒绝过权限并选择了"不再询问"，
-     * 系统不会再弹出权限对话框，需要引导用户去设置页面手动开启
-     * @returns {boolean} true 如果权限被永久拒绝
-     * @see {@link https://script.deeke.cn/base/access/access.html#islocationpermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isLocationPermissionPermanentlyDenied(): boolean;
-    /**
-     * 检查是否有蓝牙连接权限（Android 12+ 需要 BLUETOOTH_CONNECT）
-     * Android 12 以下始终返回 true
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#hasbluetoothconnectionpermission DeekeScript Pro 文档}
-     */
-    hasBluetoothConnectionPermission(): boolean;
-    /**
-     * 申请蓝牙连接权限（BLUETOOTH_CONNECT + BLUETOOTH_SCAN）
-     * Android 12 以下无需申请
-     * 注意：这是异步操作
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestbluetoothconnectionpermission DeekeScript Pro 文档}
-     */
-    requestBluetoothConnectionPermission(): void;
-    /**
-     * 检查蓝牙权限是否被永久拒绝（用户选择了"不再询问"）
-     * 如果返回true，需要引导用户去设置页面手动开启
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#isbluetoothpermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isBluetoothPermissionPermanentlyDenied(): boolean;
-    /**
-     * 打开蓝牙权限设置页面（跳转到应用详情设置页）
-     * @see {@link https://script.deeke.cn/base/access/access.html#openbluetoothpermissionsettings DeekeScript Pro 文档}
-     */
-    openBluetoothPermissionSettings(): void;
-    /**
-     * 是否已授予短信接收权限（RECEIVE_SMS）
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#hassmspermission DeekeScript Pro 文档}
-     */
-    hasSmsPermission(): boolean;
-    /**
-     * 申请短信接收/读取权限。异步，需在前台 Activity 调用
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestsmspermission DeekeScript Pro 文档}
-     */
-    requestSmsPermission(): void;
-    /**
-     * 短信权限是否被永久拒绝
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#issmspermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isSmsPermissionPermanentlyDenied(): boolean;
-    /**
-     * 是否已授予摄像头权限（CAMERA）。Images.takePhoto 需要
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#hascamerapermission DeekeScript Pro 文档}
-     */
-    hasCameraPermission(): boolean;
-    /**
-     * 申请摄像头权限。异步，需在前台 Activity 调用
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestcamerapermission DeekeScript Pro 文档}
-     */
-    requestCameraPermission(): void;
-    /**
-     * 摄像头权限是否被永久拒绝
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#iscamerapermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isCameraPermissionPermanentlyDenied(): boolean;
-    /**
-     * 是否已授予麦克风权限（RECORD_AUDIO）。Audio.startRecord 需要
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#hasrecordaudiopermission DeekeScript Pro 文档}
-     */
-    hasRecordAudioPermission(): boolean;
-    /**
-     * 申请麦克风录音权限。异步，需在前台 Activity 调用
-     * @see {@link https://script.deeke.cn/base/access/access.html#requestrecordaudiopermission DeekeScript Pro 文档}
-     */
-    requestRecordAudioPermission(): void;
-    /**
-     * 麦克风权限是否被永久拒绝
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#isrecordaudiopermissionpermanentlydenied DeekeScript Pro 文档}
-     */
-    isRecordAudioPermissionPermanentlyDenied(): boolean;
-    /**
-     * 是否已允许修改系统设置（亮度等）
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/access/access.html#canwritesettings DeekeScript Pro 文档}
-     */
-    canWriteSettings(): boolean;
-    /**
-     * 打开「允许修改系统设置」页面
-     * @see {@link https://script.deeke.cn/base/access/access.html#openwritesettings DeekeScript Pro 文档}
-     */
-    openWriteSettings(): void;
+    onError: ((errorMsg: string) => void) | null;
 }
 
 /**
@@ -6011,1307 +5615,11 @@ interface console {
 declare var console: console;
 
 /**
- * @see {@link https://script.deeke.cn/base/files/files.html DeekeScript Pro 文档}
- */
-interface files {
-    /**
-     * 读取文件内容
-     * @param {string} path 文件路径
-     * @returns {string | null} 文件内容，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#read-path DeekeScript Pro 文档}
-     */
-    read(path: string): string | null;
-    /**
-     * 写入内容到文件
-     * @param {string} path 文件路径
-     * @param {string} content 要写入的内容
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#write-path-content DeekeScript Pro 文档}
-     */
-    write(path: string, content: string): boolean;
-    /**
-     * 追加内容到文件
-     * @param {string} path 文件路径
-     * @param {string} content 要追加的内容
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#append-path-content DeekeScript Pro 文档}
-     */
-    append(path: string, content: string): boolean;
-    /**
-     * 删除文件或目录
-     * @param {string} path 文件或目录路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#delete-path DeekeScript Pro 文档}
-     */
-    delete(path: string): boolean;
-    /**
-     * 检查文件或目录是否存在
-     * @param {string} path 文件或目录路径
-     * @returns {boolean} 存在返回true，不存在返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#exists-path DeekeScript Pro 文档}
-     */
-    exists(path: string): boolean;
-    /**
-     * 创建目录（包括父目录）
-     * @param {string} path 目录路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#mkdirs-path DeekeScript Pro 文档}
-     */
-    mkdirs(path: string): boolean;
-    /**
-     * 列出目录中的文件
-     * @param {string} path 目录路径
-     * @returns {string[]} 文件名数组
-     * @see {@link https://script.deeke.cn/base/files/files.html#list-path DeekeScript Pro 文档}
-     */
-    list(path: string): string[];
-    /**
-     * 列出目录中的文件（包含完整路径）
-     * @param {string} path 目录路径
-     * @returns {string[]} 文件完整路径数组
-     * @see {@link https://script.deeke.cn/base/files/files.html#listfiles-path DeekeScript Pro 文档}
-     */
-    listFiles(path: string): string[];
-    /**
-     * 复制文件
-     * @param {string} source 源文件路径
-     * @param {string} destination 目标文件路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#copy-source-destination DeekeScript Pro 文档}
-     */
-    copy(source: string, destination: string): boolean;
-    /**
-     * 移动文件
-     * @param {string} source 源文件路径
-     * @param {string} destination 目标文件路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#move-source-destination DeekeScript Pro 文档}
-     */
-    move(source: string, destination: string): boolean;
-    /**
-     * 获取文件大小（字节）
-     * @param {string} path 文件路径
-     * @returns {number} 文件大小（字节），如果文件不存在或为目录返回-1
-     * @see {@link https://script.deeke.cn/base/files/files.html#size-path DeekeScript Pro 文档}
-     */
-    size(path: string): number;
-    /**
-     * 检查路径是否为目录
-     * @param {string} path 路径
-     * @returns {boolean} 是目录返回true，否则返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#isdirectory-path DeekeScript Pro 文档}
-     */
-    isDirectory(path: string): boolean;
-    /**
-     * 检查路径是否为文件
-     * @param {string} path 路径
-     * @returns {boolean} 是文件返回true，否则返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#isfile-path DeekeScript Pro 文档}
-     */
-    isFile(path: string): boolean;
-    /**
-     * 获取文件名
-     * @param {string} path 文件路径
-     * @returns {string} 文件名
-     * @see {@link https://script.deeke.cn/base/files/files.html#getname-path DeekeScript Pro 文档}
-     */
-    getName(path: string): string;
-    /**
-     * 获取父目录路径
-     * @param {string} path 文件路径
-     * @returns {string} 父目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getparent-path DeekeScript Pro 文档}
-     */
-    getParent(path: string): string;
-    /**
-     * 获取绝对路径
-     * @param {string} path 文件路径
-     * @returns {string} 绝对路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getabsolutepath-path DeekeScript Pro 文档}
-     */
-    getAbsolutePath(path: string): string;
-    /**
-     * 重命名文件或目录
-     * @param {string} oldPath 旧路径
-     * @param {string} newPath 新路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#rename-oldpath-newpath DeekeScript Pro 文档}
-     */
-    rename(oldPath: string, newPath: string): boolean;
-    /**
-     * 获取最后修改时间
-     * @param {string} path 文件路径
-     * @returns {number} 最后修改时间（毫秒），如果文件不存在返回-1
-     * @see {@link https://script.deeke.cn/base/files/files.html#lastmodified-path DeekeScript Pro 文档}
-     */
-    lastModified(path: string): number;
-    /**
-     * 从URI读取内容（支持content://和file://等URI）
-     * @param {string} uriString URI字符串
-     * @returns {string | null} 内容，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#readuri-uristring DeekeScript Pro 文档}
-     */
-    readUri(uriString: string): string | null;
-    /**
-     * 从URI读取字节数组（支持content://和file://等URI，用于读取图片等二进制文件）
-     * @param {string} uriString URI字符串
-     * @returns {number[] | null} 字节数组，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#readbytesfromuri-uristring DeekeScript Pro 文档}
-     */
-    readBytesFromUri(uriString: string): number[] | null;
-    /**
-     * 从content URI获取真实文件路径
-     * @param {string} uriString content URI字符串
-     * @returns {string | null} 真实文件路径，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#getpathfromuri-uristring DeekeScript Pro 文档}
-     */
-    getPathFromUri(uriString: string): string | null;
-    /**
-     * 从文件读取字节数组
-     * @param {string} path 文件路径
-     * @returns {number[] | null} 字节数组，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#readbytes-path DeekeScript Pro 文档}
-     */
-    readBytes(path: string): number[] | null;
-    /**
-     * 写入字节数组到文件
-     * @param {string} path 文件路径
-     * @param {number[]} bytes 要写入的字节数组
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#writebytes-path-bytes DeekeScript Pro 文档}
-     */
-    writeBytes(path: string, bytes: number[]): boolean;
-    /**
-     * 从URI复制文件到目标路径
-     * @param {string} uriString 源URI字符串
-     * @param {string} destination 目标文件路径
-     * @returns {boolean} 成功返回true，失败返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#copyfromuri-uristring-destination DeekeScript Pro 文档}
-     */
-    copyFromUri(uriString: string, destination: string): boolean;
-    /**
-     * 获取外部存储根目录路径
-     * @returns {string} 外部存储路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getexternalstoragepath DeekeScript Pro 文档}
-     */
-    getExternalStoragePath(): string;
-    /**
-     * 获取应用私有文件目录路径
-     * @returns {string} 文件目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getfilespath DeekeScript Pro 文档}
-     */
-    getFilesPath(): string;
-    /**
-     * 获取应用缓存目录路径
-     * @returns {string} 缓存目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getcachepath DeekeScript Pro 文档}
-     */
-    getCachePath(): string;
-    /**
-     * 获取应用外部私有文件目录路径
-     * @param {string | null} type 文件目录类型（如"Pictures"、"Documents"），null表示根目录
-     * @returns {string} 外部文件目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getexternalfilespath-type DeekeScript Pro 文档}
-     */
-    getExternalFilesPath(type: string | null): string;
-    /**
-     * 获取应用外部私有文件根目录路径
-     * @returns {string} 外部文件目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getexternalfilespath DeekeScript Pro 文档}
-     */
-    getExternalFilesPath(): string;
-    /**
-     * 获取Download目录路径
-     * @returns {string} Download目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getdownloadpath DeekeScript Pro 文档}
-     */
-    getDownloadPath(): string;
-    /**
-     * 获取Pictures目录路径
-     * @returns {string} Pictures目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getpicturespath DeekeScript Pro 文档}
-     */
-    getPicturesPath(): string;
-    /**
-     * 获取DCIM目录路径
-     * @returns {string} DCIM目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getdcimpath DeekeScript Pro 文档}
-     */
-    getDCIMPath(): string;
-    /**
-     * 获取Movies目录路径
-     * @returns {string} Movies目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getmoviespath DeekeScript Pro 文档}
-     */
-    getMoviesPath(): string;
-    /**
-     * 获取Music目录路径
-     * @returns {string} Music目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getmusicpath DeekeScript Pro 文档}
-     */
-    getMusicPath(): string;
-    /**
-     * 获取Documents目录路径
-     * @returns {string} Documents目录路径
-     * @see {@link https://script.deeke.cn/base/files/files.html#getdocumentspath DeekeScript Pro 文档}
-     */
-    getDocumentsPath(): string;
-    /**
-     * 从assets读取文件
-     * @param {string} fileName assets目录中的文件名
-     * @returns {string | null} 文件内容，如果失败返回null
-     * @see {@link https://script.deeke.cn/base/files/files.html#readasset-filename DeekeScript Pro 文档}
-     */
-    readAsset(fileName: string): string | null;
-    /**
-     * 检查外部存储是否可用且可写
-     * @returns {boolean} 可用且可写返回true，否则返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#isexternalstoragewritable DeekeScript Pro 文档}
-     */
-    isExternalStorageWritable(): boolean;
-    /**
-     * 检查外部存储是否可读
-     * @returns {boolean} 可读返回true，否则返回false
-     * @see {@link https://script.deeke.cn/base/files/files.html#isexternalstoragereadable DeekeScript Pro 文档}
-     */
-    isExternalStorageReadable(): boolean;
-    /**
-     * 获取文件扩展名
-     * @param {string} path 文件路径
-     * @returns {string} 文件扩展名（不含点），如果没有扩展名返回空字符串
-     * @see {@link https://script.deeke.cn/base/files/files.html#getextension-path DeekeScript Pro 文档}
-     */
-    getExtension(path: string): string;
-    /**
-     * 获取不带扩展名的文件名
-     * @param {string} path 文件路径
-     * @returns {string} 不带扩展名的文件名
-     * @see {@link https://script.deeke.cn/base/files/files.html#getnamewithoutextension-path DeekeScript Pro 文档}
-     */
-    getNameWithoutExtension(path: string): string;
-    /**
-     * 压缩文件或目录为 zip
-     * @param {string} sourcePath 源路径
-     * @param {string} zipPath 目标 zip 路径
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/files/files.html#zip-sourcepath-zippath DeekeScript Pro 文档}
-     */
-    zip(sourcePath: string, zipPath: string): boolean;
-    /**
-     * 解压 zip 到目录
-     * @param {string} zipPath zip 路径
-     * @param {string} destDir 目标目录
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/files/files.html#unzip-zippath-destdir DeekeScript Pro 文档}
-     */
-    unzip(zipPath: string, destDir: string): boolean;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/foregroundServiceBridge/foregroundServiceBridge.html DeekeScript Pro 文档}
- */
-interface foregroundServiceBridge {
-    /**
-     * 开启前台服务
-     * @see {@link https://script.deeke.cn/base/foregroundServiceBridge/foregroundServiceBridge.html#startservice DeekeScript Pro 文档}
-     */
-    startService(): void;
-    /**
-     * 注册执行的方法（启动服务前设置）
-     * @param {Function} func func
-     * @see {@link https://script.deeke.cn/base/foregroundServiceBridge/foregroundServiceBridge.html#register-func DeekeScript Pro 文档}
-     */
-    register(func: Function): void;
-    /**
-     * 前台服务标题和内容设置（启动服务前设置）
-     * @param {string} title 前台服务标题
-     * @param {string} content 前台服务内容
-     * @see {@link https://script.deeke.cn/base/foregroundServiceBridge/foregroundServiceBridge.html#setcontent-title-content DeekeScript Pro 文档}
-     */
-    setContent(title: string, content: string): void;
-    /**
-     * 关闭服务
-     * @see {@link https://script.deeke.cn/base/foregroundServiceBridge/foregroundServiceBridge.html#stopservice DeekeScript Pro 文档}
-     */
-    stopService(): void;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/hid/hid.html DeekeScript Pro 文档}
- */
-interface hid {
-    /**
-     * 模拟从一个点滑动到另一个点。
-     * @param {number} x1 起始点X坐标
-     * @param {number} y1 起始点Y坐标
-     * @param {number} x2 终点X坐标
-     * @param {number} y2 终点Y坐标
-     * @param {number} step 每步移动距离（5-60，默认随机20-51）（可选）
-     * @param {number} downTimeout 按下后等待时间（默认随机100-180ms）（可选）
-     * @param {number} upTimeout 滑动结束后等待抬起时间（默认随机100-180ms）（可选）
-     * @param {number} timeout 每步之间的延迟时间（默认随机8-15ms）（可选）
-     * @param {number} upDownTimes 抬起次数（默认1）（可选）
-     * @returns {boolean} 是否滑动成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#swipe-x1-y1-x2-y2-step-downtimeout-uptimeout-timeout-updowntimes DeekeScript Pro 文档}
-     */
-    swipe(x1: number, y1: number, x2: number, y2: number, step?: number, downTimeout?: number, upTimeout?: number, timeout?: number, upDownTimes?: number): boolean;
-    /**
-     * 使用仿真曲线滑动。
-     * @param {number} x1 起始点X坐标
-     * @param {number} y1 起始点Y坐标
-     * @param {number} x2 终点X坐标
-     * @param {number} y2 终点Y坐标
-     * @param {number} radian 弧度大小（默认10-100）（可选）
-     * @param {number} step 每步移动距离（5-60，默认随机20-51）（可选）
-     * @param {number} downTimeout 按下后等待时间（默认随机100-180ms）（可选）
-     * @param {number} upTimeout 滑动结束后等待抬起时间（默认随机100-180ms）（可选）
-     * @param {number} timeout 每步之间的延迟时间（默认随机8-15ms）（可选）
-     * @param {number} upDownTimes 抬起次数（默认1）（可选）
-     * @returns {boolean} 是否滑动成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#swipex-x1-y1-x2-y2-radian-step-downtimeout-uptimeout-timeout-updowntimes DeekeScript Pro 文档}
-     */
-    swipex(x1: number, y1: number, x2: number, y2: number, radian?: number, step?: number, downTimeout?: number, upTimeout?: number, timeout?: number, upDownTimes?: number): boolean;
-    /**
-     * 获取服务器HID激活码。
-     * @returns {string} 激活码字符串
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#gethidzcm DeekeScript Pro 文档}
-     */
-    getHidZcm(): string;
-    /**
-     * 获取插件版本号。
-     * @returns {number} 插件版本号
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#ver DeekeScript Pro 文档}
-     */
-    ver(): number;
-    /**
-     * 模拟按下Home键。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#home DeekeScript Pro 文档}
-     */
-    home(): boolean;
-    /**
-     * 模拟按下任务键。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#recents DeekeScript Pro 文档}
-     */
-    recents(): boolean;
-    /**
-     * 模拟按下返回键。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#back DeekeScript Pro 文档}
-     */
-    back(): boolean;
-    /**
-     * 使用另一种方式模拟按下返回键。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#back1 DeekeScript Pro 文档}
-     */
-    back1(): boolean;
-    /**
-     * 模拟手指按下事件。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#touchdown-x-y DeekeScript Pro 文档}
-     */
-    touchDown(x: number, y: number): boolean;
-    /**
-     * 模拟手指移动事件。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#touchmove-x-y DeekeScript Pro 文档}
-     */
-    touchMove(x: number, y: number): boolean;
-    /**
-     * 模拟手指抬起事件。
-     * @param {number} x X坐标（可选）
-     * @param {number} y Y坐标（可选）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#touchup-x-y DeekeScript Pro 文档}
-     */
-    touchUp(x?: number, y?: number): boolean;
-    /**
-     * 模拟手指多次抬起事件。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#touchup2 DeekeScript Pro 文档}
-     */
-    touchUp2(): boolean;
-    /**
-     * 模拟点击事件。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#tap-x-y DeekeScript Pro 文档}
-     */
-    tap(x: number, y: number): boolean;
-    /**
-     * 初始化蓝牙模块。
-     * @param {any} ctx 上下文对象
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#initbluetooth-ctx DeekeScript Pro 文档}
-     */
-    initBluetooth(ctx: any): boolean;
-    /**
-     * 获取已连接蓝牙设备名称。
-     * @returns {string} 设备名称
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#getname DeekeScript Pro 文档}
-     */
-    getName(): string;
-    /**
-     * 模拟按键按下事件。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keydown-code DeekeScript Pro 文档}
-     */
-    keyDown(code: number): boolean;
-    /**
-     * 模拟按键抬起事件。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keyup-code DeekeScript Pro 文档}
-     */
-    keyUp(code: number): boolean;
-    /**
-     * 模拟按键按下和抬起事件。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keypress-code DeekeScript Pro 文档}
-     */
-    keyPress(code: number): boolean;
-    /**
-     * 模拟指定键码的按键事件。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keypress_code-code DeekeScript Pro 文档}
-     */
-    keyPress_code(code: number): boolean;
-    /**
-     * 模拟指定键码的按键按下。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keydown_code-code DeekeScript Pro 文档}
-     */
-    keyDown_code(code: number): boolean;
-    /**
-     * 模拟指定键码的按键抬起。
-     * @param {number} code 键码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keyup_code-code DeekeScript Pro 文档}
-     */
-    keyUp_code(code: number): boolean;
-    /**
-     * 模拟松开所有按键。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#keyupall DeekeScript Pro 文档}
-     */
-    keyUpAll(): boolean;
-    /**
-     * 模拟全选操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_select DeekeScript Pro 文档}
-     */
-    key_select(): boolean;
-    /**
-     * 模拟粘贴操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_paste DeekeScript Pro 文档}
-     */
-    key_paste(): boolean;
-    /**
-     * 模拟复制操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_copy DeekeScript Pro 文档}
-     */
-    key_copy(): boolean;
-    /**
-     * 模拟剪切操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_cat DeekeScript Pro 文档}
-     */
-    key_cat(): boolean;
-    /**
-     * 模拟退格操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_del DeekeScript Pro 文档}
-     */
-    key_del(): boolean;
-    /**
-     * 模拟删除操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_delete DeekeScript Pro 文档}
-     */
-    key_delete(): boolean;
-    /**
-     * 模拟回车操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_enter DeekeScript Pro 文档}
-     */
-    key_enter(): boolean;
-    /**
-     * 模拟数字键输入。
-     * @param {number} n 数字（0-9）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_num-n DeekeScript Pro 文档}
-     */
-    key_num(n: number): boolean;
-    /**
-     * 模拟字母键输入。
-     * @param {string} n 字母
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#key_abc-n DeekeScript Pro 文档}
-     */
-    key_abc(n: string): boolean;
-    /**
-     * 模拟音量加操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#volup DeekeScript Pro 文档}
-     */
-    volUp(): boolean;
-    /**
-     * 模拟音量减操作。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#voldown DeekeScript Pro 文档}
-     */
-    volDown(): boolean;
-    /**
-     * 模拟按下电源键。
-     * @param {number} time 持续时间（可选）（可选）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#power-time DeekeScript Pro 文档}
-     */
-    power(time?: number): boolean;
-    /**
-     * 模拟重启设备。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#reboot DeekeScript Pro 文档}
-     */
-    reboot(): boolean;
-    /**
-     * 设置屏幕分辨率。
-     * @param {number} x 宽度
-     * @param {number} y 高度
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#setxy-x-y DeekeScript Pro 文档}
-     */
-    setXY(x: number, y: number): boolean;
-    /**
-     * 注册设备。
-     * @param {string} key 注册码
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#reg-key DeekeScript Pro 文档}
-     */
-    reg(key: string): boolean;
-    /**
-     * 设置点击延时随机数。
-     * @param {number} x X随机数
-     * @param {number} y Y随机数
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#setrnd-x-y DeekeScript Pro 文档}
-     */
-    setRnd(x: number, y: number): boolean;
-    /**
-     * 设置设备电量。
-     * @param {number} lv 电量百分比
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#setbattery-lv DeekeScript Pro 文档}
-     */
-    setBattery(lv: number): boolean;
-    /**
-     * 连接蓝牙设备。
-     * @param {boolean} autoconnect 是否自动连接
-     * @param {number} index 设备索引
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#connect-autoconnect-index DeekeScript Pro 文档}
-     */
-    connect(autoconnect: boolean, index: number): boolean;
-    /**
-     * 获取已连接的蓝牙设备。
-     * @returns {any} 蓝牙设备对象或null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#getconnecteddevices DeekeScript Pro 文档}
-     */
-    getConnectedDevices(): any;
-    /**
-     * 获取蓝牙连接状态。
-     * @returns {boolean} 是否已连接
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#getconnectstate DeekeScript Pro 文档}
-     */
-    getConnectState(): boolean;
-    /**
-     * 发送数据到蓝牙设备。
-     * @param {string} str 数据内容
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#senddata-str DeekeScript Pro 文档}
-     */
-    sendData(str: string): boolean;
-    /**
-     * 发送数据并等待响应。
-     * @param {string} str 数据内容
-     * @param {number} time 等待时间（毫秒）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#senddataawait-str-time DeekeScript Pro 文档}
-     */
-    sendDataAwait(str: string, time: number): boolean;
-    /**
-     * 获取接收到的数据。
-     * @param {number} time 等待时间（可选）（可选）
-     * @returns {string} 返回数据
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#getdata-time DeekeScript Pro 文档}
-     */
-    getData(time?: number): string;
-    /**
-     * 等待数据响应。
-     * @param {number} time 最大等待时间（毫秒，可选）（可选）
-     * @param {number} sleep 检查间隔（毫秒，可选）（可选）
-     * @returns {string} 返回数据或超时信息
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waitfor-time-sleep DeekeScript Pro 文档}
-     */
-    waitFor(time?: number, sleep?: number): string;
-    /**
-     * 断开蓝牙连接。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#disconnect DeekeScript Pro 文档}
-     */
-    disconnect(): boolean;
-    /**
-     * 按住指定毫秒后抬起。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @param {number} durationMs 按住毫秒（默认约800）（可选）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#press-x-y-durationms DeekeScript Pro 文档}
-     */
-    press(x: number, y: number, durationMs?: number): boolean;
-    /**
-     * 长按。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#longclick-x-y DeekeScript Pro 文档}
-     */
-    longClick(x: number, y: number): boolean;
-    /**
-     * 双击。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#doubletap-x-y DeekeScript Pro 文档}
-     */
-    doubleTap(x: number, y: number): boolean;
-    /**
-     * 带随机偏移点击。
-     * @param {number} x X坐标
-     * @param {number} y Y坐标
-     * @param {number} rx X随机半径（默认5）（可选）
-     * @param {number} ry Y随机半径（默认5）（可选）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#taprandom-x-y-rx-ry DeekeScript Pro 文档}
-     */
-    tapRandom(x: number, y: number, rx?: number, ry?: number): boolean;
-    /**
-     * 整串输入。ASCII 尽量逐键，中文等走剪贴板粘贴。
-     * @param {string} text 文本
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#type-text DeekeScript Pro 文档}
-     */
-    type(text: string): boolean;
-    /**
-     * 写入剪贴板并粘贴。
-     * @param {string} text 文本
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#paste-text DeekeScript Pro 文档}
-     */
-    paste(text: string): boolean;
-    /**
-     * 全选并删除（清空输入框）。
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#clear DeekeScript Pro 文档}
-     */
-    clear(): boolean;
-    /**
-     * 截屏找图后点击中心。
-     * @param {string} templateFile 模板图路径
-     * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#tapimage-templatefile-threshold DeekeScript Pro 文档}
-     */
-    tapImage(templateFile: string, threshold?: number): ImageMatch | null;
-    /**
-     * 找图后长按。
-     * @param {string} templateFile 模板图路径
-     * @param {number} durationMs 按住毫秒（默认800）（可选）
-     * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#pressimage-templatefile-durationms-threshold DeekeScript Pro 文档}
-     */
-    pressImage(templateFile: string, durationMs?: number, threshold?: number): ImageMatch | null;
-    /**
-     * 截屏找色后点击色块中心。
-     * @param {string} color rgba/rgb/#RRGGBB
-     * @param {number} tolerance 通道容差（默认0）（可选）
-     * @returns {Point | null} 坐标或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#tapcolor-color-tolerance DeekeScript Pro 文档}
-     */
-    tapColor(color: string, tolerance?: number): Point | null;
-    /**
-     * 等待图出现。
-     * @param {string} templateFile 模板图路径
-     * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
-     * @param {number} intervalMs 轮询间隔（默认500）（可选）
-     * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waitimage-templatefile-timeoutms-intervalms-threshold DeekeScript Pro 文档}
-     */
-    waitImage(templateFile: string, timeoutMs?: number, intervalMs?: number, threshold?: number): ImageMatch | null;
-    /**
-     * 等待颜色出现。
-     * @param {string} color 颜色
-     * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
-     * @param {number} intervalMs 轮询间隔（默认500）（可选）
-     * @param {number} tolerance 通道容差（默认0）（可选）
-     * @returns {Point | null} 坐标或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waitcolor-color-timeoutms-intervalms-tolerance DeekeScript Pro 文档}
-     */
-    waitColor(color: string, timeoutMs?: number, intervalMs?: number, tolerance?: number): Point | null;
-    /**
-     * 等待图消失。
-     * @param {string} templateFile 模板图路径
-     * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
-     * @param {number} intervalMs 轮询间隔（默认500）（可选）
-     * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {boolean} 是否在超时前消失
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waitimagegone-templatefile-timeoutms-intervalms-threshold DeekeScript Pro 文档}
-     */
-    waitImageGone(templateFile: string, timeoutMs?: number, intervalMs?: number, threshold?: number): boolean;
-    /**
-     * OCR 找字后点击。
-     * @param {string} keyword 关键字
-     * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
-     * @param {string} mode contains|exact|regex（默认 contains）（可选）
-     * @returns {Rect | null} 点击的区域或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#clicktext-keyword-timeoutms-mode DeekeScript Pro 文档}
-     */
-    clickText(keyword: string, timeoutMs?: number, mode?: string): Rect | null;
-    /**
-     * 等待文字出现。
-     * @param {string} keyword keyword
-     * @param {number} timeoutMs timeoutMs（可选）
-     * @param {number} intervalMs intervalMs（可选）
-     * @param {string} mode mode（可选）
-     * @returns {TextAndRegion | null} TextAndRegion | null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waittext-keyword-timeoutms-intervalms-mode DeekeScript Pro 文档}
-     */
-    waitText(keyword: string, timeoutMs?: number, intervalMs?: number, mode?: string): TextAndRegion | null;
-    /**
-     * 等待文字消失。
-     * @param {string} keyword keyword
-     * @param {number} timeoutMs timeoutMs（可选）
-     * @param {number} intervalMs intervalMs（可选）
-     * @param {string} mode mode（可选）
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#waittextgone-keyword-timeoutms-intervalms-mode DeekeScript Pro 文档}
-     */
-    waitTextGone(keyword: string, timeoutMs?: number, intervalMs?: number, mode?: string): boolean;
-    /**
-     * 连接并等待就绪。
-     * @param {boolean} autoconnect 是否自动连接（默认true）（可选）
-     * @param {number} index 设备索引（默认0）（可选）
-     * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
-     * @returns {boolean} 是否已连接
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#connectandwait-autoconnect-index-timeoutms DeekeScript Pro 文档}
-     */
-    connectAndWait(autoconnect?: boolean, index?: number, timeoutMs?: number): boolean;
-    /**
-     * 未连接则自动连接。
-     * @returns {boolean} 是否已连接
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#ensureconnected DeekeScript Pro 文档}
-     */
-    ensureConnected(): boolean;
-    /**
-     * 是否已连接（真实布尔）。
-     * @returns {boolean} 是否已连接
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#isconnected DeekeScript Pro 文档}
-     */
-    isConnected(): boolean;
-    /**
-     * 滑动直到出现目标图。
-     * @param {number} x1 起点X
-     * @param {number} y1 起点Y
-     * @param {number} x2 终点X
-     * @param {number} y2 终点Y
-     * @param {string} templateFile 模板图路径
-     * @param {number} maxTimes 最大滑动次数（默认10）（可选）
-     * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
-     * @see {@link https://script.deeke.cn/base/hid/hid.html#swipeuntilimage-x1-y1-x2-y2-templatefile-maxtimes-threshold DeekeScript Pro 文档}
-     */
-    swipeUntilImage(x1: number, y1: number, x2: number, y2: number, templateFile: string, maxTimes?: number, threshold?: number): ImageMatch | null;
-}
-
-/**
  * @see {@link https://script.deeke.cn/base/java/java.html DeekeScript Pro 文档}
  */
 interface java {
 }
 declare var java: java;
-
-/**
- * @see {@link https://script.deeke.cn/base/log/log.html DeekeScript Pro 文档}
- */
-interface log {
-    /**
-     * 全局设置日志输出文件
-     * @param {string} filename filename
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/log/log.html#setfile-filename DeekeScript Pro 文档}
-     */
-    setFile(filename: string): boolean;
-    /**
-     * 输出日志内容
-     * @param {object} obj obj（剩余参数）
-     * @see {@link https://script.deeke.cn/base/log/log.html#log-obj DeekeScript Pro 文档}
-     */
-    log(...obj: object): void;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/notificationBridge/notificationBridge.html DeekeScript Pro 文档}
- */
-interface notificationBridge {
-    /**
-     * 开启读取通知服务
-     * @see {@link https://script.deeke.cn/base/notificationBridge/notificationBridge.html#startservice DeekeScript Pro 文档}
-     */
-    startService(): void;
-    /**
-     * 监听通知
-     * @param {(packageName: string, title: string, text: string) => void,
-        onNotificationRemoved: (packageName: string} onNotification 通知发起后执行 @argument packageName 包名 @argument title 标题 @argument text 内容
-     * @param {string} title title
-     * @param {string) => void} text text
-     * @see {@link https://script.deeke.cn/base/notificationBridge/notificationBridge.html#startlistening-onnotification-title-text DeekeScript Pro 文档}
-     */
-    startListening(onNotification: (packageName: string, title: string, text: string) => void,
-        onNotificationRemoved: (packageName: string, title: string, text: string) => void): void;
-    /**
-     * 关闭服务
-     * @see {@link https://script.deeke.cn/base/notificationBridge/notificationBridge.html#stopservice DeekeScript Pro 文档}
-     */
-    stopService(): void;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/socket/client.html DeekeScript Pro 文档}
- */
-interface socketIoClient {
-    /**
-     * 获取socketIoClient实例
-     * @param {string} serverUrl socketIOServer地址
-     * @param {boolean} reconnect 是否自动重连（默认为true）
-     * @param {number} timeout 重连超时时间（毫秒）（默认为5000毫秒）
-     * @returns {socketIoClient} socketIoClient
-     * @see {@link https://script.deeke.cn/base/socket/client.html#getinstance-serverurl-reconnect-timeout DeekeScript Pro 文档}
-     */
-    getInstance(serverUrl: string, reconnect: boolean, timeout: number): socketIoClient;
-    /**
-     * 连接socketIOServer
-     * @see {@link https://script.deeke.cn/base/socket/client.html#connect DeekeScript Pro 文档}
-     */
-    connect(): void;
-    /**
-     * 断开socketIOServer
-     * @see {@link https://script.deeke.cn/base/socket/client.html#disconnect DeekeScript Pro 文档}
-     */
-    disconnect(): void;
-    /**
-     * 是否已连接
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/socket/client.html#isconnected DeekeScript Pro 文档}
-     */
-    isConnected(): boolean;
-    /**
-     * 向服务器发送事件和数据
-     * @param {string} eventName 事件名称
-     * @param {string} data 数据
-     * @see {@link https://script.deeke.cn/base/socket/client.html#emit-eventname-data DeekeScript Pro 文档}
-     */
-    emit(eventName: string, data: string): void;
-    /**
-     * 向服务器发送事件和数据
-     * @param {string} eventName 事件名称
-     * @param {string} data 数据
-     * @param {function} callback 服务器确认后的回调函数
-     * @see {@link https://script.deeke.cn/base/socket/client.html#emit-eventname-data-callback DeekeScript Pro 文档}
-     */
-    emit(eventName: string, data: string, callback: function): void;
-    /**
-     * 监听事件
-     * @param {string} eventName eventName
-     * @param {(data: string) => void} callback callback
-     * @see {@link https://script.deeke.cn/base/socket/client.html#on-eventname-callback DeekeScript Pro 文档}
-     */
-    on(eventName: string, callback: (data: string) => void): void;
-    /**
-     * 移除事件监听器
-     * @param {string} eventName eventName
-     * @param {(data: string) => void} callback callback
-     * @see {@link https://script.deeke.cn/base/socket/client.html#off-eventname-callback DeekeScript Pro 文档}
-     */
-    off(eventName: string, callback: (data: string) => void): void;
-    /**
-     * 移除事件监听器
-     * @param {string} eventName eventName
-     * @see {@link https://script.deeke.cn/base/socket/client.html#off-eventname DeekeScript Pro 文档}
-     */
-    off(eventName: string): void;
-    /**
-     * 移除所有事件监听器
-     * @see {@link https://script.deeke.cn/base/socket/client.html#off DeekeScript Pro 文档}
-     */
-    off(): void;
-    /**
-     * 重置当前实例的是否重连
-     * @param {boolean} bool 是否自动重连
-     * @see {@link https://script.deeke.cn/base/socket/client.html#setreconnect-bool DeekeScript Pro 文档}
-     */
-    setReconnect(bool: boolean): void;
-}
-
-/**
- * 本地 SQLite 数据库。写入时按对象字段自动建表、自动补列，无需手动 CREATE TABLE。
- * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html DeekeScript Pro 文档}
- */
-interface sqlite {
-    /**
-     * 打开或创建指定名称的数据库，返回实例
-     * @param {string} name 数据库名称（可省略 .db 后缀）
-     * @returns {Sqlite} Sqlite 实例
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#create-name DeekeScript Pro 文档}
-     */
-    create(name: string): Sqlite;
-    /**
-     * 插入一行。表不存在则按对象字段自动创建；缺列则自动补列。默认自增主键 id
-     * @param {string} table 表名
-     * @param {object} data 行数据对象
-     * @returns {number} 新行 id，失败返回 -1
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#insert-table-data DeekeScript Pro 文档}
-     */
-    insert(table: string, data: object): number;
-    /**
-     * 按条件更新。where 可传 {}，但须带 options.limit（防误改全表）。options 支持 limit/offset/orderBy
-     * @param {string} table 表名
-     * @param {object} data 要更新的字段
-     * @param {object} where 条件对象，可为空对象
-     * @param {{ limit?: number; offset?: number; orderBy?: string }} options 可选 { limit?, offset?, orderBy? }（可选）
-     * @returns {number} 影响行数，失败返回 -1
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#update-table-data-where-options DeekeScript Pro 文档}
-     */
-    update(table: string, data: object, where: object, options?: { limit?: number; offset?: number; orderBy?: string }): number;
-    /**
-     * 按条件删除。where 可传 {}，但须带 options.limit（防误删全表；清空用 clear）。options 支持 limit/offset/orderBy
-     * @param {string} table 表名
-     * @param {object} where 条件对象，可为空对象
-     * @param {{ limit?: number; offset?: number; orderBy?: string }} options 可选 { limit?, offset?, orderBy? }（可选）
-     * @returns {number} 影响行数，失败返回 -1
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#delete-table-where-options DeekeScript Pro 文档}
-     */
-    delete(table: string, where: object, options?: { limit?: number; offset?: number; orderBy?: string }): number;
-    /**
-     * 查询多行。不传 where 或空对象则查全部。options：limit/offset/orderBy；第二参数也可只传 options
-     * @param {string} table 表名
-     * @param {object} where 可选条件对象（可选）
-     * @param {{ limit?: number; offset?: number; orderBy?: string }} options 可选 { limit?, offset?, orderBy? }（可选）
-     * @returns {Array} 行对象数组
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#find-table-where-options DeekeScript Pro 文档}
-     */
-    find(table: string, where?: object, options?: { limit?: number; offset?: number; orderBy?: string }): Array;
-    /**
-     * 查询第一行。where 可空；第二参数也可只传 options（如 orderBy）
-     * @param {string} table 表名
-     * @param {object} where 可选条件对象（可选）
-     * @param {{ orderBy?: string; offset?: number }} options 可选 { orderBy?, offset? }（limit 固定为 1）（可选）
-     * @returns {object | null} 行对象，没有则 null
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#findone-table-where-options DeekeScript Pro 文档}
-     */
-    findOne(table: string, where?: object, options?: { orderBy?: string; offset?: number }): object | null;
-    /**
-     * 统计行数；where 可空表示全表
-     * @param {string} table 表名
-     * @param {object} where 可选条件对象（可选）
-     * @returns {number} 行数
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#count-table-where DeekeScript Pro 文档}
-     */
-    count(table: string, where?: object): number;
-    /**
-     * 对列求和；where 可空；无数据返回 0
-     * @param {string} table 表名
-     * @param {string} column 列名
-     * @param {object} where 可选条件（可选）
-     * @returns {number} 合计
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#sum-table-column-where DeekeScript Pro 文档}
-     */
-    sum(table: string, column: string, where?: object): number;
-    /**
-     * 对列求平均；where 可空；无数据返回 0
-     * @param {string} table 表名
-     * @param {string} column 列名
-     * @param {object} where 可选条件（可选）
-     * @returns {number} 平均值
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#avg-table-column-where DeekeScript Pro 文档}
-     */
-    avg(table: string, column: string, where?: object): number;
-    /**
-     * 列最大值；where 可空；无数据返回 null
-     * @param {string} table 表名
-     * @param {string} column 列名
-     * @param {object} where 可选条件（可选）
-     * @returns {number | string | null} number | string | null
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#max-table-column-where DeekeScript Pro 文档}
-     */
-    max(table: string, column: string, where?: object): number | string | null;
-    /**
-     * 列最小值；where 可空；无数据返回 null
-     * @param {string} table 表名
-     * @param {string} column 列名
-     * @param {object} where 可选条件（可选）
-     * @returns {number | string | null} number | string | null
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#min-table-column-where DeekeScript Pro 文档}
-     */
-    min(table: string, column: string, where?: object): number | string | null;
-    /**
-     * 分组聚合。spec.by 必填；where 可空。可选 count/sum/avg/max/min/where/orderBy/limit/offset
-     * @param {string} table 表名
-     * @param {{ by: string | string[]; count?: boolean; sum?: string; avg?: string; max?: string; min?: string; where?: object; orderBy?: string; limit?: number; offset?: number }} spec 如 { by: "status", count: true, sum: "amount", where: {...} }
-     * @returns {Array} 每组一行的数组，字段含分组列与 count/sum/avg/max/min
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#group-table-spec DeekeScript Pro 文档}
-     */
-    group(table: string, spec: { by: string | string[]; count?: boolean; sum?: string; avg?: string; max?: string; min?: string; where?: object; orderBy?: string; limit?: number; offset?: number }): Array;
-    /**
-     * 清空表全部行，保留表结构
-     * @param {string} table 表名
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#clear-table DeekeScript Pro 文档}
-     */
-    clear(table: string): boolean;
-    /**
-     * 删除整张表
-     * @param {string} table 表名
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#drop-table DeekeScript Pro 文档}
-     */
-    drop(table: string): boolean;
-    /**
-     * 列出当前库中的所有表名
-     * @returns {string[]} 表名数组
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#tables DeekeScript Pro 文档}
-     */
-    tables(): string[];
-    /**
-     * 表是否存在
-     * @param {string} table 表名
-     * @returns {boolean} 是否存在
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#exists-table DeekeScript Pro 文档}
-     */
-    exists(table: string): boolean;
-    /**
-     * 执行原始 SELECT
-     * @param {string} sql SELECT 语句，可用 ? 占位符
-     * @param {Array} args 可选绑定参数数组（可选）
-     * @returns {Array} 行对象数组
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#query-sql-args DeekeScript Pro 文档}
-     */
-    query(sql: string, args?: Array): Array;
-    /**
-     * 执行非查询 SQL（INSERT/UPDATE/DELETE/DDL 等）
-     * @param {string} sql SQL 语句
-     * @param {Array} args 可选绑定参数数组（可选）
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#exec-sql-args DeekeScript Pro 文档}
-     */
-    exec(sql: string, args?: Array): boolean;
-    /**
-     * 关闭数据库连接。之后再读写会自动重新打开
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#close DeekeScript Pro 文档}
-     */
-    close(): void;
-    /**
-     * 获取当前库文件名
-     * @returns {string} 库文件名
-     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#getname DeekeScript Pro 文档}
-     */
-    getName(): string;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/storage/storage.html DeekeScript Pro 文档}
- */
-interface storage {
-    /**
-     * 创建存储实例  全局使用一个即可
-     * @param {string} db 数据库名称
-     * @returns {storage} 返回当前实例，如果已存在则直接返回
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#create-db DeekeScript Pro 文档}
-     */
-    create(db: string): storage;
-    /**
-     * 设置字符串
-     * @param {string} key 键
-     * @param {string} value 值
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#put-key-value DeekeScript Pro 文档}
-     */
-    put(key: string, value: string): boolean;
-    /**
-     * 设置整型值
-     * @param {string} key 键
-     * @param {number} value 值
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#putinteger-key-value DeekeScript Pro 文档}
-     */
-    putInteger(key: string, value: number): boolean;
-    /**
-     * 设置bool
-     * @param {string} key 键
-     * @param {boolean} value 值
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#putboolean-key-value DeekeScript Pro 文档}
-     */
-    putBoolean(key: string, value: boolean): boolean;
-    /**
-     * 设置双精度值
-     * @param {string} key 键
-     * @param {number} value 值
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#putdouble-key-value DeekeScript Pro 文档}
-     */
-    putDouble(key: string, value: number): boolean;
-    /**
-     * 设置对象
-     * @param {string} key 键
-     * @param {object} obj 值
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#putobj-key-obj DeekeScript Pro 文档}
-     */
-    putObj(key: string, obj: object): boolean;
-    /**
-     * 设置集合（字符串）
-     * @param {string} key 键
-     * @param {Array} arr arr
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#putarray-key-arr DeekeScript Pro 文档}
-     */
-    putArray(key: string, arr: Array): boolean;
-    /**
-     * 获取集合（字符串）
-     * @param {string} key 键
-     * @returns {Array} Array
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getarray-key DeekeScript Pro 文档}
-     */
-    getArray(key: string): Array;
-    /**
-     * 获取字符串
-     * @param {string} key 键
-     * @returns {string} string
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#get-key DeekeScript Pro 文档}
-     */
-    get(key: string): string;
-    /**
-     * 获取字符串
-     * @param {string} key 键
-     * @returns {string} string
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getstring-key DeekeScript Pro 文档}
-     */
-    getString(key: string): string;
-    /**
-     * 获取bool类型的值
-     * @param {string} key 键
-     * @returns {boolean} boolean
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getboolean-key DeekeScript Pro 文档}
-     */
-    getBoolean(key: string): boolean;
-    /**
-     * 获取Double类型的值
-     * @param {string} key 键
-     * @returns {number} number
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getdouble-key DeekeScript Pro 文档}
-     */
-    getDouble(key: string): number;
-    /**
-     * 获取整型类型的值
-     * @param {string} key 键
-     * @returns {number} number
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getinteger-key DeekeScript Pro 文档}
-     */
-    getInteger(key: string): number;
-    /**
-     * 获取对象类型的值
-     * @param {string} key 键
-     * @returns {object} object
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#getobj-key DeekeScript Pro 文档}
-     */
-    getObj(key: string): object;
-    /**
-     * 移除某个键
-     * @param {string} key 键
-     * @returns {any} 返回Promise，实际使用时通过blockingSubscribe()或toCompletionStage()来获取结果
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#remove-key DeekeScript Pro 文档}
-     */
-    remove(key: string): any;
-    /**
-     * 清空所有值
-     * @returns {any} 返回Promise，实际使用时通过blockingSubscribe()或toCompletionStage()来获取结果
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#clear DeekeScript Pro 文档}
-     */
-    clear(): any;
-    /**
-     * 判断是否包含键为key的数据
-     * @param {string} key 键
-     * @returns {boolean} 返回boolean，表示是否存在该键
-     * @see {@link https://script.deeke.cn/base/storage/storage.html#contains-key DeekeScript Pro 文档}
-     */
-    contains(key: string): boolean;
-}
-
-/**
- * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html DeekeScript Pro 文档}
- */
-interface webSocket {
-    /**
-     * 连接成功
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#onopen DeekeScript Pro 文档}
-     */
-    onOpen(): void;
-    /**
-     * 消息通知
-     * @param {string} data data
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#onmessage-data DeekeScript Pro 文档}
-     */
-    onMessage(data: string): void;
-    /**
-     * 连接关闭
-     * @param {number} code code
-     * @param {string} reason reason
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#onclose-code-reason DeekeScript Pro 文档}
-     */
-    onClose(code: number, reason: string): void;
-    /**
-     * 连接出错
-     * @param {string} errorMsg errorMsg
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#onerror-errormsg DeekeScript Pro 文档}
-     */
-    onError(errorMsg: string): void;
-    /**
-     * 发送数据
-     * @param {string} data data
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#send-data DeekeScript Pro 文档}
-     */
-    send(data: string): void;
-    /**
-     * 关闭当前连接
-     * @see {@link https://script.deeke.cn/base/webSocket/webSocket.html#close DeekeScript Pro 文档}
-     */
-    close(): void;
-}
 
 // --- require / module（项目根相对路径）---
 
