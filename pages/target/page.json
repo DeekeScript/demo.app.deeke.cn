@@ -1,0 +1,171 @@
+{
+  "title": {
+    "hidden": true
+  },
+  "style": {
+    "background": "#F3F6F5",
+    "padding": 0
+  },
+  "body": [
+    {
+      "type": "column",
+      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "image",
+              "src": "img/back.svg",
+              "onTap": "onBack",
+              "style": { "width": 26, "height": 26 }
+            },
+            {
+              "type": "text",
+              "text": "适配下载",
+              "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold", "align": "center" }
+            },
+            { "type": "space", "style": { "width": 26 } }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "column",
+      "style": { "padding": 8, "gap": 6 },
+      "children": [
+        {
+          "type": "card",
+          "showIf": "showEmpty",
+          "style": { "padding": 14, "gap": 6, "radius": 12, "background": "#FFFFFF" },
+          "children": [
+            { "type": "text", "text": "暂无适配信息", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "notice", "text": "{{emptyHint}}" }
+          ]
+        },
+        {
+          "type": "card",
+          "showIf": "showMain",
+          "style": { "padding": 14, "gap": 8, "radius": 12, "background": "#FFFFFF" },
+          "children": [
+            {
+              "type": "row",
+              "style": { "valign": "center", "gap": 8 },
+              "children": [
+                { "type": "text", "text": "{{appName}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 17 } },
+                {
+                  "type": "tag",
+                  "text": "{{compatTag}}",
+                  "style": { "background": "{{compatTagBg}}", "color": "{{compatTagColor}}", "radius": 6 }
+                }
+              ]
+            },
+            { "type": "notice", "text": "{{packageLine}}", "showIf": "hasPackage" },
+            {
+              "type": "row",
+              "style": { "valign": "center", "gap": 8 },
+              "children": [
+                { "type": "text", "text": "本机状态", "style": { "fontSize": 13, "color": "#667" } },
+                {
+                  "type": "tag",
+                  "text": "{{localTag}}",
+                  "style": { "background": "{{localTagBg}}", "color": "{{localTagColor}}", "radius": 6 }
+                }
+              ]
+            },
+            { "type": "notice", "text": "{{localDetail}}" },
+            {
+              "type": "button",
+              "text": "打开官方下载页",
+              "size": "sm",
+              "showIf": "showOfficial",
+              "onTap": "onOpenOfficial",
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8, "width": "100%" }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "showIf": "showVersions",
+          "style": { "padding": 12, "gap": 8, "radius": 12, "background": "#FFFFFF" },
+          "children": [
+            { "type": "text", "text": "支持的版本", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            {
+              "type": "list",
+              "bind": "versions",
+              "item": {
+                "type": "card",
+                "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "#F7FAF9" },
+                "children": [
+                  {
+                    "type": "row",
+                    "style": { "valign": "center", "gap": 8 },
+                    "children": [
+                      {
+                        "type": "column",
+                        "style": { "weight": 1, "gap": 2 },
+                        "children": [
+                          {
+                            "type": "row",
+                            "style": { "valign": "center", "gap": 6 },
+                            "children": [
+                              { "type": "text", "text": "{{item.versionText}}", "style": { "fontWeight": "bold", "fontSize": 14 } },
+                              {
+                                "type": "tag",
+                                "text": "推荐",
+                                "showIf": "item.isRecommended",
+                                "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 6 }
+                              }
+                            ]
+                          },
+                          { "type": "notice", "text": "{{item.note}}", "showIf": "item.hasNote" },
+                          { "type": "notice", "text": "{{item.sourceLine}}", "showIf": "item.hasSource" }
+                        ]
+                      },
+                      {
+                        "type": "button",
+                        "text": "去下载",
+                        "size": "sm",
+                        "showIf": "item.hasDownload",
+                        "onTap": "onDownloadVersion",
+                        "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "showIf": "showNote",
+          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFFFFF" },
+          "children": [
+            { "type": "text", "text": "适配说明", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "notice", "text": "{{note}}" }
+          ]
+        },
+        {
+          "type": "card",
+          "showIf": "showMain",
+          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFF6E8" },
+          "children": [
+            { "type": "text", "text": "重要提醒", "style": { "fontWeight": "bold", "fontSize": 14, "color": "#A35B00" } },
+            { "type": "notice", "text": "{{autoUpdateTip}}" }
+          ]
+        },
+        {
+          "type": "card",
+          "showIf": "showMain",
+          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFFFFF" },
+          "children": [
+            { "type": "notice", "text": "{{disclaimer}}" }
+          ]
+        },
+        { "type": "space", "height": 12 }
+      ]
+    }
+  ]
+}

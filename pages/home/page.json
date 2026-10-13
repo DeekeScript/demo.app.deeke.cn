@@ -25,7 +25,7 @@
         { "type": "notice", "text": "{{statusDetail}}" },
         {
           "type": "button",
-          "text": "去开通",
+          "text": "去激活",
           "showIf": "showPayEntry",
           "size": "sm",
           "onTap": "onGoPay",
@@ -35,12 +35,35 @@
     },
     {
       "type": "card",
+      "showIf": "showTargetCard",
       "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 12 },
       "children": [
-        { "type": "text", "text": "话术", "style": { "fontSize": 12, "color": "#7A8A88" } },
-        { "type": "text", "text": "{{scriptSummary}}", "style": { "fontSize": 14, "color": "#223" } },
-        { "type": "text", "text": "参数", "style": { "fontSize": 12, "color": "#7A8A88" } },
-        { "type": "text", "text": "{{paramsSummary}}", "style": { "fontSize": 14, "color": "#223" } }
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "{{targetTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 15 } },
+            {
+              "type": "tag",
+              "text": "{{targetTag}}",
+              "style": { "background": "{{targetTagBg}}", "color": "{{targetTagColor}}", "radius": 6 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "{{targetSummary}}" },
+        { "type": "notice", "text": "{{targetDetail}}" },
+        {
+          "type": "notice",
+          "text": "建议关闭应用市场对该 App 的自动更新，避免版本变化导致脚本失效",
+          "style": { "color": "#A35B00" }
+        },
+        {
+          "type": "button",
+          "text": "查看支持版本与下载",
+          "size": "sm",
+          "onTap": "onGoTarget",
+          "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8, "width": "100%" }
+        }
       ]
     },
     {
@@ -81,8 +104,8 @@
     {
       "type": "dialog",
       "showIf": "paramsDialogOpen",
-      "title": "请先设置参数",
-      "text": "首次运行前请到「参数」页完成设置并点击保存。",
+      "title": "请先完成设置",
+      "text": "首次运行前请到「设置」页完成配置并保存。",
       "confirmText": "去设置",
       "cancelText": "取消",
       "onConfirm": "onGoParams",
@@ -92,12 +115,23 @@
     {
       "type": "dialog",
       "showIf": "payDialogOpen",
-      "title": "需要先开通",
+      "title": "未激活提醒",
       "text": "{{payDialogText}}",
-      "confirmText": "去开通",
+      "confirmText": "去激活",
       "cancelText": "取消",
       "onConfirm": "onGoPay",
       "onCancel": "onClosePayDialog",
+      "style": { "color": "#0B6E6A" }
+    },
+    {
+      "type": "dialog",
+      "showIf": "targetDialogOpen",
+      "title": "请先安装适配 App",
+      "text": "{{targetDialogText}}",
+      "confirmText": "去下载",
+      "cancelText": "仍要运行",
+      "onConfirm": "onGoTarget",
+      "onCancel": "onContinueDespiteTarget",
       "style": { "color": "#0B6E6A" }
     }
   ],

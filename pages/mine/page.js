@@ -136,7 +136,7 @@ Page({
   },
 
   onOpenFloat() {
-    permission.ensureFloat();
+    Access.openFloatWindowsSetting();
   },
 
   onBattery() {

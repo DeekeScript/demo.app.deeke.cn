@@ -20,9 +20,8 @@ function ensureFloat() {
   if (Access.isFloatWindowsEnabled()) {
     return true;
   }
-  return confirmOpen('请开启悬浮窗权限', function () {
-    Access.openFloatWindowsSetting();
-  });
+  Access.openFloatWindowsSetting();
+  return false;
 }
 
 function ensureScreenCapture() {

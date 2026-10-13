@@ -214,5 +214,10 @@ module.exports = {
 
   versionHistory() {
     return this.get('/apps/' + encode(config.toolCode) + '/versions');
+  },
+
+  /** 工具详情（含 targetApp 适配说明与外部下载链接） */
+  toolDetail() {
+    return this.get('/apps/' + encode(config.toolCode));
   }
 };

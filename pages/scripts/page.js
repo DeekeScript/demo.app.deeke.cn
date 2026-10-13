@@ -95,6 +95,10 @@ Page({
     });
   },
 
+  onCloseAdd() {
+    this.setData({ addOpen: false });
+  },
+
   onAdd() {
     let text = (this.data.newContent || '').trim();
     if (!text) {

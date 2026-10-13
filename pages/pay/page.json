@@ -23,7 +23,7 @@
             },
             {
               "type": "text",
-              "text": "开通会员",
+              "text": "激活APP",
               "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold", "align": "center" }
             },
             {

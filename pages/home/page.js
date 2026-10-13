@@ -1,10 +1,10 @@
 let permission = require('../../common/permission.js');
 let activation = require('../../common/activation.js');
-let scripts = require('../../common/scripts.js');
 let params = require('../../common/params.js');
 let update = require('../../common/update.js');
 let guide = require('../../common/guide.js');
 let protocol = require('../../common/protocol.js');
+let target = require('../../common/target.js');
 
 Page({
   data: {
@@ -14,8 +14,13 @@ Page({
     statusTagBg: '#EEF2F1',
     statusTagColor: '#667',
     showPayEntry: false,
-    scriptSummary: '',
-    paramsSummary: '',
+    showTargetCard: false,
+    targetTitle: '',
+    targetSummary: '',
+    targetDetail: '',
+    targetTag: '',
+    targetTagBg: '#EEF2F1',
+    targetTagColor: '#667',
     guideOpen: false,
     guideAppName: guide.appName(),
     agreeProtocol: protocol.readAgreed(),
@@ -24,7 +29,10 @@ Page({
     agreeTipOpen: false,
     paramsDialogOpen: false,
     payDialogOpen: false,
-    payDialogText: '待激活，激活后才能正常使用本APP。',
+    payDialogText: '激活后才能正常使用本应用',
+    targetDialogOpen: false,
+    targetDialogText: '',
+    skipTargetGate: false,
     updateOpen: false,
     updateTitle: '发现新版本',
     updateVersionLine: '',
@@ -43,11 +51,25 @@ Page({
     return { bg: '#FFF1E8', color: '#C65A12' };
   },
 
-  refresh() {
+  refreshTargetCard() {
+    let card = target.homeCard();
+    if (!card.show) {
+      this.setData({ showTargetCard: false });
+      return;
+    }
     this.setData({
-      scriptSummary: scripts.summary(),
-      paramsSummary: params.summary()
+      showTargetCard: true,
+      targetTitle: card.title,
+      targetSummary: card.summary,
+      targetDetail: card.detail,
+      targetTag: card.tag,
+      targetTagBg: card.tagBg,
+      targetTagColor: card.tagColor
     });
+  },
+
+  refresh() {
+    this.refreshTargetCard();
 
     let result = activation.checkOnline();
     if (!result.ok) {
@@ -152,6 +174,16 @@ Page({
     this.setData({ payDialogOpen: false });
   },
 
+  onGoTarget() {
+    this.setData({ targetDialogOpen: false });
+    this.navigate({ page: 'pages/target' });
+  },
+
+  onContinueDespiteTarget() {
+    this.setData({ targetDialogOpen: false, skipTargetGate: true });
+    this.onRun();
+  },
+
   onGoParams() {
     this.setData({ paramsDialogOpen: false });
     this.switchTab({ page: 'pages/params' });
@@ -193,12 +225,26 @@ Page({
       if (paid.needPay) {
         this.setData({
           payDialogOpen: true,
-          payDialogText: paid.message || '待激活，激活后才能正常使用本APP'
+          payDialogText: '激活后才能正常使用本应用'
         });
         return;
       }
       this.toast(paid.message || '检测失败');
       return;
+    }
+    if (!this.data.skipTargetGate) {
+      let ready = target.ensureReady();
+      if (ready.hasTarget && ready.needAction) {
+        let tip = ready.message || '请先安装适配的目标 App 版本';
+        tip += '。安装后请关闭应用市场自动更新，防止版本被升级。';
+        this.setData({
+          targetDialogOpen: true,
+          targetDialogText: tip
+        });
+        return;
+      }
+    } else {
+      this.setData({ skipTargetGate: false });
     }
     if (!Access.isAccessibilityServiceEnabled()) {
       this.setData({ guideOpen: true });

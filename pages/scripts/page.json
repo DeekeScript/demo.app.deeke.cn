@@ -128,9 +128,26 @@
     {
       "showIf": "addOpen",
       "position": "bottom",
-      "title": "添加话术",
-      "style": { "radius": 16, "background": "#FFFFFF" },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 12, "gap": 10 },
       "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "width": "100%" },
+          "children": [
+            { "type": "space", "style": { "width": 22 } },
+            {
+              "type": "text",
+              "text": "添加话术",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseAdd",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
         {
           "type": "radio",
           "name": "newType",
@@ -152,10 +169,9 @@
         {
           "type": "switch",
           "name": "newEnabled",
-          "label": "启用",
+          "label": "启用状态",
           "style": { "color": "#0B6E6A" }
         },
-        { "type": "space", "height": 8 },
         {
           "type": "button",
           "text": "保存",
