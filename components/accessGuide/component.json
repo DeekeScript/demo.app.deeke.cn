@@ -1,0 +1,58 @@
+{
+  "component": true,
+  "id": "accessGuide",
+  "body": [
+    {
+      "type": "row",
+      "style": { "valign": "center" },
+      "children": [
+        { "type": "space", "style": { "width": 22 } },
+        {
+          "type": "text",
+          "text": "如何开启无障碍",
+          "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A", "align": "center" }
+        },
+        {
+          "type": "image",
+          "src": "img/close.svg",
+          "onTap": "onClose",
+          "style": { "width": 22, "height": 22 }
+        }
+      ]
+    },
+    {
+      "type": "column",
+      "style": { "width": "100%", "background": "#F7FAF9", "radius": 10, "padding": 10, "gap": 8, "borderWidth": 1, "borderColor": "#E2EAEA" },
+      "children": [
+        {
+          "type": "text",
+          "text": "已下载的应用",
+          "style": { "fontSize": 13, "color": "#7A8A88", "align": "left" }
+        },
+        {
+          "type": "row",
+          "style": { "width": "100%", "valign": "center", "gap": 8, "background": "#FFFFFF", "radius": 8, "padding": 10 },
+          "children": [
+            {
+              "type": "text",
+              "text": "{{guideAppName}}",
+              "style": { "width": "wrap", "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
+            },
+            {
+              "type": "text",
+              "text": "已关闭 >",
+              "style": { "fontSize": 13, "color": "#0B6E6A" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "text": "去打开",
+      "size": "sm",
+      "onTap": "onOpenAccessibility",
+      "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+    }
+  ]
+}

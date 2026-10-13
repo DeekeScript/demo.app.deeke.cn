@@ -10,41 +10,7 @@
     "padding": 10
   },
   "body": [
-    {
-      "type": "card",
-      "style": {
-        "padding": 10,
-        "gap": 6,
-        "radius": 12,
-        "background": "#FFFFFF",
-        "marginBottom": 5,
-        "borderWidth": 1,
-        "borderColor": "#E2EAEA"
-      },
-      "children": [
-        {
-          "type": "text",
-          "text": "激活状态",
-          "style": { "fontSize": 12, "color": "#7A8A88" }
-        },
-        {
-          "type": "row",
-          "style": { "valign": "center", "gap": 8 },
-          "children": [
-            { "type": "text", "text": "{{statusTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A" } },
-            {
-              "type": "button",
-              "text": "去激活",
-              "showIf": "showPayEntry",
-              "size": "sm",
-              "onTap": "onGoPay",
-              "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 8 }
-            }
-          ]
-        },
-        { "type": "notice", "text": "{{statusDetail}}" }
-      ]
-    },
+    { "type": "activationCard", "id": "activationCard" },
     {
       "type": "card",
       "style": {
@@ -181,6 +147,18 @@
       "onConfirm": "onGoTarget",
       "onCancel": "onContinueDespiteTarget",
       "style": { "color": "#0B6E6A" }
+    },
+    {
+      "type": "dialog",
+      "showIf": "stopHintOpen",
+      "title": "运行提示",
+      "text": "程序运行过程中，请通过点击悬浮窗两次的方式关闭（间隔1-3秒），尽量不要强制关闭App。",
+      "confirmText": "确认并开始",
+      "cancelText": "取消",
+      "closeOnMask": false,
+      "onConfirm": "onConfirmStopHint",
+      "onCancel": "onCancelStopHint",
+      "style": { "color": "#0B6E6A" }
     }
   ],
   "popups": [
@@ -230,56 +208,10 @@
       "style": { "radius": 14, "background": "#FFFFFF", "padding": 10, "gap": 6, "height": "wrap" },
       "body": [
         {
-          "type": "row",
-          "style": { "valign": "center" },
-          "children": [
-            { "type": "space", "style": { "width": 22 } },
-            {
-              "type": "text",
-              "text": "如何开启无障碍",
-              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A", "align": "center" }
-            },
-            {
-              "type": "image",
-              "src": "img/close.svg",
-              "onTap": "onCloseGuide",
-              "style": { "width": 22, "height": 22 }
-            }
-          ]
-        },
-        {
-          "type": "column",
-          "style": { "background": "#F7FAF9", "radius": 10, "padding": 10, "gap": 8, "borderWidth": 1, "borderColor": "#E2EAEA" },
-          "children": [
-            {
-              "type": "text",
-              "text": "已下载的应用",
-              "style": { "fontSize": 13, "color": "#7A8A88", "align": "left" }
-            },
-            {
-              "type": "row",
-              "style": { "valign": "center", "gap": 8, "background": "#FFFFFF", "radius": 8, "padding": 10 },
-              "children": [
-                {
-                  "type": "text",
-                  "text": "{{guideAppName}}",
-                  "style": { "weight": 1, "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
-                },
-                {
-                  "type": "text",
-                  "text": "已关闭 >",
-                  "style": { "fontSize": 13, "color": "#0B6E6A" }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "button",
-          "text": "去打开",
-          "size": "sm",
-          "onTap": "onOpenAccessibility",
-          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+          "type": "accessGuide",
+          "id": "accessGuide",
+          "onClose": "onCloseGuide",
+          "style": { "width": "100%" }
         }
       ]
     },
@@ -291,31 +223,11 @@
       "closeOnMask": false,
       "style": { "radius": 14, "background": "#FFFFFF", "padding": 10 },
       "body": [
-        { "type": "notice", "text": "{{updateVersionLine}}" },
-        { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },
-        { "type": "space", "height": 6 },
-        { "type": "text", "text": "{{updateChangelog}}", "style": { "fontSize": 13, "color": "#334" } },
-        { "type": "space", "height": 10 },
         {
-          "type": "row",
-          "style": { "gap": 8 },
-          "children": [
-            {
-              "type": "button",
-              "text": "以后再说",
-              "size": "sm",
-              "showIf": "canSkipUpdate",
-              "onTap": "onSkipUpdate",
-              "style": { "weight": 1, "background": "#F3F7F6", "color": "#445", "radius": 8 }
-            },
-            {
-              "type": "button",
-              "text": "{{updateConfirmText}}",
-              "size": "sm",
-              "onTap": "onDoUpdate",
-              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
-            }
-          ]
+          "type": "updateDialog",
+          "id": "updateDialog",
+          "onSkip": "onSkipUpdate",
+          "onClose": "onCloseUpdate"
         }
       ]
     }

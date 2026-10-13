@@ -1,20 +1,14 @@
 let permission = require('../../common/permission.js');
 let activation = require('../../common/activation.js');
+let config = require('../../common/config.js');
 let params = require('../../common/params.js');
 let update = require('../../common/update.js');
-let guide = require('../../common/guide.js');
 let protocol = require('../../common/protocol.js');
 let target = require('../../common/target.js');
 let logger = require('../../common/logger.js');
 
 Page({
   data: {
-    statusTitle: '检测中…',
-    statusDetail: '',
-    statusTag: '…',
-    statusTagBg: '#EEF2F1',
-    statusTagColor: '#667',
-    showPayEntry: false,
     showTargetCard: false,
     targetTitle: '',
     targetSummary: '',
@@ -22,8 +16,6 @@ Page({
     targetTag: '',
     targetTagBg: '#EEF2F1',
     targetTagColor: '#667',
-    guideOpen: false,
-    guideAppName: guide.appName(),
     agreeProtocol: protocol.readAgreed(),
     protocolOpen: false,
     protocolHtml: protocol.html,
@@ -34,22 +26,10 @@ Page({
     targetDialogOpen: false,
     targetDialogText: '',
     skipTargetGate: false,
+    stopHintOpen: false,
+    guideOpen: false,
     updateOpen: false,
-    updateTitle: '发现新版本',
-    updateVersionLine: '',
-    updateSizeLine: '',
-    hasUpdateSize: false,
-    updateChangelog: '',
-    canSkipUpdate: true,
-    updateConfirmText: '立即更新',
-    pendingLatest: null
-  },
-
-  tagStyle(ok) {
-    if (ok) {
-      return { bg: '#E8F6F4', color: '#0B6E6A' };
-    }
-    return { bg: '#FFF1E8', color: '#C65A12' };
+    updateTitle: '发现新版本'
   },
 
   refreshTargetCard() {
@@ -69,55 +49,44 @@ Page({
     });
   },
 
+  refreshActivation() {
+    let card = this.selectComponent('activationCard');
+    if (card) {
+      card.call('refresh');
+    }
+  },
+
   refresh() {
     this.refreshTargetCard();
+    this.refreshActivation();
+  },
 
-    let result = activation.checkOnline();
-    if (!result.ok) {
-      let cache = activation.formatStatus(activation.readCache());
-      this.setData({
-        statusTitle: cache.text,
-        statusDetail: result.message || cache.detail,
-        statusTag: '离线',
-        statusTagBg: '#EEF2F1',
-        statusTagColor: '#667',
-        showPayEntry: !cache.activated
-      });
+  openUpdate(view) {
+    if (!view) {
       return;
     }
-    let st = result.status;
-    let okStyle = this.tagStyle(st.activated);
+    this._updateView = view;
     this.setData({
-      statusTitle: st.activated ? st.text : '待激活',
-      statusDetail: st.activated ? st.detail : '激活后才能正常使用本应用',
-      statusTag: st.activated ? '可用' : '待支付',
-      statusTagBg: okStyle.bg,
-      statusTagColor: okStyle.color,
-      showPayEntry: !st.activated
+      updateOpen: true,
+      updateTitle: view.updateTitle || '发现新版本'
     });
+    let that = this;
+    setTimeout(function () {
+      let dialog = that.selectComponent('updateDialog');
+      if (dialog) {
+        dialog.call('apply', that._updateView);
+      }
+    }, 30);
   },
 
   autoCheckUpdate() {
     if (!update.shouldAutoCheck()) {
       return;
     }
-    let result = update.check(false);
-    if (!result.ok || !result.hasUpdate || !result.latest) {
-      return;
+    let view = update.dialogState(update.check(false));
+    if (view) {
+      this.openUpdate(view);
     }
-    let latest = result.latest;
-    let sizeText = result.sizeText || '';
-    this.setData({
-      updateOpen: true,
-      updateTitle: result.forceUpdate ? '需要更新后才能继续使用' : '发现新版本',
-      updateVersionLine: '最新：' + (latest.version || '') + '（' + (latest.versionCode || '') + '）',
-      updateSizeLine: sizeText ? ('大小：' + sizeText) : '',
-      hasUpdateSize: !!sizeText,
-      updateChangelog: result.changelog || '',
-      canSkipUpdate: !result.forceUpdate,
-      updateConfirmText: '立即更新',
-      pendingLatest: latest
-    });
   },
 
   onLoad() {
@@ -131,27 +100,6 @@ Page({
     this.refresh();
   },
 
-  onSkipUpdate() {
-    let latest = this.data.pendingLatest || {};
-    update.skipToday(latest.versionCode);
-    this.setData({ updateOpen: false });
-  },
-
-  onDoUpdate() {
-    let latest = this.data.pendingLatest;
-    if (!latest || !latest.downloadUrl) {
-      this.toast('没有可下载的版本');
-      return;
-    }
-    this.setData({ updateConfirmText: '下载中…' });
-    let done = update.downloadAndInstall(latest);
-    this.setData({
-      updateConfirmText: '立即更新',
-      updateOpen: this.data.canSkipUpdate ? false : !done.ok
-    });
-    this.toast(done.message || (done.ok ? '请按提示安装' : '更新失败'));
-  },
-
   onGoMine() {
     this.setData({ guideOpen: false });
     this.switchTab({ page: 'pages/mine' });
@@ -161,9 +109,12 @@ Page({
     this.setData({ guideOpen: false });
   },
 
-  onOpenAccessibility() {
-    this.setData({ guideOpen: false });
-    Access.openAccessibilityServiceSetting();
+  onSkipUpdate() {
+    this.setData({ updateOpen: false });
+  },
+
+  onCloseUpdate() {
+    this.setData({ updateOpen: false });
   },
 
   onGoPay() {
@@ -210,6 +161,20 @@ Page({
 
   onCloseAgreeTip() {
     this.setData({ agreeTipOpen: false });
+  },
+
+  hasStopHint() {
+    return Storage.get(config.storagePrefix + 'run.stopHint') === '1';
+  },
+
+  onCancelStopHint() {
+    this.setData({ stopHintOpen: false });
+  },
+
+  onConfirmStopHint() {
+    Storage.put(config.storagePrefix + 'run.stopHint', '1');
+    this.setData({ stopHintOpen: false });
+    this.onRun();
   },
 
   onRun() {
@@ -260,6 +225,11 @@ Page({
     if (!Access.isFloatWindowsEnabled()) {
       logger.warn('run', '悬浮窗未开启');
       permission.ensureFloat();
+      return;
+    }
+    if (!this.hasStopHint()) {
+      logger.info('run', '首次运行，等待确认关闭方式');
+      this.setData({ stopHintOpen: true });
       return;
     }
     logger.info('run', '启动 tasks/rpa.js');

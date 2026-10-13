@@ -13,6 +13,11 @@
     { "id": "logs", "file": "pages/logs", "title": "诊断日志" },
     { "id": "mine", "file": "pages/mine", "title": "我的" }
   ],
+  "components": [
+    { "id": "activationCard", "file": "components/activationCard" },
+    { "id": "accessGuide", "file": "components/accessGuide" },
+    { "id": "updateDialog", "file": "components/updateDialog" }
+  ],
   "bottomMenus": [
     { "title": "首页", "icon": "img/home.svg", "page": "pages/home" },
     { "title": "话术", "icon": "img/scripts.svg", "page": "pages/scripts" },

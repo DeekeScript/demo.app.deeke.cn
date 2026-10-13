@@ -1,0 +1,32 @@
+{
+  "component": true,
+  "id": "updateDialog",
+  "body": [
+    { "type": "notice", "text": "{{updateVersionLine}}" },
+    { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },
+    { "type": "space", "height": 6 },
+    { "type": "text", "text": "{{updateChangelog}}", "style": { "fontSize": 13, "color": "#334" } },
+    { "type": "space", "height": 10 },
+    {
+      "type": "row",
+      "style": { "gap": 8 },
+      "children": [
+        {
+          "type": "button",
+          "text": "以后再说",
+          "size": "sm",
+          "showIf": "canSkipUpdate",
+          "onTap": "onSkipUpdate",
+          "style": { "weight": 1, "background": "#F3F7F6", "color": "#445", "radius": 8 }
+        },
+        {
+          "type": "button",
+          "text": "{{updateConfirmText}}",
+          "size": "sm",
+          "onTap": "onDoUpdate",
+          "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+        }
+      ]
+    }
+  ]
+}

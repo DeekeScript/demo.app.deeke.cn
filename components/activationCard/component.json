@@ -1,0 +1,45 @@
+{
+  "component": true,
+  "id": "activationCard",
+  "body": [
+    {
+      "type": "card",
+      "style": {
+        "padding": 10,
+        "gap": 6,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 5,
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": "激活状态",
+          "style": { "fontSize": 12, "color": "#7A8A88" }
+        },
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "text",
+              "text": "{{statusTitle}}",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A" }
+            },
+            {
+              "type": "button",
+              "text": "去激活",
+              "showIf": "showPayEntry",
+              "size": "sm",
+              "onTap": "onGoPay",
+              "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 8 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "{{statusDetail}}" }
+      ]
+    }
+  ]
+}

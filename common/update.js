@@ -173,6 +173,24 @@ module.exports = {
     return { ok: false, message: '无法安装，请稍后重试' };
   },
 
+  dialogState(result) {
+    if (!result || !result.ok || !result.hasUpdate || !result.latest) {
+      return null;
+    }
+    let latest = result.latest;
+    let sizeText = result.sizeText || '';
+    return {
+      updateTitle: result.forceUpdate ? '需要更新后才能继续使用' : '发现新版本',
+      updateVersionLine: '最新：' + (latest.version || '') + '（' + (latest.versionCode || '') + '）',
+      updateSizeLine: sizeText ? ('大小：' + sizeText) : '',
+      hasUpdateSize: !!sizeText,
+      updateChangelog: result.changelog || '',
+      canSkipUpdate: !result.forceUpdate,
+      updateConfirmText: '立即更新',
+      pendingLatest: latest
+    };
+  },
+
   downloadAndInstall(latest) {
     let dl = this.download(latest);
     if (!dl.ok) {

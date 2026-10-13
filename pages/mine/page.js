@@ -1,15 +1,10 @@
 let permission = require('../../common/permission.js');
-let activation = require('../../common/activation.js');
 let device = require('../../common/device.js');
 let config = require('../../common/config.js');
 let update = require('../../common/update.js');
-let guide = require('../../common/guide.js');
 
 Page({
   data: {
-    statusTitle: '检测中…',
-    statusDetail: '',
-    showPayEntry: false,
     accessText: '',
     floatText: '',
     batteryText: '',
@@ -25,24 +20,16 @@ Page({
     localVersion: '',
     updateHint: '点击检查是否有新版本',
     hasUpdate: false,
-    updateOpen: false,
-    updateTitle: '发现新版本',
-    updateVersionLine: '',
-    updateSizeLine: '',
-    hasUpdateSize: false,
-    updateChangelog: '',
-    canSkipUpdate: true,
-    updateConfirmText: '立即更新',
-    pendingLatest: null,
     guideOpen: false,
-    guideAppName: guide.appName()
+    updateOpen: false,
+    updateTitle: '发现新版本'
   },
 
   statusColor(ok) {
     return ok ? '#0B6E6A' : '#C65A12';
   },
 
-  applyUpdateResult(result, silent) {
+  applyUpdateResult(result) {
     if (!result || !result.ok) {
       this.setData({
         localVersion: update.currentVersionName() + ' (' + update.currentVersionCode() + ')',
@@ -62,45 +49,20 @@ Page({
     this.setData({
       localVersion: result.localVersion || (update.currentVersionName() + ' (' + update.currentVersionCode() + ')'),
       updateHint: hint,
-      hasUpdate: !!result.hasUpdate,
-      pendingLatest: latest
+      hasUpdate: !!result.hasUpdate
     });
-    if (result.hasUpdate && latest && !silent) {
-      let sizeText = result.sizeText || update.formatSize(latest.size);
-      this.setData({
-        updateOpen: true,
-        updateTitle: result.forceUpdate ? '需要更新后才能继续使用' : '发现新版本',
-        updateVersionLine: '最新：' + (latest.version || '') + '（' + (latest.versionCode || '') + '）',
-        updateSizeLine: sizeText ? ('大小：' + sizeText) : '',
-        hasUpdateSize: !!sizeText,
-        updateChangelog: result.changelog || '',
-        canSkipUpdate: !result.forceUpdate,
-        updateConfirmText: '立即更新'
-      });
+  },
+
+  refreshActivation() {
+    let card = this.selectComponent('activationCard');
+    if (card) {
+      card.call('refresh');
     }
   },
 
   refresh() {
     let snap = permission.permissionSnapshot();
-    let statusTitle = '检测中…';
-    let statusDetail = '';
-    let showPayEntry = false;
-    let online = activation.checkOnline();
-    if (!online.ok) {
-      let cache = activation.formatStatus(activation.readCache());
-      statusTitle = cache.text;
-      statusDetail = online.message || cache.detail;
-      showPayEntry = !cache.activated;
-    } else {
-      let st = online.status;
-      statusTitle = st.activated ? st.text : '待激活';
-      statusDetail = st.activated ? st.detail : '激活后才能正常使用本应用';
-      showPayEntry = !st.activated;
-    }
     this.setData({
-      statusTitle: statusTitle,
-      statusDetail: statusDetail,
-      showPayEntry: showPayEntry,
       accessText: snap.accessibilityText,
       floatText: snap.floatText,
       batteryText: snap.batteryText,
@@ -115,6 +77,7 @@ Page({
       toolCode: config.toolCode,
       localVersion: update.currentVersionName() + ' (' + update.currentVersionCode() + ')'
     });
+    this.refreshActivation();
   },
 
   onLoad() {
@@ -125,8 +88,22 @@ Page({
     this.refresh();
   },
 
-  onGoPay() {
-    this.navigate({ page: 'pages/pay' });
+  openUpdate(view) {
+    if (!view) {
+      return;
+    }
+    this._updateView = view;
+    this.setData({
+      updateOpen: true,
+      updateTitle: view.updateTitle || '发现新版本'
+    });
+    let that = this;
+    setTimeout(function () {
+      let dialog = that.selectComponent('updateDialog');
+      if (dialog) {
+        dialog.call('apply', that._updateView);
+      }
+    }, 30);
   },
 
   onOpenGuide() {
@@ -135,11 +112,6 @@ Page({
 
   onCloseGuide() {
     this.setData({ guideOpen: false });
-  },
-
-  onOpenAccessibility() {
-    this.setData({ guideOpen: false });
-    Access.openAccessibilityServiceSetting();
   },
 
   onOpenFloat() {
@@ -173,37 +145,57 @@ Page({
   onCheckUpdate() {
     this.toast('正在检查…');
     let result = update.check(true);
-    this.applyUpdateResult(result, false);
-    if (result.ok && !result.hasUpdate) {
+    this.applyUpdateResult(result);
+    let view = update.dialogState(result);
+    if (view) {
+      this.openUpdate(view);
+    } else if (result && result.ok && !result.hasUpdate) {
       this.toast(result.message || '已是最新版本');
     }
   },
 
+  onUpdateChecked(e) {
+    let result = e && e.detail ? e.detail : null;
+    this.applyUpdateResult(result);
+    let view = update.dialogState(result);
+    if (view) {
+      this._updateView = view;
+    }
+  },
+
   onSkipUpdate() {
-    let latest = this.data.pendingLatest || {};
-    update.skipToday(latest.versionCode);
     this.setData({ updateOpen: false });
     this.toast('今日不再提醒');
   },
 
+  onCloseUpdate() {
+    this.setData({ updateOpen: false });
+  },
+
   onDoUpdate() {
-    let latest = this.data.pendingLatest;
-    if (!latest || !latest.downloadUrl) {
+    let view = this._updateView;
+    if (!view) {
       let result = update.check(true);
-      this.applyUpdateResult(result, true);
-      latest = this.data.pendingLatest;
+      this.applyUpdateResult(result);
+      view = update.dialogState(result);
     }
-    if (!latest || !latest.downloadUrl) {
+    if (!view) {
       this.toast('没有可下载的版本');
       return;
     }
-    this.setData({ updateConfirmText: '下载中…' });
-    this.toast('开始下载…');
-    let done = update.downloadAndInstall(latest);
+    this._updateView = view;
     this.setData({
-      updateConfirmText: '立即更新',
-      updateOpen: done.ok ? false : this.data.updateOpen
+      updateOpen: true,
+      updateTitle: view.updateTitle || '发现新版本'
     });
-    this.toast(done.message || (done.ok ? '请按提示安装' : '更新失败'));
+    let that = this;
+    setTimeout(function () {
+      let dialog = that.selectComponent('updateDialog');
+      if (!dialog) {
+        return;
+      }
+      dialog.call('apply', that._updateView);
+      dialog.call('onDoUpdate');
+    }, 30);
   }
 });
