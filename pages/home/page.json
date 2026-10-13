@@ -119,7 +119,7 @@
       "type": "dialog",
       "showIf": "paramsDialogOpen",
       "title": "请先完成设置",
-      "text": "首次运行前请到「设置」页完成配置并保存。",
+      "text": "请先到「设置」填写视频搜索关键词和评论关键词。",
       "confirmText": "去设置",
       "cancelText": "取消",
       "onConfirm": "onGoParams",

@@ -15,7 +15,7 @@
       "style": {
         "padding": 12,
         "paddingBottom": 10,
-        "gap": 6,
+        "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
         "marginBottom": 4,
@@ -23,11 +23,128 @@
         "borderColor": "#E2EAEA"
       },
       "children": [
-        { "type": "text", "text": "功能开关", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        { "type": "notice", "text": "关闭后对应动作不会执行" },
-        { "type": "switch", "name": "enableLike", "label": "点赞", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } },
-        { "type": "switch", "name": "enableComment", "label": "评论", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } },
-        { "type": "switch", "name": "enableDm", "label": "私信", "size": "sm", "onChange": "onAutoSave", "style": { "color": "#0B6E6A" } }
+        { "type": "text", "text": "搜索筛选", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "notice", "text": "对应抖音搜索页筛选。点选卡片即可，选中为主色底、白字。全部选「不限 / 综合」时不会点开筛选。" },
+        {
+          "type": "column",
+          "style": { "gap": 6 },
+          "children": [
+            { "type": "text", "text": "排序依据", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            {
+              "type": "grid",
+              "bind": "sortOpts",
+              "columns": 3,
+              "style": { "gap": 8 },
+              "item": {
+                "type": "card",
+                "value": "{{item.value}}",
+                "onTap": "onPickFilter",
+                "style": {
+                  "padding": 10,
+                  "radius": 10,
+                  "gap": 0,
+                  "align": "center",
+                  "background": "{{item.bg}}",
+                  "borderWidth": 1,
+                  "borderColor": "{{item.border}}"
+                },
+                "children": [
+                  { "type": "text", "text": "{{item.label}}", "style": { "fontSize": 12, "align": "center", "color": "{{item.color}}" } }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "gap": 6 },
+          "children": [
+            { "type": "text", "text": "发布时间", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            {
+              "type": "grid",
+              "bind": "timeOpts",
+              "columns": 2,
+              "style": { "gap": 8 },
+              "item": {
+                "type": "card",
+                "value": "{{item.value}}",
+                "onTap": "onPickFilter",
+                "style": {
+                  "padding": 10,
+                  "radius": 10,
+                  "gap": 0,
+                  "align": "center",
+                  "background": "{{item.bg}}",
+                  "borderWidth": 1,
+                  "borderColor": "{{item.border}}"
+                },
+                "children": [
+                  { "type": "text", "text": "{{item.label}}", "style": { "fontSize": 12, "align": "center", "color": "{{item.color}}" } }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "gap": 6 },
+          "children": [
+            { "type": "text", "text": "视频时长", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            {
+              "type": "grid",
+              "bind": "minuteOpts",
+              "columns": 2,
+              "style": { "gap": 8 },
+              "item": {
+                "type": "card",
+                "value": "{{item.value}}",
+                "onTap": "onPickFilter",
+                "style": {
+                  "padding": 10,
+                  "radius": 10,
+                  "gap": 0,
+                  "align": "center",
+                  "background": "{{item.bg}}",
+                  "borderWidth": 1,
+                  "borderColor": "{{item.border}}"
+                },
+                "children": [
+                  { "type": "text", "text": "{{item.label}}", "style": { "fontSize": 12, "align": "center", "color": "{{item.color}}" } }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "gap": 6 },
+          "children": [
+            { "type": "text", "text": "搜索范围", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            {
+              "type": "grid",
+              "bind": "randomOpts",
+              "columns": 2,
+              "style": { "gap": 8 },
+              "item": {
+                "type": "card",
+                "value": "{{item.value}}",
+                "onTap": "onPickFilter",
+                "style": {
+                  "padding": 10,
+                  "radius": 10,
+                  "gap": 0,
+                  "align": "center",
+                  "background": "{{item.bg}}",
+                  "borderWidth": 1,
+                  "borderColor": "{{item.border}}"
+                },
+                "children": [
+                  { "type": "text", "text": "{{item.label}}", "style": { "fontSize": 12, "align": "center", "color": "{{item.color}}" } }
+                ]
+              }
+            }
+          ]
+        }
       ]
     },
     {
@@ -42,37 +159,92 @@
         "borderColor": "#E2EAEA"
       },
       "children": [
-        { "type": "text", "text": "触发频率", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        { "type": "notice", "text": "遇到目标内容时执行该动作的概率，建议循序渐进" },
+        { "type": "text", "text": "关键词", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        {
+          "type": "input",
+          "name": "searchTitle",
+          "label": "视频搜索关键词",
+          "hint": "必填，用于搜索视频",
+          "onChange": "onAutoSave",
+          "onBlur": "onAutoSave"
+        },
+        {
+          "type": "textarea",
+          "name": "commentKeyword",
+          "label": "评论关键词",
+          "hint": "必填，多个关键词用逗号隔开",
+          "minLines": 3,
+          "variant": "box",
+          "size": "sm",
+          "onChange": "onAutoSave",
+          "onBlur": "onAutoSave"
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "style": {
+        "padding": 12,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
+      "children": [
+        { "type": "text", "text": "操作频率", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "notice", "text": "评论赞、回复评论、私信、关注四者按概率只执行其中一个" },
         {
           "type": "slider",
-          "name": "likeRate",
-          "label": "点赞概率",
+          "name": "zanCommentRate",
+          "label": "评论赞频率",
           "min": 0,
           "max": 100,
-          "step": 5,
+          "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
           "style": { "color": "#0B6E6A" }
         },
         {
           "type": "slider",
-          "name": "commentRate",
-          "label": "评论概率",
+          "name": "replyCommentRate",
+          "label": "回复评论",
           "min": 0,
           "max": 100,
-          "step": 5,
+          "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
           "style": { "color": "#0B6E6A" }
         },
         {
           "type": "slider",
-          "name": "dmRate",
-          "label": "私信概率",
+          "name": "privateRate",
+          "label": "私信频率",
           "min": 0,
           "max": 100,
-          "step": 5,
+          "step": 1,
+          "unit": "%",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "focusRate",
+          "label": "关注频率",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "onChange": "onAutoSave",
+          "style": { "color": "#0B6E6A" }
+        },
+        {
+          "type": "slider",
+          "name": "firstCommentRate",
+          "label": "回复作品首评频率",
+          "min": 0,
+          "max": 100,
+          "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
           "style": { "color": "#0B6E6A" }
@@ -80,98 +252,13 @@
         {
           "type": "slider",
           "name": "intervalSec",
-          "label": "动作间隔",
-          "min": 1,
-          "max": 30,
-          "step": 1,
+          "label": "操作间隔",
+          "min": 5,
+          "max": 100,
+          "step": 5,
           "unit": "秒",
           "onChange": "onAutoSave",
           "style": { "color": "#0B6E6A" }
-        }
-      ]
-    },
-    {
-      "type": "card",
-      "style": {
-        "padding": 12,
-        "gap": 8,
-        "radius": 12,
-        "background": "#FFFFFF",
-        "marginBottom": 4,
-        "borderWidth": 1,
-        "borderColor": "#E2EAEA"
-      },
-      "children": [
-        { "type": "text", "text": "单次上限", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        { "type": "notice", "text": "单次运行达到上限后自动停止对应动作" },
-        {
-          "type": "slider",
-          "name": "likeMax",
-          "label": "点赞次数",
-          "min": 0,
-          "max": 200,
-          "step": 5,
-          "unit": "次",
-          "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
-        },
-        {
-          "type": "slider",
-          "name": "commentMax",
-          "label": "评论次数",
-          "min": 0,
-          "max": 100,
-          "step": 5,
-          "unit": "次",
-          "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
-        },
-        {
-          "type": "slider",
-          "name": "dmMax",
-          "label": "私信次数",
-          "min": 0,
-          "max": 50,
-          "step": 1,
-          "unit": "次",
-          "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
-        }
-      ]
-    },
-    {
-      "type": "card",
-      "style": {
-        "padding": 12,
-        "gap": 6,
-        "radius": 12,
-        "background": "#FFFFFF",
-        "borderWidth": 1,
-        "borderColor": "#E2EAEA"
-      },
-      "children": [
-        { "type": "text", "text": "关键词", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        {
-          "type": "textarea",
-          "name": "keywords",
-          "label": "匹配关键词",
-          "hint": "每行一个，命中后才执行动作",
-          "minLines": 3,
-          "variant": "box",
-          "size": "sm",
-          "onChange": "onAutoSave",
-          "onBlur": "onAutoSave"
-        },
-        {
-          "type": "textarea",
-          "name": "excludeKeywords",
-          "label": "排除关键词",
-          "hint": "每行一个，命中则跳过",
-          "minLines": 2,
-          "variant": "box",
-          "size": "sm",
-          "onChange": "onAutoSave",
-          "onBlur": "onAutoSave"
         }
       ]
     }

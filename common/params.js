@@ -5,7 +5,11 @@ module.exports = {
   configuredKey: config.storagePrefix + 'params.configured',
 
   hasConfigured() {
-    return Storage.getBoolean(this.configuredKey) === true;
+    if (Storage.getBoolean(this.configuredKey) !== true) {
+      return false;
+    }
+    let p = this.load();
+    return !!(String(p.searchTitle || '').trim() && String(p.commentKeyword || '').trim());
   },
 
   markConfigured() {
@@ -14,18 +18,18 @@ module.exports = {
 
   defaults() {
     return {
-      enableLike: true,
-      enableComment: true,
-      enableDm: true,
-      likeRate: 60,
-      commentRate: 30,
-      dmRate: 10,
-      intervalSec: 3,
-      likeMax: 30,
-      commentMax: 15,
-      dmMax: 5,
-      keywords: '涨粉\n互助\n同城',
-      excludeKeywords: ''
+      videoSort: 0,
+      videoTime: 0,
+      videoMinute: 0,
+      videoRandom: 0,
+      searchTitle: '',
+      commentKeyword: '',
+      zanCommentRate: 0,
+      replyCommentRate: 0,
+      privateRate: 0,
+      focusRate: 0,
+      firstCommentRate: 0,
+      intervalSec: 5
     };
   },
 
@@ -36,18 +40,18 @@ module.exports = {
       return d;
     }
     return {
-      enableLike: saved.enableLike !== false,
-      enableComment: saved.enableComment !== false,
-      enableDm: saved.enableDm !== false,
-      likeRate: this.num(saved.likeRate, d.likeRate),
-      commentRate: this.num(saved.commentRate, d.commentRate),
-      dmRate: this.num(saved.dmRate, d.dmRate),
-      intervalSec: this.num(saved.intervalSec, d.intervalSec),
-      likeMax: this.num(saved.likeMax, d.likeMax),
-      commentMax: this.num(saved.commentMax, d.commentMax),
-      dmMax: this.num(saved.dmMax, d.dmMax),
-      keywords: saved.keywords != null ? String(saved.keywords) : d.keywords,
-      excludeKeywords: saved.excludeKeywords != null ? String(saved.excludeKeywords) : d.excludeKeywords
+      videoSort: this.num(saved.videoSort, d.videoSort),
+      videoTime: this.num(saved.videoTime, d.videoTime),
+      videoMinute: this.num(saved.videoMinute, d.videoMinute),
+      videoRandom: this.num(saved.videoRandom, d.videoRandom),
+      searchTitle: saved.searchTitle != null ? String(saved.searchTitle) : d.searchTitle,
+      commentKeyword: saved.commentKeyword != null ? String(saved.commentKeyword) : d.commentKeyword,
+      zanCommentRate: this.num(saved.zanCommentRate, d.zanCommentRate),
+      replyCommentRate: this.num(saved.replyCommentRate, d.replyCommentRate),
+      privateRate: this.num(saved.privateRate, d.privateRate),
+      focusRate: this.num(saved.focusRate, d.focusRate),
+      firstCommentRate: this.num(saved.firstCommentRate, d.firstCommentRate),
+      intervalSec: this.num(saved.intervalSec, d.intervalSec)
     };
   },
 
@@ -63,47 +67,35 @@ module.exports = {
     let d = this.defaults();
     let src = data || {};
     Storage.putObj(this.key, {
-      enableLike: src.enableLike === true,
-      enableComment: src.enableComment === true,
-      enableDm: src.enableDm === true,
-      likeRate: this.num(src.likeRate, d.likeRate),
-      commentRate: this.num(src.commentRate, d.commentRate),
-      dmRate: this.num(src.dmRate, d.dmRate),
-      intervalSec: this.num(src.intervalSec, d.intervalSec),
-      likeMax: this.num(src.likeMax, d.likeMax),
-      commentMax: this.num(src.commentMax, d.commentMax),
-      dmMax: this.num(src.dmMax, d.dmMax),
-      keywords: String(src.keywords != null ? src.keywords : ''),
-      excludeKeywords: String(src.excludeKeywords != null ? src.excludeKeywords : '')
+      videoSort: this.num(src.videoSort, d.videoSort),
+      videoTime: this.num(src.videoTime, d.videoTime),
+      videoMinute: this.num(src.videoMinute, d.videoMinute),
+      videoRandom: this.num(src.videoRandom, d.videoRandom),
+      searchTitle: String(src.searchTitle != null ? src.searchTitle : ''),
+      commentKeyword: String(src.commentKeyword != null ? src.commentKeyword : ''),
+      zanCommentRate: this.num(src.zanCommentRate, d.zanCommentRate),
+      replyCommentRate: this.num(src.replyCommentRate, d.replyCommentRate),
+      privateRate: this.num(src.privateRate, d.privateRate),
+      focusRate: this.num(src.focusRate, d.focusRate),
+      firstCommentRate: this.num(src.firstCommentRate, d.firstCommentRate),
+      intervalSec: this.num(src.intervalSec, d.intervalSec)
     });
     this.markConfigured();
   },
 
-  lines(text) {
-    let out = [];
-    let arr = String(text || '').split(/\r?\n/);
-    for (let i = 0; i < arr.length; i++) {
-      let s = String(arr[i] || '').trim();
-      if (s) {
-        out.push(s);
-      }
-    }
-    return out;
+  filterConfig() {
+    let p = this.load();
+    return {
+      sort: p.videoSort,
+      time: p.videoTime,
+      minute: p.videoMinute,
+      random: p.videoRandom
+    };
   },
 
   summary() {
     let p = this.load();
-    let parts = [];
-    if (p.enableLike) {
-      parts.push('赞' + p.likeRate + '%');
-    }
-    if (p.enableComment) {
-      parts.push('评' + p.commentRate + '%');
-    }
-    if (p.enableDm) {
-      parts.push('信' + p.dmRate + '%');
-    }
-    let kw = this.lines(p.keywords).length;
-    return (parts.length ? parts.join(' · ') : '功能全关') + ' · 词' + kw + '个 · 间隔' + p.intervalSec + 's';
+    let title = String(p.searchTitle || '').trim() || '未填搜索词';
+    return title + ' · 间隔' + p.intervalSec + 's';
   }
 };
