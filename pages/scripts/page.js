@@ -35,7 +35,7 @@ Page({
     let all = scripts.load();
     let filter = this.data.filter || 'all';
     let shown = [];
-    for (let i = 0; i < all.length; i++) {
+    for (let i = all.length - 1; i >= 0; i--) {
       if (filter !== 'all' && all[i].type !== filter) {
         continue;
       }

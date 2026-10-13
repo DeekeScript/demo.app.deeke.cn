@@ -55,7 +55,7 @@ Page({
       this.toast({ text: msg, duration: 'long' });
       return;
     }
-    this.setData({ hint: '正在分享：' + (item.title || name) });
+    this.setData({ hint: '' });
     this.toast('请选择要分享到的应用');
   },
 
