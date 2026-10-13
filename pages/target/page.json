@@ -7,18 +7,18 @@
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 12
+    "padding": 10
   },
   "body": [
     {
       "type": "card",
       "showIf": "showEmpty",
       "style": {
-        "padding": 16,
+        "padding": 12,
         "gap": 6,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -31,11 +31,11 @@
       "type": "card",
       "showIf": "showMain",
       "style": {
-        "padding": 16,
+        "padding": 12,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -85,11 +85,11 @@
       "type": "card",
       "showIf": "showVersions",
       "style": {
-        "padding": 14,
+        "padding": 10,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -98,9 +98,10 @@
         {
           "type": "list",
           "bind": "versions",
+          "style": { "gap": 4 },
           "item": {
             "type": "card",
-            "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "#F7FAF9" },
+            "style": { "padding": 10, "radius": 10, "background": "#F7FAF9" },
             "children": [
               {
                 "type": "row",
@@ -146,11 +147,11 @@
       "type": "card",
       "showIf": "showNote",
       "style": {
-        "padding": 14,
+        "padding": 10,
         "gap": 4,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -163,11 +164,11 @@
       "type": "card",
       "showIf": "showMain",
       "style": {
-        "padding": 14,
+        "padding": 10,
         "gap": 4,
         "radius": 12,
         "background": "#FFF8F0",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#F0E0C8"
       },
@@ -180,7 +181,7 @@
       "type": "card",
       "showIf": "showMain",
       "style": {
-        "padding": 14,
+        "padding": 10,
         "gap": 4,
         "radius": 12,
         "background": "#FFFFFF",

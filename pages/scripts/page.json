@@ -3,16 +3,23 @@
     "text": "话术",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#0B6E6A",
+    "right": [
+      {
+        "icon": "img/add.svg",
+        "text": "添加",
+        "onTap": "onOpenAdd"
+      }
+    ]
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 12
+    "padding": 10
   },
   "body": [
     {
       "type": "row",
-      "style": { "gap": 8, "valign": "center", "marginBottom": 8 },
+      "style": { "gap": 8, "valign": "center", "marginBottom": 5 },
       "children": [
         {
           "type": "button",
@@ -34,29 +41,22 @@
           "size": "sm",
           "onTap": "onFilterComment",
           "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 8 }
-        },
-        { "type": "space", "style": { "weight": 1 } },
-        {
-          "type": "image",
-          "src": "img/add.svg",
-          "onTap": "onOpenAdd",
-          "style": { "width": 26, "height": 26 }
         }
       ]
     },
     {
       "type": "column",
-      "style": { "gap": 8 },
+      "style": { "gap": 4 },
       "children": [
         {
           "type": "list",
           "bind": "rows",
+          "style": { "gap": 4 },
           "item": {
             "type": "card",
             "style": {
-              "padding": 12,
-              "marginBottom": 8,
-              "radius": 12,
+              "padding": 10,
+              "radius": 10,
               "background": "#FFFFFF",
               "borderWidth": 1,
               "borderColor": "#E2EAEA"
@@ -95,7 +95,7 @@
           "type": "card",
           "showIf": "empty",
           "style": {
-            "padding": 28,
+            "padding": 18,
             "gap": 6,
             "radius": 12,
             "background": "#FFFFFF",
@@ -137,7 +137,7 @@
     {
       "showIf": "addOpen",
       "position": "bottom",
-      "style": { "radius": 16, "background": "#FFFFFF", "padding": 14, "gap": 12 },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 10, "gap": 8 },
       "body": [
         {
           "type": "row",

@@ -7,17 +7,17 @@
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 12
+    "padding": 10
   },
   "body": [
     {
       "type": "card",
       "style": {
-        "padding": 12,
+        "padding": 10,
         "gap": 6,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -48,11 +48,11 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
-        "gap": 12,
+        "padding": 12,
+        "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -134,11 +134,11 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
+        "padding": 12,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -178,11 +178,11 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
+        "padding": 12,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -208,7 +208,7 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
+        "padding": 12,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
@@ -262,7 +262,7 @@
       "showIf": "guideOpen",
       "position": "center",
       "width": "88%",
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 14, "gap": 10, "height": "wrap" },
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10, "gap": 6, "height": "wrap" },
       "body": [
         {
           "type": "row",
@@ -284,7 +284,7 @@
         },
         {
           "type": "column",
-          "style": { "background": "#F7FAF9", "radius": 10, "padding": 12, "gap": 8, "borderWidth": 1, "borderColor": "#E2EAEA" },
+          "style": { "background": "#F7FAF9", "radius": 10, "padding": 10, "gap": 8, "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
             {
               "type": "text",
@@ -293,7 +293,7 @@
             },
             {
               "type": "row",
-              "style": { "valign": "center", "gap": 8, "background": "#FFFFFF", "radius": 8, "padding": 12 },
+              "style": { "valign": "center", "gap": 8, "background": "#FFFFFF", "radius": 8, "padding": 10 },
               "children": [
                 {
                   "type": "text",
@@ -324,7 +324,7 @@
       "title": "{{updateTitle}}",
       "width": "88%",
       "closeOnMask": false,
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 14 },
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10 },
       "body": [
         { "type": "notice", "text": "{{updateVersionLine}}" },
         { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },

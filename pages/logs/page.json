@@ -7,17 +7,17 @@
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 12
+    "padding": 10
   },
   "body": [
     {
       "type": "card",
       "style": {
-        "padding": 14,
+        "padding": 10,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 8,
+        "marginBottom": 5,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -43,7 +43,7 @@
     {
       "type": "card",
       "style": {
-        "padding": 12,
+        "padding": 10,
         "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
@@ -54,13 +54,13 @@
         {
           "type": "list",
           "bind": "files",
+          "style": { "gap": 4 },
           "item": {
             "type": "row",
             "style": {
               "valign": "center",
               "gap": 8,
               "padding": 10,
-              "marginBottom": 6,
               "radius": 8,
               "background": "#F7FAF9",
               "borderWidth": 1,

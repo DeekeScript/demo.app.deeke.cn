@@ -9,7 +9,7 @@
   "body": [
     {
       "type": "column",
-      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 12 },
+      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
       "children": [
         {
           "type": "row",
@@ -38,12 +38,12 @@
     },
     {
       "type": "column",
-      "style": { "padding": 12, "gap": 8 },
+      "style": { "padding": 10, "gap": 8 },
       "children": [
         {
           "type": "card",
           "style": {
-            "padding": 12,
+            "padding": 10,
             "gap": 4,
             "radius": 12,
             "background": "#E8F6F4",
@@ -58,7 +58,7 @@
         {
           "type": "card",
           "showIf": "isFree",
-          "style": { "padding": 14, "gap": 4, "radius": 12, "background": "#E8F6F4", "borderWidth": 1, "borderColor": "#D5EBE8" },
+          "style": { "padding": 10, "gap": 4, "radius": 12, "background": "#E8F6F4", "borderWidth": 1, "borderColor": "#D5EBE8" },
           "children": [
             { "type": "title", "text": "免费使用", "style": { "color": "#0B6E6A" } },
             { "type": "notice", "text": "{{freeHint}}" }
@@ -68,12 +68,12 @@
           "type": "list",
           "bind": "plans",
           "showIf": "showPlans",
+          "style": { "gap": 4 },
           "item": {
             "type": "card",
             "onTap": "onSelectPlan",
             "style": {
-              "padding": 14,
-              "marginBottom": 8,
+              "padding": 10,
               "radius": 12,
               "background": "{{item.cardBg}}",
               "borderColor": "{{item.borderColor}}",
@@ -107,7 +107,7 @@
       "showIf": "showPayActions",
       "style": {
         "sticky": "bottom",
-        "padding": 12,
+        "padding": 10,
         "gap": 8,
         "background": "#FFFFFF",
         "borderTopWidth": 1,
@@ -194,7 +194,7 @@
       "showIf": "activateOpen",
       "position": "bottom",
       "title": "激活码",
-      "style": { "radius": 16, "background": "#FFFFFF", "padding": 12 },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 10 },
       "body": [
         {
           "type": "column",
@@ -248,7 +248,7 @@
       "showIf": "qrOpen",
       "position": "center",
       "width": "86%",
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 12, "gap": 10, "height": "wrap", "align": "center" },
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10, "gap": 6, "height": "wrap", "align": "center" },
       "body": [
         {
           "type": "row",

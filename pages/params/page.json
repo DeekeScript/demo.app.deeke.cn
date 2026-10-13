@@ -7,18 +7,18 @@
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 12
+    "padding": 10
   },
   "body": [
     {
       "type": "card",
       "style": {
-        "padding": 16,
-        "paddingBottom": 14,
-        "gap": 10,
+        "padding": 12,
+        "paddingBottom": 10,
+        "gap": 6,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -33,11 +33,11 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
-        "gap": 12,
+        "padding": 12,
+        "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -93,11 +93,11 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
-        "gap": 12,
+        "padding": 12,
+        "gap": 8,
         "radius": 12,
         "background": "#FFFFFF",
-        "marginBottom": 10,
+        "marginBottom": 4,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
@@ -142,8 +142,8 @@
     {
       "type": "card",
       "style": {
-        "padding": 16,
-        "gap": 10,
+        "padding": 12,
+        "gap": 6,
         "radius": 12,
         "background": "#FFFFFF",
         "borderWidth": 1,
