@@ -33,6 +33,7 @@ Page({
     activateBoundHint: '当前设备已绑定激活码',
     showActivateCode: false,
     showActivateForm: true,
+    pendingPricingRefresh: false,
     qrOpen: false,
     qrImage: '',
     qrStatus: '等待支付…',
@@ -56,8 +57,17 @@ Page({
       savedActivationCode: code,
       showActivateCode: !!code,
       showActivateForm: !code,
-      activateBoundHint: code ? '当前设备已绑定激活码' : ''
+      activateBoundHint: code ? '当前设备已绑定激活码' : '',
+      activateTip: ''
     });
+  },
+
+  flushPendingPricing() {
+    if (!this.data.pendingPricingRefresh) {
+      return;
+    }
+    this.setData({ pendingPricingRefresh: false });
+    this.loadPricing({ quiet: true, skipActivatePanel: true });
   },
 
   onLoad() {
@@ -66,6 +76,7 @@ Page({
 
   onShow() {
     this.syncActivatePanel();
+    this.flushPendingPricing();
   },
 
   onBack() {
@@ -74,6 +85,7 @@ Page({
 
   onOpenActivate() {
     // 打开前再拉一次状态，失效后不再展示旧激活码
+    this.flushPendingPricing();
     activation.checkOnline();
     this.syncActivatePanel();
     this.setData({ activateOpen: true, activateTip: '' });
@@ -568,10 +580,7 @@ Page({
       this.toast({ text: '请输入激活码', duration: 'long' });
       return;
     }
-    this.setData({ activateTip: '正在激活…' });
-    this.showLoading('正在激活…');
     let res = api.activate({ activation_code: code });
-    this.hideLoading();
     if (!res.ok) {
       let msg = res.message || '激活失败';
       this.setData({ activateTip: msg });
@@ -581,16 +590,17 @@ Page({
     let payload = res.data || {};
     payload.activationCode = code;
     activation.saveCache(payload);
-    // 先静默刷新价格（不再 sync 弹窗），再一次性切到已绑定视图，避免弹窗刷两次
-    this.loadPricing({ quiet: true, skipActivatePanel: true });
+    let st = activation.formatStatus(payload);
+    // 切回最初交互：隐藏输入，展示激活码；不 Loading、不重开弹窗、不立刻 loadPricing，减轻闪动
     this.setData({
       activationCode: '',
       activateTip: '',
-      activateOpen: true,
       savedActivationCode: code,
       showActivateCode: true,
       showActivateForm: false,
-      activateBoundHint: '激活成功，当前设备已绑定激活码'
+      activateBoundHint: '激活成功，当前设备已绑定激活码',
+      activationHint: st.text + ' · ' + st.detail,
+      pendingPricingRefresh: true
     });
     this.toast({ text: '激活成功', duration: 'long' });
   }

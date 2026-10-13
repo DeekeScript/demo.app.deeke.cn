@@ -99,12 +99,6 @@
           }
         },
         { "type": "empty", "text": "暂无可用套餐", "showIf": "plansEmpty" },
-        {
-          "type": "notice",
-          "showIf": "showPayActions",
-          "text": "支付由支付宝完成，本应用不存储支付密码",
-          "style": { "color": "#7A8A88" }
-        },
         { "type": "space", "height": 12 }
       ]
     },
