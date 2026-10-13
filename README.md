@@ -15,14 +15,14 @@
 |------|------|
 | 首页 | 开通状态、权限摘要、开始运行（先检测支付/无障碍/悬浮窗） |
 | 话术 | 私信 / 评论总开关 + 列表启停 |
-| 开通 | 月卡/年卡等套餐、支付宝调起、扫码支付、激活码 |
+| 开通 | 月卡/年卡等套餐、优惠码预览/下单、支付宝调起、扫码支付、激活码 |
 | 我的 | 省电/高耗电、无障碍教程、**检查/下载更新**、设备号 |
 
 ## 接口（已有，无需补后端）
 
-- `GET /app/tools/{code}/pricing`
+- `GET /app/tools/{code}/pricing`（可选 `?coupon=` 预览券后价）
 - `POST /app/activation/check`
-- `POST /app/orders`（`channel`: `app` / `qr` / `h5`）
+- `POST /app/orders`（`channel`: `app` / `qr` / `h5`，可选 `coupon`）
 - `GET /app/orders/{orderNo}`
 - `POST /app/activate`
 - `GET /app/update/check`、`GET /app/update/download/{code}/{versionCode?}`

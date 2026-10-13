@@ -143,9 +143,14 @@ module.exports = {
     return this.parse(raw, u);
   },
 
-  pricing() {
+  pricing(coupon) {
     let id = encode(device.getDeviceId());
-    return this.get('/app/tools/' + config.toolCode + '/pricing?device_id=' + id);
+    let q = '/app/tools/' + config.toolCode + '/pricing?device_id=' + id;
+    let code = String(coupon || '').trim();
+    if (code) {
+      q += '&coupon=' + encode(code);
+    }
+    return this.get(q);
   },
 
   checkActivation() {
@@ -169,14 +174,19 @@ module.exports = {
     return this.post('/app/activate', body);
   },
 
-  createOrder(plan, channel) {
-    return this.post('/app/orders', {
+  createOrder(plan, channel, coupon) {
+    let body = {
       code: config.toolCode,
       plan: plan,
       device_id: device.getDeviceId(),
       pay_method: 'alipay',
       channel: channel || 'app'
-    });
+    };
+    let code = String(coupon || '').trim();
+    if (code) {
+      body.coupon = code;
+    }
+    return this.post('/app/orders', body);
   },
 
   getOrder(orderNo) {

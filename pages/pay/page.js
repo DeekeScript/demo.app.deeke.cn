@@ -13,10 +13,19 @@ Page({
     plansEmpty: false,
     showPayActions: false,
     showMock: false,
+    showCouponBox: false,
     plans: [],
     selectedPlan: '',
     selectedPlanName: '',
     selectedPrice: '-',
+    selectedCouponLine: '',
+    hasSelectedCouponLine: false,
+    couponCode: '',
+    couponApplied: '',
+    couponHint: '',
+    hasCouponHint: false,
+    showCouponApply: true,
+    showCouponClear: false,
     activationCode: '',
     activateOpen: false,
     activateTip: '',
@@ -29,6 +38,10 @@ Page({
     qrStatus: '等待支付…',
     pendingOrderNo: '',
     polling: false
+  },
+
+  currentCoupon() {
+    return String(this.data.couponApplied || '').trim();
   },
 
   syncActivatePanel() {
@@ -76,6 +89,65 @@ Page({
     this.toast('已复制激活码');
   },
 
+  onApplyCoupon() {
+    let code = String(this.data.couponCode || '').trim();
+    if (!code) {
+      this.toast('请输入优惠码');
+      return;
+    }
+    this.setData({ couponApplied: code });
+    this.loadPricing();
+  },
+
+  onClearCoupon() {
+    this.setData({
+      couponCode: '',
+      couponApplied: '',
+      couponHint: '',
+      hasCouponHint: false,
+      showCouponApply: true,
+      showCouponClear: false,
+      selectedCouponLine: '',
+      hasSelectedCouponLine: false
+    });
+    this.loadPricing();
+  },
+
+  buildPlanSub(p, payPrice) {
+    let sub = (p.days || '') + ' 天';
+    if (p.originalPrice) {
+      sub += ' · 原价 ¥' + p.originalPrice;
+    }
+    if (p.dailyPrice != null && p.couponPrice == null) {
+      sub += ' · 约 ¥' + p.dailyPrice + '/天';
+    }
+    if (p.couponPrice != null && p.couponDiscount != null) {
+      sub += ' · 已减 ¥' + p.couponDiscount;
+    } else if (p.couponError) {
+      sub += ' · ' + (p.couponMessage || '本套餐不可用此券');
+    }
+    if (p.price != null && payPrice != null && Number(payPrice) !== Number(p.price) && !p.couponError) {
+      sub = '原价 ¥' + p.price + (sub ? ' · ' + sub : '');
+    }
+    return sub;
+  },
+
+  selectedCouponLineOf(item) {
+    if (item && item.discount != null && item.listPrice != null) {
+      return '优惠后实付 ¥' + item.price + '（已减 ¥' + item.discount + '）';
+    }
+    return '';
+  },
+
+  toastOrderError(res) {
+    let err = res && res.error ? String(res.error) : '';
+    if (err.indexOf('COUPON_') === 0) {
+      this.toast(res.message || '优惠码不可用，请更换或清除后重试');
+      return;
+    }
+    this.toast((res && res.message) || '下单失败');
+  },
+
   loadPricing(opt) {
     opt = opt || {};
     let quiet = !!opt.quiet;
@@ -83,14 +155,16 @@ Page({
     if (!quiet) {
       this.showLoading('加载中…');
     }
-    let res = api.pricing();
+    let coupon = this.currentCoupon();
+    let res = api.pricing(coupon);
     if (!res.ok) {
       this.setData({
         toolName: '价格加载失败',
         activationHint: (res.message || '请检查网络与工具编号') + (res.url ? ('\n' + res.url) : ''),
         showPlans: false,
         plansEmpty: true,
-        showPayActions: false
+        showPayActions: false,
+        showCouponBox: false
       });
       if (!quiet) {
         this.hideLoading();
@@ -131,7 +205,8 @@ Page({
         showPlans: false,
         plansEmpty: false,
         showPayActions: false,
-        showMock: false
+        showMock: false,
+        showCouponBox: false
       });
       if (!skipActivatePanel) {
         this.syncActivatePanel();
@@ -141,6 +216,27 @@ Page({
       }
       return;
     }
+
+    let couponInfo = data.coupon || null;
+    let couponHint = '';
+    let couponOk = false;
+    if (coupon) {
+      if (couponInfo && couponInfo.valid) {
+        couponOk = true;
+        couponHint = (couponInfo.name || couponInfo.code || coupon) + ' 已生效';
+        if (couponInfo.type === 'percent' && couponInfo.value != null) {
+          couponHint += '（' + couponInfo.value + ' 折）';
+        } else if (couponInfo.type === 'amount' && couponInfo.value != null) {
+          couponHint += '（立减 ¥' + couponInfo.value + '）';
+        }
+      } else {
+        couponHint = (couponInfo && (couponInfo.message || couponInfo.error)) || '优惠码无效';
+        this.setData({ couponApplied: '' });
+        coupon = '';
+        this.toast(couponHint);
+      }
+    }
+
     let plans = [];
     let raw = data.plans || [];
     let selected = this.data.selectedPlan;
@@ -149,20 +245,16 @@ Page({
       if (!p || !p.available) {
         continue;
       }
-      let price = p.couponPrice != null ? p.couponPrice : p.price;
-      let sub = (p.days || '') + ' 天';
-      if (p.originalPrice) {
-        sub += ' · 原价 ¥' + p.originalPrice;
-      }
-      if (p.dailyPrice != null) {
-        sub += ' · 约 ¥' + p.dailyPrice + '/天';
-      }
+      let hasCouponPrice = couponOk && p.couponPrice != null && !p.couponError;
+      let price = hasCouponPrice ? p.couponPrice : p.price;
       let active = selected ? selected === p.plan : plans.length === 0;
       plans.push({
         plan: p.plan,
         name: p.name || p.plan,
-        sub: sub,
+        sub: this.buildPlanSub(p, price),
         price: price,
+        listPrice: p.price,
+        discount: hasCouponPrice ? p.couponDiscount : null,
         priceText: '¥' + price,
         cardBg: active ? '#E8F6F4' : '#FFFFFF',
         borderColor: active ? '#0B6E6A' : '#E6EEEE'
@@ -177,6 +269,7 @@ Page({
         selectedItem = plans[j];
       }
     }
+    let selectedCouponLine = this.selectedCouponLineOf(selectedItem);
     this.setData({
       toolName: data.name || config.toolCode,
       activationHint: st.text + ' · ' + st.detail,
@@ -185,10 +278,17 @@ Page({
       plansEmpty: plans.length === 0,
       showPayActions: plans.length > 0,
       showMock: showMock,
+      showCouponBox: true,
       plans: plans,
       selectedPlan: selectedItem ? selectedItem.plan : '',
       selectedPlanName: selectedItem ? selectedItem.name : '',
       selectedPrice: selectedItem ? selectedItem.price : '-',
+      selectedCouponLine: selectedCouponLine,
+      hasSelectedCouponLine: !!selectedCouponLine,
+      couponHint: couponHint,
+      hasCouponHint: !!couponHint,
+      showCouponApply: !couponOk,
+      showCouponClear: couponOk,
       canApp: canApp,
       canQr: canQr
     });
@@ -206,6 +306,7 @@ Page({
       return;
     }
     let plans = (this.data.plans || []).slice();
+    let selectedItem = null;
     for (let i = 0; i < plans.length; i++) {
       let active = plans[i].plan === item.plan;
       plans[i] = {
@@ -213,16 +314,24 @@ Page({
         name: plans[i].name,
         sub: plans[i].sub,
         price: plans[i].price,
+        listPrice: plans[i].listPrice,
+        discount: plans[i].discount,
         priceText: plans[i].priceText,
         cardBg: active ? '#E8F6F4' : '#FFFFFF',
         borderColor: active ? '#0B6E6A' : '#E6EEEE'
       };
+      if (active) {
+        selectedItem = plans[i];
+      }
     }
+    let selectedCouponLine = this.selectedCouponLineOf(selectedItem);
     this.setData({
       plans: plans,
       selectedPlan: item.plan,
       selectedPlanName: item.name,
-      selectedPrice: item.price
+      selectedPrice: item.price,
+      selectedCouponLine: selectedCouponLine,
+      hasSelectedCouponLine: !!selectedCouponLine
     });
   },
 
@@ -287,10 +396,11 @@ Page({
       return;
     }
     this.showLoading('正在调起支付宝…');
-    let res = api.createOrder(plan, 'app');
+    let coupon = this.currentCoupon();
+    let res = api.createOrder(plan, 'app', coupon);
     if (!res.ok) {
       this.hideLoading();
-      this.toast(res.message || '下单失败');
+      this.toastOrderError(res);
       return;
     }
     let pay = (res.data && res.data.payParams) || {};
@@ -344,11 +454,12 @@ Page({
     // 先用整页 loading，下单完成后再一次性打开弹窗，避免弹窗二次 setData 闪一下
     this.showLoading('生成二维码…');
     let self = this;
+    let coupon = this.currentCoupon();
     setTimeout(function () {
-      let res = api.createOrder(plan, 'qr');
+      let res = api.createOrder(plan, 'qr', coupon);
       if (!res.ok) {
         self.hideLoading();
-        self.toast(res.message || '下单失败');
+        self.toastOrderError(res);
         return;
       }
       let pay = (res.data && res.data.payParams) || {};
@@ -394,15 +505,20 @@ Page({
     if (!plan) {
       return;
     }
-    let mockOrder = api.post('/app/orders', {
+    let body = {
       code: config.toolCode,
       plan: plan,
       device_id: device.getDeviceId(),
       pay_method: 'mock',
       channel: 'app'
-    });
+    };
+    let coupon = this.currentCoupon();
+    if (coupon) {
+      body.coupon = coupon;
+    }
+    let mockOrder = api.post('/app/orders', body);
     if (!mockOrder.ok) {
-      this.toast(mockOrder.message || '模拟下单失败');
+      this.toastOrderError(mockOrder);
       return;
     }
     let orderNo = mockOrder.data.orderNo || mockOrder.data.order_no;
