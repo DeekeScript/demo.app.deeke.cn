@@ -2,6 +2,7 @@ let permission = require('../common/permission.js');
 let activation = require('../common/activation.js');
 let scripts = require('../common/scripts.js');
 let params = require('../common/params.js');
+let logger = require('../common/logger.js');
 
 let task = {
   pickOne(list) {
@@ -25,14 +26,14 @@ let task = {
 
   run() {
     if (!permission.ensureRun()) {
-      console.log('rpa: 权限未就绪');
+      logger.warn('rpa', '权限未就绪');
       Engines.closeAll();
       return;
     }
 
     let paid = activation.ensurePaid();
     if (!paid.ok) {
-      console.log('rpa: 未开通 - ' + (paid.message || ''));
+      logger.warn('rpa', '未开通 - ' + (paid.message || ''));
       Engines.closeAll();
       return;
     }
@@ -44,33 +45,37 @@ let task = {
     let excludes = params.lines(conf.excludeKeywords);
     let waitMs = Math.max(1, conf.intervalSec || 1) * 1000;
 
-    console.log('rpa: 开始（demo 占位）');
-    console.log('rpa: 参数 ' + params.summary());
-    console.log('rpa: 关键词=' + keywords.length + ' 排除=' + excludes.length);
-    console.log('rpa: 私信话术=' + dmTexts.length + ' 评论话术=' + commentTexts.length);
+    logger.info('rpa', '开始（demo 占位）');
+    logger.info('rpa', '参数 ' + params.summary());
+    logger.info('rpa', '关键词=' + keywords.length + ' 排除=' + excludes.length);
+    logger.info('rpa', '私信话术=' + dmTexts.length + ' 评论话术=' + commentTexts.length);
 
-    if (conf.enableLike && this.hit(conf.likeRate)) {
-      console.log('rpa: 点赞（上限 ' + conf.likeMax + '）');
-      System.sleep(waitMs);
-    } else {
-      console.log('rpa: 跳过点赞');
+    try {
+      if (conf.enableLike && this.hit(conf.likeRate)) {
+        logger.info('rpa', '点赞（上限 ' + conf.likeMax + '）');
+        System.sleep(waitMs);
+      } else {
+        logger.info('rpa', '跳过点赞');
+      }
+
+      if (conf.enableComment && this.hit(conf.commentRate) && commentTexts.length) {
+        logger.info('rpa', '评论 → ' + this.pickOne(commentTexts) + '（上限 ' + conf.commentMax + '）');
+        System.sleep(waitMs);
+      } else {
+        logger.info('rpa', '跳过评论');
+      }
+
+      if (conf.enableDm && this.hit(conf.dmRate) && dmTexts.length) {
+        logger.info('rpa', '私信 → ' + this.pickOne(dmTexts) + '（上限 ' + conf.dmMax + '）');
+        System.sleep(waitMs);
+      } else {
+        logger.info('rpa', '跳过私信');
+      }
+
+      logger.info('rpa', 'demo 结束');
+    } catch (e) {
+      logger.error('rpa', '异常: ' + ((e && e.message) || e));
     }
-
-    if (conf.enableComment && this.hit(conf.commentRate) && commentTexts.length) {
-      console.log('rpa: 评论 → ' + this.pickOne(commentTexts) + '（上限 ' + conf.commentMax + '）');
-      System.sleep(waitMs);
-    } else {
-      console.log('rpa: 跳过评论');
-    }
-
-    if (conf.enableDm && this.hit(conf.dmRate) && dmTexts.length) {
-      console.log('rpa: 私信 → ' + this.pickOne(dmTexts) + '（上限 ' + conf.dmMax + '）');
-      System.sleep(waitMs);
-    } else {
-      console.log('rpa: 跳过私信');
-    }
-
-    console.log('rpa: demo 结束');
     Engines.closeAll();
   }
 };

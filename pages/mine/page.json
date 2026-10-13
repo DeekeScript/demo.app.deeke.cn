@@ -63,14 +63,20 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
+            { "type": "image", "src": "img/perm_access.svg", "style": { "width": 20, "height": 20 } },
             { "type": "text", "text": "无障碍", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A" } },
-            { "type": "tag", "text": "{{accessText}}", "style": { "background": "{{accessBg}}", "color": "{{accessColor}}", "radius": 4 } },
+            {
+              "type": "text",
+              "text": "{{accessText}}",
+              "style": { "fontSize": 12, "color": "{{accessColor}}" }
+            },
             {
               "type": "button",
               "text": "去开启",
               "size": "sm",
+              "showIf": "showAccessBtn",
               "onTap": "onOpenGuide",
-              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         },
@@ -78,21 +84,28 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
+            { "type": "image", "src": "img/perm_float.svg", "style": { "width": 20, "height": 20 } },
             { "type": "text", "text": "悬浮窗", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A" } },
-            { "type": "tag", "text": "{{floatText}}", "style": { "background": "{{floatBg}}", "color": "{{floatColor}}", "radius": 4 } },
+            {
+              "type": "text",
+              "text": "{{floatText}}",
+              "style": { "fontSize": 12, "color": "{{floatColor}}" }
+            },
             {
               "type": "button",
               "text": "去开启",
               "size": "sm",
+              "showIf": "showFloatBtn",
               "onTap": "onOpenFloat",
-              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         },
         {
           "type": "row",
-          "style": { "valign": "center", "gap": 8 },
+          "style": { "valign": "top", "gap": 8 },
           "children": [
+            { "type": "image", "src": "img/perm_battery.svg", "style": { "width": 20, "height": 20, "marginTop": 1 } },
             {
               "type": "column",
               "style": { "weight": 1, "gap": 2 },
@@ -102,9 +115,9 @@
               ]
             },
             {
-              "type": "tag",
+              "type": "text",
               "text": "{{batteryText}}",
-              "style": { "background": "{{batteryBg}}", "color": "{{batteryColor}}", "radius": 4 }
+              "style": { "fontSize": 12, "color": "{{batteryColor}}" }
             },
             {
               "type": "button",
@@ -112,7 +125,7 @@
               "size": "sm",
               "onTap": "onBattery",
               "showIf": "showBatteryBtn",
-              "style": { "background": "#FFF8F0", "color": "#8A5A20", "radius": 8 }
+              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         }
@@ -204,7 +217,7 @@
       },
       "children": [
         { "type": "text", "text": "设备信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        { "type": "notice", "text": "售后请提供设备号信息" },
+        { "type": "notice", "text": "售后请提供设备号和日志信息" },
         {
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
@@ -225,6 +238,20 @@
           "children": [
             { "type": "text", "text": "工具编号", "style": { "fontSize": 13, "color": "#7A8A88" } },
             { "type": "text", "text": "{{toolCode}}", "style": { "weight": 1, "fontSize": 13, "color": "#1A2B2A" } }
+          ]
+        },
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "诊断日志", "style": { "weight": 1, "fontSize": 13, "color": "#1A2B2A" } },
+            {
+              "type": "button",
+              "text": "查看 / 导出",
+              "size": "sm",
+              "onTap": "onGoLogs",
+              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
+            }
           ]
         }
       ]

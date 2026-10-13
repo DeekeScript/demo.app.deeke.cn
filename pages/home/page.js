@@ -5,6 +5,7 @@ let update = require('../../common/update.js');
 let guide = require('../../common/guide.js');
 let protocol = require('../../common/protocol.js');
 let target = require('../../common/target.js');
+let logger = require('../../common/logger.js');
 
 Page({
   data: {
@@ -213,15 +214,18 @@ Page({
 
   onRun() {
     if (!this.data.agreeProtocol) {
+      logger.warn('run', '未勾选用户协议');
       this.setData({ agreeTipOpen: true });
       return;
     }
     if (!params.hasConfigured()) {
+      logger.warn('run', '首次未完成设置');
       this.setData({ paramsDialogOpen: true });
       return;
     }
     let paid = activation.ensurePaid();
     if (!paid.ok) {
+      logger.warn('run', '激活检查失败: ' + (paid.message || ''));
       if (paid.needPay) {
         this.setData({
           payDialogOpen: true,
@@ -237,6 +241,7 @@ Page({
       if (ready.hasTarget && ready.needAction) {
         let tip = ready.message || '请先安装适配的目标 App 版本';
         tip += '。安装后请关闭应用市场自动更新，防止版本被升级。';
+        logger.warn('run', tip);
         this.setData({
           targetDialogOpen: true,
           targetDialogText: tip
@@ -244,16 +249,20 @@ Page({
         return;
       }
     } else {
+      logger.info('run', '用户选择仍要运行（跳过适配检测）');
       this.setData({ skipTargetGate: false });
     }
     if (!Access.isAccessibilityServiceEnabled()) {
+      logger.warn('run', '无障碍未开启');
       this.setData({ guideOpen: true });
       return;
     }
     if (!Access.isFloatWindowsEnabled()) {
+      logger.warn('run', '悬浮窗未开启');
       permission.ensureFloat();
       return;
     }
+    logger.info('run', '启动 tasks/rpa.js');
     permission.runScript('tasks/rpa.js');
   }
 });

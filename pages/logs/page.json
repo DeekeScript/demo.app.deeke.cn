@@ -1,0 +1,137 @@
+{
+  "title": {
+    "hidden": true
+  },
+  "style": {
+    "background": "#EEF2F1",
+    "padding": 0
+  },
+  "body": [
+    {
+      "type": "column",
+      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
+      "children": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "image",
+              "src": "img/back.svg",
+              "onTap": "onBack",
+              "style": { "width": 26, "height": 26 }
+            },
+            {
+              "type": "text",
+              "text": "诊断日志",
+              "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold", "align": "center" }
+            },
+            { "type": "space", "style": { "width": 26 } }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "column",
+      "style": { "padding": 12, "gap": 8 },
+      "children": [
+        {
+          "type": "card",
+          "style": {
+            "padding": 14,
+            "gap": 8,
+            "radius": 12,
+            "background": "#FFFFFF",
+            "borderWidth": 1,
+            "borderColor": "#E2EAEA"
+          },
+          "children": [
+            { "type": "text", "text": "日志文件", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+            { "type": "notice", "text": "按日生成日志文件，可将对应文件分享给客服。" },
+            { "type": "notice", "text": "{{summaryText}}", "style": { "color": "#7A8A88" } },
+            {
+              "type": "button",
+              "text": "清空日志",
+              "size": "sm",
+              "onTap": "onClear",
+              "style": { "background": "#FFF1E8", "color": "#C65A12", "radius": 8, "width": "100%" }
+            },
+            {
+              "type": "notice",
+              "showIf": "hint",
+              "text": "{{hint}}",
+              "style": { "color": "#0B6E6A" }
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "style": {
+            "padding": 12,
+            "gap": 8,
+            "radius": 12,
+            "background": "#FFFFFF",
+            "borderWidth": 1,
+            "borderColor": "#E2EAEA"
+          },
+          "children": [
+            {
+              "type": "list",
+              "bind": "files",
+              "item": {
+                "type": "row",
+                "style": {
+                  "valign": "center",
+                  "gap": 8,
+                  "padding": 10,
+                  "marginBottom": 6,
+                  "radius": 8,
+                  "background": "#F7FAF9",
+                  "borderWidth": 1,
+                  "borderColor": "#E2EAEA"
+                },
+                "children": [
+                  {
+                    "type": "column",
+                    "style": { "weight": 1, "gap": 2 },
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "{{item.title}}",
+                        "style": { "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
+                      },
+                      {
+                        "type": "notice",
+                        "text": "{{item.detail}}",
+                        "style": { "color": "#7A8A88" }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "button",
+                    "text": "分享",
+                    "size": "sm",
+                    "onTap": "onShareFile",
+                    "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+                  }
+                ]
+              }
+            },
+            { "type": "empty", "text": "暂无日志文件", "showIf": "empty" }
+          ]
+        },
+        {
+          "type": "dialog",
+          "showIf": "clearConfirmOpen",
+          "title": "清空日志",
+          "text": "确定清空全部日志文件吗？此操作不可恢复。",
+          "confirmText": "清空",
+          "cancelText": "取消",
+          "onConfirm": "onConfirmClear",
+          "onCancel": "onCancelClear",
+          "style": { "color": "#0B6E6A" }
+        }
+      ]
+    }
+  ]
+}

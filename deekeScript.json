@@ -10,6 +10,7 @@
     { "id": "params", "file": "pages/params", "title": "设置" },
     { "id": "pay", "file": "pages/pay", "title": "激活APP" },
     { "id": "target", "file": "pages/target", "title": "适配下载" },
+    { "id": "logs", "file": "pages/logs", "title": "诊断日志" },
     { "id": "mine", "file": "pages/mine", "title": "我的" }
   ],
   "bottomMenus": [

@@ -13,12 +13,11 @@ Page({
     accessText: '',
     floatText: '',
     batteryText: '',
-    accessBg: '#EEF2F1',
-    accessColor: '#667',
-    floatBg: '#EEF2F1',
-    floatColor: '#667',
-    batteryBg: '#EEF2F1',
-    batteryColor: '#667',
+    accessColor: '#7A8A88',
+    floatColor: '#7A8A88',
+    batteryColor: '#7A8A88',
+    showAccessBtn: true,
+    showFloatBtn: true,
     showBatteryBtn: true,
     deviceId: '',
     supportWechat: '',
@@ -39,11 +38,8 @@ Page({
     guideAppName: guide.appName()
   },
 
-  tagStyle(ok) {
-    if (ok) {
-      return { bg: '#E8F6F4', color: '#0B6E6A' };
-    }
-    return { bg: '#FFF1E8', color: '#C65A12' };
+  statusColor(ok) {
+    return ok ? '#0B6E6A' : '#C65A12';
   },
 
   applyUpdateResult(result, silent) {
@@ -86,9 +82,6 @@ Page({
 
   refresh() {
     let snap = permission.permissionSnapshot();
-    let a = this.tagStyle(snap.accessibility);
-    let f = this.tagStyle(snap.floatWindow);
-    let b = this.tagStyle(!!snap.battery);
     let statusTitle = '检测中…';
     let statusDetail = '';
     let showPayEntry = false;
@@ -111,12 +104,11 @@ Page({
       accessText: snap.accessibilityText,
       floatText: snap.floatText,
       batteryText: snap.batteryText,
-      accessBg: a.bg,
-      accessColor: a.color,
-      floatBg: f.bg,
-      floatColor: f.color,
-      batteryBg: b.bg,
-      batteryColor: b.color,
+      accessColor: this.statusColor(!!snap.accessibility),
+      floatColor: this.statusColor(!!snap.floatWindow),
+      batteryColor: this.statusColor(!!snap.battery),
+      showAccessBtn: !snap.accessibility,
+      showFloatBtn: !snap.floatWindow,
       showBatteryBtn: !snap.battery,
       deviceId: device.getDeviceId(),
       supportWechat: config.supportWechat || 'DeekeScript',
@@ -166,6 +158,10 @@ Page({
   onCopyDevice() {
     System.setClip(device.getDeviceId());
     this.toast('已复制设备号');
+  },
+
+  onGoLogs() {
+    this.navigate({ page: 'pages/logs' });
   },
 
   onCopyWechat() {
