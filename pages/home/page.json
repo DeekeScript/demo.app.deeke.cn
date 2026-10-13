@@ -267,7 +267,7 @@
                 },
                 {
                   "type": "text",
-                  "text": "去开启 >",
+                  "text": "已关闭 >",
                   "style": { "fontSize": 13, "color": "#0B6E6A" }
                 }
               ]
