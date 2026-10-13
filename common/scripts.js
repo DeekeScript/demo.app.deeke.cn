@@ -153,7 +153,13 @@ module.exports = {
   },
 
   summary() {
+    let smart = require('./smartScripts.js');
+    let conf = smart.load();
+    if (conf.mode === 'smart') {
+      let dm = conf.dmSmart ? '智能私信' : '平台私信';
+      return smart.ready() ? 'AI智能话术 · 评论智能 · ' + dm : 'AI智能话术 · 待配置 Key';
+    }
     let c = this.counts();
-    return '共 ' + c.total + ' 条 · 私信 ' + c.dmOn + '/' + c.dm + ' · 评论 ' + c.commentOn + '/' + c.comment;
+    return '自定义话术 · 共 ' + c.total + ' 条 · 私信 ' + c.dmOn + '/' + c.dm + ' · 评论 ' + c.commentOn + '/' + c.comment;
   }
 };

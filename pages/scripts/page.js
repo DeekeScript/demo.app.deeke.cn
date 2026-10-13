@@ -1,4 +1,5 @@
 let scripts = require('../../common/scripts.js');
+let smart = require('../../common/smartScripts.js');
 
 Page({
   data: {
@@ -17,7 +18,170 @@ Page({
     filterDmBg: '#EEF2F1',
     filterDmColor: '#556',
     filterCommentBg: '#EEF2F1',
-    filterCommentColor: '#556'
+    filterCommentColor: '#556',
+    mode: 'platform',
+    showPlatform: true,
+    showSmart: false,
+    modePlatformBg: '#FFFFFF',
+    modePlatformColor: '#0B6E6A',
+    modePlatformSub: '#7A8A88',
+    modeSmartBg: '#E4EEEC',
+    modeSmartColor: '#667',
+    modeSmartSub: '#99A8A6',
+    dmSmart: true,
+    provider: 'deepseek',
+    apiKey: '',
+    model: '',
+    baseUrl: '',
+    industry: 'general',
+    industryCustom: '',
+    showIndustryCustom: false,
+    industryOpts: [],
+    sentenceOpts: [],
+    toneOpts: [],
+    goalOpts: [],
+    personOpts: [],
+    lengthOpts: [],
+    addressOpts: [],
+    emojiOpts: [],
+    approachOpts: [],
+    focusOpts: [],
+    sentence: 'statement',
+    tone: 'sincere',
+    goal: 'interact',
+    person: 'fan',
+    length: 'one',
+    address: 'none',
+    emoji: 'none',
+    approach: 'soft',
+    focus: 'content',
+    showCustomUrl: false,
+    trialInput: '',
+    trialKind: '',
+    trialText: '',
+    showTrial: false,
+    _ready: false
+  },
+
+  modeStyle(mode) {
+    let smartOn = mode === 'smart';
+    return {
+      mode: smartOn ? 'smart' : 'platform',
+      showPlatform: !smartOn,
+      showSmart: smartOn,
+      modePlatformBg: smartOn ? '#E4EEEC' : '#FFFFFF',
+      modePlatformColor: smartOn ? '#667' : '#0B6E6A',
+      modePlatformSub: smartOn ? '#99A8A6' : '#7A8A88',
+      modeSmartBg: smartOn ? '#FFFFFF' : '#E4EEEC',
+      modeSmartColor: smartOn ? '#0B6E6A' : '#667',
+      modeSmartSub: smartOn ? '#7A8A88' : '#99A8A6'
+    };
+  },
+
+  chipList(field, selected) {
+    let list = [];
+    let styles = smart.styles || [];
+    let fieldDef = null;
+    for (let i = 0; i < styles.length; i++) {
+      if (styles[i].key === field) {
+        fieldDef = styles[i];
+        break;
+      }
+    }
+    if (!fieldDef) {
+      return list;
+    }
+    let opts = fieldDef.options || [];
+    for (let i = 0; i < opts.length; i++) {
+      let on = opts[i].value === selected;
+      list.push({
+        field: field,
+        value: opts[i].value,
+        label: opts[i].label,
+        bg: on ? '#0B6E6A' : '#FFFFFF',
+        border: '#0B6E6A',
+        color: on ? '#FFFFFF' : '#334443'
+      });
+    }
+    return list;
+  },
+
+  applySmart(conf) {
+    let c = conf || smart.load();
+    let st = this.modeStyle(c.mode);
+    this.setData({
+      mode: st.mode,
+      showPlatform: st.showPlatform,
+      showSmart: st.showSmart,
+      modePlatformBg: st.modePlatformBg,
+      modePlatformColor: st.modePlatformColor,
+      modePlatformSub: st.modePlatformSub,
+      modeSmartBg: st.modeSmartBg,
+      modeSmartColor: st.modeSmartColor,
+      modeSmartSub: st.modeSmartSub,
+      dmSmart: c.dmSmart !== false,
+      provider: c.provider,
+      apiKey: c.apiKey,
+      model: c.model,
+      baseUrl: c.baseUrl,
+      industry: c.industry,
+      industryCustom: c.industryCustom,
+      showIndustryCustom: c.industry === 'custom',
+      industryOpts: this.chipList('industry', c.industry),
+      sentenceOpts: this.chipList('sentence', c.sentence),
+      toneOpts: this.chipList('tone', c.tone),
+      goalOpts: this.chipList('goal', c.goal),
+      personOpts: this.chipList('person', c.person),
+      lengthOpts: this.chipList('length', c.length),
+      addressOpts: this.chipList('address', c.address),
+      emojiOpts: this.chipList('emoji', c.emoji),
+      approachOpts: this.chipList('approach', c.approach),
+      focusOpts: this.chipList('focus', c.focus),
+      sentence: c.sentence,
+      tone: c.tone,
+      goal: c.goal,
+      person: c.person,
+      length: c.length,
+      address: c.address,
+      emoji: c.emoji,
+      approach: c.approach,
+      focus: c.focus,
+      showCustomUrl: c.provider === 'custom'
+    });
+  },
+
+  snapshotSmart(extra) {
+    let d = this.data;
+    let src = extra || {};
+    return {
+      mode: src.mode != null ? src.mode : d.mode,
+      dmSmart: src.dmSmart != null ? src.dmSmart === true : d.dmSmart === true,
+      provider: src.provider != null ? src.provider : d.provider,
+      apiKey: src.apiKey != null ? src.apiKey : d.apiKey,
+      model: src.model != null ? src.model : d.model,
+      baseUrl: src.baseUrl != null ? src.baseUrl : d.baseUrl,
+      agent: '',
+      industry: src.industry != null ? src.industry : d.industry,
+      industryCustom: src.industryCustom != null ? src.industryCustom : d.industryCustom,
+      sentence: src.sentence != null ? src.sentence : d.sentence,
+      tone: src.tone != null ? src.tone : d.tone,
+      goal: src.goal != null ? src.goal : d.goal,
+      person: src.person != null ? src.person : d.person,
+      length: src.length != null ? src.length : d.length,
+      address: src.address != null ? src.address : d.address,
+      emoji: src.emoji != null ? src.emoji : d.emoji,
+      approach: src.approach != null ? src.approach : d.approach,
+      focus: src.focus != null ? src.focus : d.focus
+    };
+  },
+
+  persistSmart(extra) {
+    if (!this.data._ready) {
+      return smart.load();
+    }
+    let next = smart.save(this.snapshotSmart(extra));
+    this.applySmart(next);
+    return next;
   },
 
   filterStyle(active) {
@@ -64,11 +228,84 @@ Page({
   },
 
   onLoad() {
+    this.applySmart(smart.load());
+    this.setData({ _ready: true });
     this.refresh();
   },
 
   onShow() {
+    this.applySmart(smart.load());
+    this.setData({ _ready: true });
     this.refresh();
+  },
+
+  onHide() {
+    this.persistSmart();
+  },
+
+  onModePlatform() {
+    this.persistSmart({ mode: 'platform' });
+  },
+
+  onModeSmart() {
+    this.persistSmart({ mode: 'smart' });
+  },
+
+  onSmartSave(e) {
+    let extra = {};
+    if (e && e.name) {
+      extra[e.name] = e.value;
+    }
+    this.persistSmart(extra);
+  },
+
+  onPickChip(e) {
+    let item = e && e.item ? e.item : null;
+    if (!item || !item.field) {
+      return;
+    }
+    let extra = {};
+    extra[item.field] = item.value;
+    this.persistSmart(extra);
+  },
+
+  onProviderChange(e) {
+    let id = e && e.value != null ? String(e.value) : this.data.provider;
+    let spec = smart.providerOf(id);
+    let extra = { provider: id };
+    if (id !== 'custom' && spec.model) {
+      extra.model = spec.model;
+    }
+    this.persistSmart(extra);
+  },
+
+  trial(kind) {
+    this.persistSmart();
+    if (!smart.ready()) {
+      this.toast('请先填写 API Key 和模型');
+      return;
+    }
+    this.showLoading('正在生成…');
+    let res = smart.generate(kind, this.data.trialInput);
+    this.hideLoading();
+    if (!res.ok) {
+      this.setData({ showTrial: false });
+      this.toast(res.message || '生成失败');
+      return;
+    }
+    this.setData({
+      showTrial: true,
+      trialKind: kind === 'dm' ? '私信预览' : '评论预览',
+      trialText: res.text
+    });
+  },
+
+  onTrialComment() {
+    this.trial('comment');
+  },
+
+  onTrialDm() {
+    this.trial('dm');
   },
 
   onFilterAll() {
@@ -87,6 +324,10 @@ Page({
   },
 
   onOpenAdd() {
+    if (this.data.mode === 'smart') {
+      this.toast('AI智能话术按场景生成，添加固定文案请切回自定义话术');
+      return;
+    }
     this.setData({
       addOpen: true,
       newType: 'dm',
@@ -177,5 +418,3 @@ Page({
     }
   }
 });
-
-
