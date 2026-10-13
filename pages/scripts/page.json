@@ -1,66 +1,53 @@
 {
   "title": {
-    "hidden": true
+    "text": "话术",
+    "fontSize": 17,
+    "color": "#FFFFFF",
+    "background": "#0B6E6A"
   },
   "style": {
     "background": "#EEF2F1",
-    "padding": 0
+    "padding": 12
   },
   "body": [
     {
-      "type": "column",
-      "style": { "background": "#0B6E6A", "padding": 12 },
+      "type": "row",
+      "style": { "gap": 8, "valign": "center", "marginBottom": 8 },
       "children": [
         {
-          "type": "row",
-          "style": { "valign": "center" },
-          "children": [
-            {
-              "type": "text",
-              "text": "话术",
-              "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold" }
-            },
-            {
-              "type": "image",
-              "src": "img/add.svg",
-              "onTap": "onOpenAdd",
-              "style": { "width": 26, "height": 26 }
-            }
-          ]
+          "type": "button",
+          "text": "全部",
+          "size": "sm",
+          "onTap": "onFilterAll",
+          "style": { "background": "{{filterAllBg}}", "color": "{{filterAllColor}}", "radius": 8 }
+        },
+        {
+          "type": "button",
+          "text": "私信",
+          "size": "sm",
+          "onTap": "onFilterDm",
+          "style": { "background": "{{filterDmBg}}", "color": "{{filterDmColor}}", "radius": 8 }
+        },
+        {
+          "type": "button",
+          "text": "评论",
+          "size": "sm",
+          "onTap": "onFilterComment",
+          "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 8 }
+        },
+        { "type": "space", "style": { "weight": 1 } },
+        {
+          "type": "image",
+          "src": "img/add.svg",
+          "onTap": "onOpenAdd",
+          "style": { "width": 26, "height": 26 }
         }
       ]
     },
     {
       "type": "column",
-      "style": { "padding": 12, "gap": 8 },
+      "style": { "gap": 8 },
       "children": [
-        {
-          "type": "row",
-          "style": { "gap": 8, "valign": "center" },
-          "children": [
-            {
-              "type": "button",
-              "text": "全部",
-              "size": "sm",
-              "onTap": "onFilterAll",
-              "style": { "background": "{{filterAllBg}}", "color": "{{filterAllColor}}", "radius": 8 }
-            },
-            {
-              "type": "button",
-              "text": "私信",
-              "size": "sm",
-              "onTap": "onFilterDm",
-              "style": { "background": "{{filterDmBg}}", "color": "{{filterDmColor}}", "radius": 8 }
-            },
-            {
-              "type": "button",
-              "text": "评论",
-              "size": "sm",
-              "onTap": "onFilterComment",
-              "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 8 }
-            }
-          ]
-        },
         {
           "type": "list",
           "bind": "rows",
@@ -118,7 +105,7 @@
           },
           "children": [
             { "type": "text", "text": "暂无话术", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A", "align": "center" } },
-            { "type": "notice", "text": "点击右上角添加，建议先准备私信与评论各若干条" }
+            { "type": "notice", "text": "点右上 + 添加，建议先准备私信与评论各若干条" }
           ]
         }
       ]
