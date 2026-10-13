@@ -7,8 +7,9 @@ let guide = require('../../common/guide.js');
 
 Page({
   data: {
-    statusTitle: '',
+    statusTitle: '检测中…',
     statusDetail: '',
+    showPayEntry: false,
     accessText: '',
     floatText: '',
     batteryText: '',
@@ -88,11 +89,25 @@ Page({
     let a = this.tagStyle(snap.accessibility);
     let f = this.tagStyle(snap.floatWindow);
     let b = this.tagStyle(!!snap.battery);
+    let statusTitle = '检测中…';
+    let statusDetail = '';
+    let showPayEntry = false;
     let online = activation.checkOnline();
-    let st = online.status || activation.formatStatus(activation.readCache());
+    if (!online.ok) {
+      let cache = activation.formatStatus(activation.readCache());
+      statusTitle = cache.text;
+      statusDetail = online.message || cache.detail;
+      showPayEntry = !cache.activated;
+    } else {
+      let st = online.status;
+      statusTitle = st.activated ? st.text : '待激活';
+      statusDetail = st.activated ? st.detail : '激活后才能正常使用本应用';
+      showPayEntry = !st.activated;
+    }
     this.setData({
-      statusTitle: st.text,
-      statusDetail: online.ok ? st.detail : (online.message || st.detail),
+      statusTitle: statusTitle,
+      statusDetail: statusDetail,
+      showPayEntry: showPayEntry,
       accessText: snap.accessibilityText,
       floatText: snap.floatText,
       batteryText: snap.batteryText,

@@ -3,7 +3,7 @@
     "hidden": true
   },
   "style": {
-    "background": "#F3F6F5",
+    "background": "#EEF2F1",
     "padding": 0
   },
   "body": [
@@ -24,7 +24,7 @@
               "type": "image",
               "src": "img/add.svg",
               "onTap": "onOpenAdd",
-              "style": { "width": 28, "height": 28 }
+              "style": { "width": 26, "height": 26 }
             }
           ]
         }
@@ -32,7 +32,7 @@
     },
     {
       "type": "column",
-      "style": { "padding": 12 },
+      "style": { "padding": 12, "gap": 8 },
       "children": [
         {
           "type": "row",
@@ -43,31 +43,37 @@
               "text": "全部",
               "size": "sm",
               "onTap": "onFilterAll",
-              "style": { "background": "{{filterAllBg}}", "color": "{{filterAllColor}}", "radius": 16 }
+              "style": { "background": "{{filterAllBg}}", "color": "{{filterAllColor}}", "radius": 8 }
             },
             {
               "type": "button",
               "text": "私信",
               "size": "sm",
               "onTap": "onFilterDm",
-              "style": { "background": "{{filterDmBg}}", "color": "{{filterDmColor}}", "radius": 16 }
+              "style": { "background": "{{filterDmBg}}", "color": "{{filterDmColor}}", "radius": 8 }
             },
             {
               "type": "button",
               "text": "评论",
               "size": "sm",
               "onTap": "onFilterComment",
-              "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 16 }
+              "style": { "background": "{{filterCommentBg}}", "color": "{{filterCommentColor}}", "radius": 8 }
             }
           ]
         },
-        { "type": "space", "height": 8 },
         {
           "type": "list",
           "bind": "rows",
           "item": {
             "type": "card",
-            "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "#FFFFFF" },
+            "style": {
+              "padding": 12,
+              "marginBottom": 8,
+              "radius": 12,
+              "background": "#FFFFFF",
+              "borderWidth": 1,
+              "borderColor": "#E2EAEA"
+            },
             "children": [
               {
                 "type": "row",
@@ -76,13 +82,13 @@
                   {
                     "type": "tag",
                     "text": "{{item.typeLabel}}",
-                    "style": { "background": "{{item.typeBg}}", "color": "{{item.typeColor}}", "radius": 6 }
+                    "style": { "background": "{{item.typeBg}}", "color": "{{item.typeColor}}", "radius": 4 }
                   },
                   {
                     "type": "column",
                     "style": { "weight": 1, "gap": 2 },
                     "children": [
-                      { "type": "text", "text": "{{item.content}}", "style": { "fontSize": 14, "color": "#223" } },
+                      { "type": "text", "text": "{{item.content}}", "style": { "fontSize": 14, "color": "#1A2B2A" } },
                       { "type": "notice", "text": "{{item.statusText}}" }
                     ]
                   },
@@ -91,14 +97,30 @@
                     "text": "⋮",
                     "size": "sm",
                     "onTap": "onMore",
-                    "style": { "background": "#F0F4F3", "color": "#445", "radius": 16, "fontSize": 18 }
+                    "style": { "background": "#F3F7F6", "color": "#445", "radius": 8, "fontSize": 16 }
                   }
                 ]
               }
             ]
           }
         },
-        { "type": "empty", "text": "暂无话术，点右上角添加", "showIf": "empty" }
+        {
+          "type": "card",
+          "showIf": "empty",
+          "style": {
+            "padding": 28,
+            "gap": 6,
+            "radius": 12,
+            "background": "#FFFFFF",
+            "borderWidth": 1,
+            "borderColor": "#E2EAEA",
+            "align": "center"
+          },
+          "children": [
+            { "type": "text", "text": "暂无话术", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A", "align": "center" } },
+            { "type": "notice", "text": "点击右上角添加，建议先准备私信与评论各若干条" }
+          ]
+        }
       ]
     },
     {
@@ -128,7 +150,7 @@
     {
       "showIf": "addOpen",
       "position": "bottom",
-      "style": { "radius": 16, "background": "#FFFFFF", "padding": 12, "gap": 10 },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 14, "gap": 12 },
       "body": [
         {
           "type": "row",
@@ -138,7 +160,7 @@
             {
               "type": "text",
               "text": "添加话术",
-              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A", "align": "center" }
             },
             {
               "type": "image",
@@ -164,17 +186,20 @@
           "label": "内容",
           "hint": "输入一条话术",
           "minLines": 3,
-          "variant": "box"
+          "variant": "box",
+          "size": "sm"
         },
         {
           "type": "switch",
           "name": "newEnabled",
           "label": "启用状态",
+          "size": "sm",
           "style": { "color": "#0B6E6A" }
         },
         {
           "type": "button",
           "text": "保存",
+          "size": "md",
           "onTap": "onAdd",
           "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
         }

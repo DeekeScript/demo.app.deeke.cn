@@ -6,25 +6,39 @@
     "background": "#0B6E6A"
   },
   "style": {
-    "background": "#F3F6F5",
+    "background": "#EEF2F1",
     "padding": 12
   },
   "body": [
     {
       "type": "card",
-      "style": { "padding": 16, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
+      "style": {
+        "padding": 12,
+        "gap": 6,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 8,
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
       "children": [
+        {
+          "type": "text",
+          "text": "激活状态",
+          "style": { "fontSize": 12, "color": "#7A8A88" }
+        },
         {
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "{{statusTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16 } },
+            { "type": "text", "text": "{{statusTitle}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A" } },
             {
               "type": "button",
-              "text": "开通",
+              "text": "去激活",
+              "showIf": "showPayEntry",
               "size": "sm",
               "onTap": "onGoPay",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 8 }
             }
           ]
         },
@@ -33,55 +47,64 @@
     },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 12, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
+      "style": {
+        "padding": 16,
+        "gap": 12,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 10,
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
       "children": [
-        { "type": "text", "text": "权限", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        { "type": "text", "text": "运行权限", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "notice", "text": "以下权限仅用于完成本机自动化，可随时在系统中关闭" },
         {
           "type": "row",
-          "style": { "valign": "center" },
+          "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "无障碍", "style": { "weight": 1, "fontSize": 14 } },
-            { "type": "tag", "text": "{{accessText}}", "style": { "background": "{{accessBg}}", "color": "{{accessColor}}", "radius": 6 } },
+            { "type": "text", "text": "无障碍", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A" } },
+            { "type": "tag", "text": "{{accessText}}", "style": { "background": "{{accessBg}}", "color": "{{accessColor}}", "radius": 4 } },
             {
               "type": "button",
               "text": "去开启",
               "size": "sm",
               "onTap": "onOpenGuide",
-              "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
             }
           ]
         },
         {
           "type": "row",
-          "style": { "valign": "center" },
+          "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "悬浮窗", "style": { "weight": 1, "fontSize": 14 } },
-            { "type": "tag", "text": "{{floatText}}", "style": { "background": "{{floatBg}}", "color": "{{floatColor}}", "radius": 6 } },
+            { "type": "text", "text": "悬浮窗", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A" } },
+            { "type": "tag", "text": "{{floatText}}", "style": { "background": "{{floatBg}}", "color": "{{floatColor}}", "radius": 4 } },
             {
               "type": "button",
               "text": "去开启",
               "size": "sm",
               "onTap": "onOpenFloat",
-              "style": { "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
             }
           ]
         },
         {
           "type": "row",
-          "style": { "valign": "center" },
+          "style": { "valign": "center", "gap": 8 },
           "children": [
             {
               "type": "column",
               "style": { "weight": 1, "gap": 2 },
               "children": [
-                { "type": "text", "text": "省电限制", "style": { "fontSize": 14 } },
-                { "type": "notice", "text": "允许高耗电，避免被系统杀掉" }
+                { "type": "text", "text": "省电限制", "style": { "fontSize": 14, "color": "#1A2B2A" } },
+                { "type": "notice", "text": "允许高耗电，提升持续稳定性" }
               ]
             },
             {
               "type": "tag",
               "text": "{{batteryText}}",
-              "style": { "background": "{{batteryBg}}", "color": "{{batteryColor}}", "radius": 6 }
+              "style": { "background": "{{batteryBg}}", "color": "{{batteryColor}}", "radius": 4 }
             },
             {
               "type": "button",
@@ -89,7 +112,7 @@
               "size": "sm",
               "onTap": "onBattery",
               "showIf": "showBatteryBtn",
-              "style": { "background": "#FFF6E8", "color": "#A35B00", "radius": 8 }
+              "style": { "background": "#FFF8F0", "color": "#8A5A20", "radius": 8 }
             }
           ]
         }
@@ -97,14 +120,22 @@
     },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
+      "style": {
+        "padding": 16,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 10,
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
       "children": [
         {
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "版本", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 15 } },
-            { "type": "text", "text": "{{localVersion}}", "style": { "fontSize": 13, "color": "#667" } }
+            { "type": "text", "text": "版本与更新", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+            { "type": "text", "text": "{{localVersion}}", "style": { "fontSize": 12, "color": "#7A8A88" } }
           ]
         },
         { "type": "notice", "text": "{{updateHint}}" },
@@ -117,7 +148,7 @@
               "text": "检查更新",
               "size": "sm",
               "onTap": "onCheckUpdate",
-              "style": { "weight": 1, "background": "#F0F4F3", "color": "#0B6E6A", "radius": 8 }
+              "style": { "weight": 1, "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
             },
             {
               "type": "button",
@@ -133,15 +164,23 @@
     },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF", "marginBottom": 4 },
+      "style": {
+        "padding": 16,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 10,
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
       "children": [
-        { "type": "text", "text": "客服", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        { "type": "text", "text": "客服支持", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
         {
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "微信", "style": { "fontSize": 13, "color": "#667" } },
-            { "type": "text", "text": "{{supportWechat}}", "style": { "weight": 1, "fontSize": 14, "color": "#223", "fontWeight": "bold" } },
+            { "type": "text", "text": "微信", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "{{supportWechat}}", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A", "fontWeight": "bold" } },
             {
               "type": "image",
               "src": "img/copy.svg",
@@ -150,20 +189,28 @@
             }
           ]
         },
-        { "type": "notice", "text": "添加好友时请备注「D0001咨询」" }
+        { "type": "notice", "text": "添加好友时请备注「D0001咨询」，便于快速定位问题" }
       ]
     },
     {
       "type": "card",
-      "style": { "padding": 14, "gap": 8, "radius": 14, "background": "#FFFFFF" },
+      "style": {
+        "padding": 16,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "borderWidth": 1,
+        "borderColor": "#E2EAEA"
+      },
       "children": [
-        { "type": "text", "text": "设备", "style": { "fontWeight": "bold", "fontSize": 15 } },
+        { "type": "text", "text": "设备信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "notice", "text": "售后请提供设备号信息" },
         {
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#667" } },
-            { "type": "text", "text": "{{deviceId}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } },
+            { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "{{deviceId}}", "style": { "weight": 1, "fontSize": 12, "color": "#1A2B2A" } },
             {
               "type": "image",
               "src": "img/copy.svg",
@@ -176,8 +223,8 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "APP代码", "style": { "fontSize": 13, "color": "#667" } },
-            { "type": "text", "text": "{{toolCode}}", "style": { "weight": 1, "fontSize": 13, "color": "#223" } }
+            { "type": "text", "text": "工具编号", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "{{toolCode}}", "style": { "weight": 1, "fontSize": 13, "color": "#1A2B2A" } }
           ]
         }
       ]
@@ -188,7 +235,7 @@
       "showIf": "guideOpen",
       "position": "center",
       "width": "88%",
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 12, "gap": 10, "height": "wrap" },
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 14, "gap": 10, "height": "wrap" },
       "body": [
         {
           "type": "row",
@@ -198,7 +245,7 @@
             {
               "type": "text",
               "text": "如何开启无障碍",
-              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#1A2B2A", "align": "center" }
             },
             {
               "type": "image",
@@ -210,26 +257,26 @@
         },
         {
           "type": "column",
-          "style": { "background": "#FFFFFF", "radius": 10, "padding": 10, "gap": 8, "borderWidth": 1, "borderColor": "#E6EEEE" },
+          "style": { "background": "#F7FAF9", "radius": 10, "padding": 12, "gap": 8, "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
             {
               "type": "text",
               "text": "已下载的应用",
-              "style": { "fontSize": 14, "fontWeight": "bold", "color": "#223", "align": "left" }
+              "style": { "fontSize": 13, "color": "#7A8A88", "align": "left" }
             },
             {
               "type": "row",
-              "style": { "valign": "center", "gap": 8, "background": "#F7FAF9", "radius": 8, "padding": 10 },
+              "style": { "valign": "center", "gap": 8, "background": "#FFFFFF", "radius": 8, "padding": 12 },
               "children": [
                 {
                   "type": "text",
                   "text": "{{guideAppName}}",
-                  "style": { "weight": 1, "fontSize": 14, "fontWeight": "bold", "color": "#223" }
+                  "style": { "weight": 1, "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
                 },
                 {
                   "type": "text",
-                  "text": "已关闭 >",
-                  "style": { "fontSize": 13, "color": "#889999" }
+                  "text": "去开启 >",
+                  "style": { "fontSize": 13, "color": "#0B6E6A" }
                 }
               ]
             }
@@ -250,7 +297,7 @@
       "title": "{{updateTitle}}",
       "width": "88%",
       "closeOnMask": false,
-      "style": { "radius": 14, "background": "#FFFFFF" },
+      "style": { "radius": 14, "background": "#FFFFFF", "padding": 14 },
       "body": [
         { "type": "notice", "text": "{{updateVersionLine}}" },
         { "type": "notice", "text": "{{updateSizeLine}}", "showIf": "hasUpdateSize" },
@@ -267,14 +314,14 @@
               "size": "sm",
               "showIf": "canSkipUpdate",
               "onTap": "onSkipUpdate",
-              "style": { "weight": 1, "background": "#F0F4F3", "color": "#445" }
+              "style": { "weight": 1, "background": "#F3F7F6", "color": "#445", "radius": 8 }
             },
             {
               "type": "button",
               "text": "{{updateConfirmText}}",
               "size": "sm",
               "onTap": "onDoUpdate",
-              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF" }
+              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         }

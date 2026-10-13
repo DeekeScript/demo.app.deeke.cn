@@ -88,7 +88,7 @@ Page({
     let okStyle = this.tagStyle(st.activated);
     this.setData({
       statusTitle: st.activated ? st.text : '待激活',
-      statusDetail: st.activated ? st.detail : '激活后，才能正常使用本APP',
+      statusDetail: st.activated ? st.detail : '激活后才能正常使用本应用',
       statusTag: st.activated ? '可用' : '待支付',
       statusTagBg: okStyle.bg,
       statusTagColor: okStyle.color,

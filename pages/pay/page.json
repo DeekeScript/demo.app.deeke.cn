@@ -3,13 +3,13 @@
     "hidden": true
   },
   "style": {
-    "background": "#F3F6F5",
+    "background": "#EEF2F1",
     "padding": 0
   },
   "body": [
     {
       "type": "column",
-      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
+      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 12 },
       "children": [
         {
           "type": "row",
@@ -38,19 +38,27 @@
     },
     {
       "type": "column",
-      "style": { "padding": 8, "gap": 6 },
+      "style": { "padding": 12, "gap": 8 },
       "children": [
         {
           "type": "card",
-          "style": { "padding": 10, "gap": 4, "radius": 10, "background": "#FFFFFF" },
+          "style": {
+            "padding": 12,
+            "gap": 4,
+            "radius": 12,
+            "background": "#E8F6F4",
+            "borderWidth": 1,
+            "borderColor": "#D5EBE8"
+          },
           "children": [
-            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款（需要提供“我的”界面中的“设备号”）" }
+            { "type": "text", "text": "售后保障", "style": { "fontWeight": "bold", "fontSize": 13, "color": "#0B6E6A" } },
+            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款（需提供「我的」中的设备号）" }
           ]
         },
         {
           "type": "card",
           "showIf": "isFree",
-          "style": { "padding": 12, "gap": 4, "radius": 10, "background": "#E8F6F4" },
+          "style": { "padding": 14, "gap": 4, "radius": 12, "background": "#E8F6F4", "borderWidth": 1, "borderColor": "#D5EBE8" },
           "children": [
             { "type": "title", "text": "免费使用", "style": { "color": "#0B6E6A" } },
             { "type": "notice", "text": "{{freeHint}}" }
@@ -63,28 +71,41 @@
           "item": {
             "type": "card",
             "onTap": "onSelectPlan",
-            "style": { "padding": 10, "marginBottom": 4, "radius": 10, "background": "{{item.cardBg}}", "borderColor": "{{item.borderColor}}", "borderWidth": 1 },
+            "style": {
+              "padding": 14,
+              "marginBottom": 8,
+              "radius": 12,
+              "background": "{{item.cardBg}}",
+              "borderColor": "{{item.borderColor}}",
+              "borderWidth": 1
+            },
             "children": [
               {
                 "type": "row",
-                "style": { "valign": "center", "gap": 6 },
+                "style": { "valign": "center", "gap": 8 },
                 "children": [
                   {
                     "type": "column",
-                    "style": { "weight": 1, "gap": 1 },
+                    "style": { "weight": 1, "gap": 2 },
                     "children": [
-                      { "type": "text", "text": "{{item.name}}", "style": { "fontWeight": "bold", "fontSize": 14 } },
+                      { "type": "text", "text": "{{item.name}}", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
                       { "type": "notice", "text": "{{item.sub}}" }
                     ]
                   },
-                  { "type": "text", "text": "{{item.priceText}}", "style": { "color": "#0B6E6A", "fontWeight": "bold", "fontSize": 17 } }
+                  { "type": "text", "text": "{{item.priceText}}", "style": { "color": "#0B6E6A", "fontWeight": "bold", "fontSize": 18 } }
                 ]
               }
             ]
           }
         },
         { "type": "empty", "text": "暂无可用套餐", "showIf": "plansEmpty" },
-        { "type": "space", "height": 8 }
+        {
+          "type": "notice",
+          "showIf": "showPayActions",
+          "text": "支付由支付宝完成，本应用不存储支付密码",
+          "style": { "color": "#7A8A88" }
+        },
+        { "type": "space", "height": 12 }
       ]
     },
     {
@@ -92,11 +113,11 @@
       "showIf": "showPayActions",
       "style": {
         "sticky": "bottom",
-        "padding": 10,
+        "padding": 12,
         "gap": 8,
         "background": "#FFFFFF",
         "borderTopWidth": 1,
-        "borderTopColor": "#E6EEEE"
+        "borderTopColor": "#E2EAEA"
       },
       "children": [
         { "type": "notice", "text": "已选：{{selectedPlanName}} · ¥{{selectedPrice}}" },
@@ -137,7 +158,7 @@
                   "size": "sm",
                   "showIf": "showCouponClear",
                   "onTap": "onClearCoupon",
-                  "style": { "background": "#F0F4F3", "color": "#556", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
+                  "style": { "background": "#F3F7F6", "color": "#556", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
                 }
               ]
             },
@@ -169,7 +190,7 @@
           "size": "sm",
           "showIf": "showMock",
           "onTap": "onPayMock",
-          "style": { "background": "#F0F4F3", "color": "#556", "width": "100%" }
+          "style": { "background": "#F3F7F6", "color": "#556", "width": "100%", "radius": 8 }
         }
       ]
     }

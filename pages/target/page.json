@@ -3,7 +3,7 @@
     "hidden": true
   },
   "style": {
-    "background": "#F3F6F5",
+    "background": "#EEF2F1",
     "padding": 0
   },
   "body": [
@@ -33,31 +33,36 @@
     },
     {
       "type": "column",
-      "style": { "padding": 8, "gap": 6 },
+      "style": { "padding": 12, "gap": 8 },
       "children": [
         {
           "type": "card",
           "showIf": "showEmpty",
-          "style": { "padding": 14, "gap": 6, "radius": 12, "background": "#FFFFFF" },
+          "style": { "padding": 16, "gap": 6, "radius": 12, "background": "#FFFFFF", "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
-            { "type": "text", "text": "暂无适配信息", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "text", "text": "暂无适配信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
             { "type": "notice", "text": "{{emptyHint}}" }
           ]
         },
         {
           "type": "card",
           "showIf": "showMain",
-          "style": { "padding": 14, "gap": 8, "radius": 12, "background": "#FFFFFF" },
+          "style": { "padding": 16, "gap": 8, "radius": 12, "background": "#FFFFFF", "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
+            {
+              "type": "text",
+              "text": "目标应用",
+              "style": { "fontSize": 12, "color": "#7A8A88" }
+            },
             {
               "type": "row",
               "style": { "valign": "center", "gap": 8 },
               "children": [
-                { "type": "text", "text": "{{appName}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 17 } },
+                { "type": "text", "text": "{{appName}}", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 17, "color": "#1A2B2A" } },
                 {
                   "type": "tag",
                   "text": "{{compatTag}}",
-                  "style": { "background": "{{compatTagBg}}", "color": "{{compatTagColor}}", "radius": 6 }
+                  "style": { "background": "{{compatTagBg}}", "color": "{{compatTagColor}}", "radius": 4 }
                 }
               ]
             },
@@ -66,11 +71,11 @@
               "type": "row",
               "style": { "valign": "center", "gap": 8 },
               "children": [
-                { "type": "text", "text": "本机状态", "style": { "fontSize": 13, "color": "#667" } },
+                { "type": "text", "text": "本机状态", "style": { "fontSize": 13, "color": "#7A8A88" } },
                 {
                   "type": "tag",
                   "text": "{{localTag}}",
-                  "style": { "background": "{{localTagBg}}", "color": "{{localTagColor}}", "radius": 6 }
+                  "style": { "background": "{{localTagBg}}", "color": "{{localTagColor}}", "radius": 4 }
                 }
               ]
             },
@@ -81,16 +86,16 @@
               "size": "sm",
               "showIf": "showOfficial",
               "onTap": "onOpenOfficial",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8, "width": "100%" }
+              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8, "width": "100%" }
             }
           ]
         },
         {
           "type": "card",
           "showIf": "showVersions",
-          "style": { "padding": 12, "gap": 8, "radius": 12, "background": "#FFFFFF" },
+          "style": { "padding": 14, "gap": 8, "radius": 12, "background": "#FFFFFF", "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
-            { "type": "text", "text": "支持的版本", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "text", "text": "支持的版本", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
             {
               "type": "list",
               "bind": "versions",
@@ -115,7 +120,7 @@
                                 "type": "tag",
                                 "text": "推荐",
                                 "showIf": "item.isRecommended",
-                                "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 6 }
+                                "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 4 }
                               }
                             ]
                           },
@@ -141,25 +146,25 @@
         {
           "type": "card",
           "showIf": "showNote",
-          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFFFFF" },
+          "style": { "padding": 14, "gap": 4, "radius": 12, "background": "#FFFFFF", "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
-            { "type": "text", "text": "适配说明", "style": { "fontWeight": "bold", "fontSize": 15 } },
+            { "type": "text", "text": "适配说明", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
             { "type": "notice", "text": "{{note}}" }
           ]
         },
         {
           "type": "card",
           "showIf": "showMain",
-          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFF6E8" },
+          "style": { "padding": 14, "gap": 4, "radius": 12, "background": "#FFF8F0", "borderWidth": 1, "borderColor": "#F0E0C8" },
           "children": [
-            { "type": "text", "text": "重要提醒", "style": { "fontWeight": "bold", "fontSize": 14, "color": "#A35B00" } },
+            { "type": "text", "text": "重要提醒", "style": { "fontWeight": "bold", "fontSize": 14, "color": "#8A5A20" } },
             { "type": "notice", "text": "{{autoUpdateTip}}" }
           ]
         },
         {
           "type": "card",
           "showIf": "showMain",
-          "style": { "padding": 12, "gap": 4, "radius": 12, "background": "#FFFFFF" },
+          "style": { "padding": 14, "gap": 4, "radius": 12, "background": "#FFFFFF", "borderWidth": 1, "borderColor": "#E2EAEA" },
           "children": [
             { "type": "notice", "text": "{{disclaimer}}" }
           ]
