@@ -300,6 +300,10 @@ Page({
     this.persistSmart(extra);
   },
 
+  onOpenApiKeyGuide() {
+    this.navigate({ page: 'pages/apiKey' });
+  },
+
   trialTabStyle(tab) {
     let commentOn = tab !== 'dm';
     return {

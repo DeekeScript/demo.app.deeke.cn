@@ -309,17 +309,31 @@
           },
           "children": [
             {
-              "type": "text",
-              "text": "大模型",
+              "type": "row",
               "style": {
-                "fontWeight": "bold",
-                "fontSize": 15,
-                "color": "#1A2B2A"
-              }
-            },
-            {
-              "type": "notice",
-              "text": "Key 只保存在本机，请使用你自己的平台密钥"
+                "valign": "center"
+              },
+              "children": [
+                {
+                  "type": "text",
+                  "text": "大模型",
+                  "style": {
+                    "weight": 1,
+                    "fontWeight": "bold",
+                    "fontSize": 15,
+                    "color": "#1A2B2A"
+                  }
+                },
+                {
+                  "type": "text",
+                  "text": "如何获取API Key？",
+                  "onTap": "onOpenApiKeyGuide",
+                  "style": {
+                    "fontSize": 12,
+                    "color": "#0B6E6A"
+                  }
+                }
+              ]
             },
             {
               "type": "picker",
