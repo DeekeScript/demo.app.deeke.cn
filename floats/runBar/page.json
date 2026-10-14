@@ -1,0 +1,14 @@
+{
+  "style": {
+    "padding": 0,
+    "background": "#00000000"
+  },
+  "body": [
+    {
+      "type": "runBar",
+      "id": "bar",
+      "onStop": "onStop",
+      "params": { "title": "任务正在执行" }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 let permission = require('../common/permission.js');
 let activation = require('../common/activation.js');
+let config = require('../common/config.js');
 let scripts = require('../common/scripts.js');
 let smart = require('../common/smartScripts.js');
 let params = require('../common/params.js');
@@ -12,6 +13,49 @@ let DySearch = require('../app/dy/Search.js');
 let DyVideo = require('../app/dy/Video.js');
 let DyIndex = require('../app/dy/Index.js');
 let DyComment = require('../app/dy/Comment.js');
+
+let STOP_KEY = config.storagePrefix + 'runBar.stop';
+let TITLE_KEY = config.storagePrefix + 'runBar.title';
+let DONE_KEY = config.storagePrefix + 'runBar.done';
+let TOAST_KEY = config.storagePrefix + 'runBar.toasted';
+
+function taskStopped() {
+  return Storage.getBoolean(STOP_KEY);
+}
+
+function showRunBar() {
+  Storage.putBoolean(STOP_KEY, false);
+  Storage.put(DONE_KEY, '0');
+  Storage.put(TOAST_KEY, '0');
+  Storage.put(TITLE_KEY, '评论截流正在执行');
+  let density = Device.width() / 360;
+  if (density < 1) {
+    density = 1;
+  }
+  let w = Math.floor(168 * density);
+  let shown = FloatPage.show('runBar', {
+    x: Math.floor((Device.width() - w) / 2),
+    y: Math.floor(6 * density),
+    width: w,
+    height: Math.floor(28 * density),
+    opacity: 0,
+    background: '#00000000',
+    draggable: false,
+    focusable: false,
+    gestureTouchable: false,
+    inStatusBar: true
+  });
+  if (!shown) {
+    logger.warn('rpa', '运行条打开失败');
+    return;
+  }
+  Events.on('script_stop', function () {
+    FloatPage.close('runBar');
+    if (Storage.get(DONE_KEY) !== '1' && Storage.get(TOAST_KEY) !== '1') {
+      System.toast('任务已关闭');
+    }
+  });
+}
 
 let task = {
   nicknames: [],
@@ -249,24 +293,37 @@ let task = {
 
     logger.info('rpa', '开始评论截流II');
     logger.info('rpa', '参数 ' + params.summary());
+    showRunBar();
 
     Engines.executeScript('unit/dialogClose.js');
     System.setAccessibilityMode('fast');
 
     while (true) {
+      if (taskStopped()) {
+        break;
+      }
       try {
         tCommon.openApp();
         let r = this.testTask(input, conf.intervalSec, conf);
+        if (taskStopped()) {
+          break;
+        }
         if (r) {
+          Storage.put(DONE_KEY, '1');
+          FloatPage.close('runBar');
           FloatDialogs.show('温馨提示', '已结束');
           System.exit();
         }
         tCommon.sleep(3000);
       } catch (e) {
+        if (taskStopped()) {
+          break;
+        }
         logger.error('rpa', '异常: ' + ((e && e.message) || e));
         tCommon.closeAlert(1);
       }
     }
+    Engines.closeAll();
   }
 };
 

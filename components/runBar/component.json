@@ -1,0 +1,36 @@
+{
+  "component": true,
+  "id": "runBar",
+  "body": [
+    {
+      "type": "row",
+      "style": {
+        "gap": 6,
+        "background": "#0B6E6A",
+        "radius": 999,
+        "paddingLeft": 8,
+        "paddingRight": 6,
+        "paddingTop": 2,
+        "paddingBottom": 2
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": "●",
+          "style": { "color": "#8ECCC4", "fontSize": 10, "opacity": "{{dotOpacity}}" }
+        },
+        {
+          "type": "text",
+          "text": "{{title}}",
+          "style": { "color": "#FFFFFF", "fontSize": 11, "weight": 1, "width": 0, "lines": 1 }
+        },
+        {
+          "type": "image",
+          "src": "img/stop.svg",
+          "onTap": "onStop",
+          "style": { "width": 16, "height": 16 }
+        }
+      ]
+    }
+  ]
+}

@@ -16,7 +16,8 @@
   "components": [
     { "id": "activationCard", "file": "components/activationCard" },
     { "id": "accessGuide", "file": "components/accessGuide" },
-    { "id": "updateDialog", "file": "components/updateDialog" }
+    { "id": "updateDialog", "file": "components/updateDialog" },
+    { "id": "runBar", "file": "components/runBar" }
   ],
   "bottomMenus": [
     { "title": "首页", "icon": "img/home.svg", "page": "pages/home" },
