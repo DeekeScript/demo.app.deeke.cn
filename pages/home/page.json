@@ -139,17 +139,6 @@
     },
     {
       "type": "dialog",
-      "showIf": "targetDialogOpen",
-      "title": "请先安装适配 App",
-      "text": "{{targetDialogText}}",
-      "confirmText": "去下载",
-      "cancelText": "仍要运行",
-      "onConfirm": "onGoTarget",
-      "onCancel": "onContinueDespiteTarget",
-      "style": { "color": "#0B6E6A" }
-    },
-    {
-      "type": "dialog",
       "showIf": "stopHintOpen",
       "title": "运行提示",
       "text": "运行后屏幕顶部会出现运行条，点右侧停止图标结束本次任务。请勿强制关闭 App。",
@@ -162,6 +151,80 @@
     }
   ],
   "popups": [
+    {
+      "showIf": "targetDialogOpen",
+      "position": "center",
+      "width": "88%",
+      "closeOnMask": false,
+      "style": {
+        "radius": 14,
+        "background": "#FFFFFF",
+        "padding": 16,
+        "gap": 10,
+        "height": "wrap"
+      },
+      "body": [
+        {
+          "type": "text",
+          "text": "请先安装适配 App",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": 16,
+            "color": "#1A2B2A",
+            "align": "center"
+          }
+        },
+        {
+          "type": "text",
+          "text": "{{targetDialogText}}",
+          "style": {
+            "fontSize": 14,
+            "color": "#334443"
+          }
+        },
+        {
+          "type": "checkbox",
+          "name": "dismissTargetRemind",
+          "label": "不再提醒",
+          "onChange": "onDismissTargetRemind",
+          "style": {
+            "color": "#0B6E6A"
+          }
+        },
+        {
+          "type": "row",
+          "style": {
+            "gap": 8
+          },
+          "children": [
+            {
+              "type": "button",
+              "text": "仍要运行",
+              "size": "sm",
+              "onTap": "onContinueDespiteTarget",
+              "style": {
+                "background": "#F3F7F6",
+                "color": "#334443",
+                "radius": 10,
+                "weight": 1
+              }
+            },
+            {
+              "type": "button",
+              "text": "去下载",
+              "size": "sm",
+              "onTap": "onGoTarget",
+              "style": {
+                "background": "#0B6E6A",
+                "color": "#FFFFFF",
+                "radius": 10,
+                "weight": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "showIf": "protocolOpen",
       "position": "center",

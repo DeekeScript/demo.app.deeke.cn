@@ -25,7 +25,7 @@ Page({
     payDialogText: '激活后才能正常使用本应用',
     targetDialogOpen: false,
     targetDialogText: '',
-    skipTargetGate: false,
+    dismissTargetRemind: false,
     stopHintOpen: false,
     guideOpen: false,
     updateOpen: false,
@@ -127,12 +127,29 @@ Page({
   },
 
   onGoTarget() {
-    this.setData({ targetDialogOpen: false });
+    this.rememberTargetRemind();
+    this.setData({ targetDialogOpen: false, dismissTargetRemind: false });
     this.navigate({ page: 'pages/target' });
   },
 
+  onDismissTargetRemind(e) {
+    this.setData({ dismissTargetRemind: !!(e && e.value) });
+  },
+
+  hasSkipTargetRemind() {
+    return Storage.get(config.storagePrefix + 'run.skipTargetRemind') === '1';
+  },
+
+  rememberTargetRemind() {
+    if (this.data.dismissTargetRemind) {
+      Storage.put(config.storagePrefix + 'run.skipTargetRemind', '1');
+    }
+  },
+
   onContinueDespiteTarget() {
-    this.setData({ targetDialogOpen: false, skipTargetGate: true });
+    this.rememberTargetRemind();
+    this._skipTargetGate = true;
+    this.setData({ targetDialogOpen: false, dismissTargetRemind: false });
     this.onRun();
   },
 
@@ -178,6 +195,18 @@ Page({
   },
 
   onRun() {
+    if (this._inRun) {
+      return;
+    }
+    this._inRun = true;
+    try {
+      this.runChecked();
+    } finally {
+      this._inRun = false;
+    }
+  },
+
+  runChecked() {
     if (!this.data.agreeProtocol) {
       logger.warn('run', '未勾选用户协议');
       this.setData({ agreeTipOpen: true });
@@ -201,7 +230,18 @@ Page({
       this.toast(paid.message || '检测失败');
       return;
     }
-    if (!this.data.skipTargetGate) {
+    if (!Access.isAccessibilityServiceEnabled()) {
+      logger.warn('run', '无障碍未开启');
+      this.setData({ guideOpen: true });
+      return;
+    }
+    if (this._skipTargetGate) {
+      logger.info('run', '用户选择仍要运行（跳过适配检测）');
+      this._skipTargetGate = false;
+    } else if (!this.hasSkipTargetRemind()) {
+      if (this.data.targetDialogOpen) {
+        return;
+      }
       let ready = target.ensureReady();
       if (ready.hasTarget && ready.needAction) {
         let tip = ready.message || '请先安装适配的目标 App 版本';
@@ -209,18 +249,13 @@ Page({
         logger.warn('run', tip);
         this.setData({
           targetDialogOpen: true,
-          targetDialogText: tip
+          targetDialogText: tip,
+          dismissTargetRemind: false
         });
         return;
       }
     } else {
-      logger.info('run', '用户选择仍要运行（跳过适配检测）');
-      this.setData({ skipTargetGate: false });
-    }
-    if (!Access.isAccessibilityServiceEnabled()) {
-      logger.warn('run', '无障碍未开启');
-      this.setData({ guideOpen: true });
-      return;
+      logger.info('run', '已勾选不再提醒，跳过适配检测');
     }
     if (!Access.isFloatWindowsEnabled()) {
       logger.warn('run', '悬浮窗未开启');

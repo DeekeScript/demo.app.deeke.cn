@@ -1,6 +1,5 @@
 let permission = require('../common/permission.js');
 let activation = require('../common/activation.js');
-let config = require('../common/config.js');
 let scripts = require('../common/scripts.js');
 let smart = require('../common/smartScripts.js');
 let params = require('../common/params.js');
@@ -14,20 +13,14 @@ let DyVideo = require('../app/dy/Video.js');
 let DyIndex = require('../app/dy/Index.js');
 let DyComment = require('../app/dy/Comment.js');
 
-let STOP_KEY = config.storagePrefix + 'runBar.stop';
-let TITLE_KEY = config.storagePrefix + 'runBar.title';
-let DONE_KEY = config.storagePrefix + 'runBar.done';
-let TOAST_KEY = config.storagePrefix + 'runBar.toasted';
+let stopped = false;
+let finished = false;
 
 function taskStopped() {
-  return Storage.getBoolean(STOP_KEY);
+  return stopped;
 }
 
 function showRunBar() {
-  Storage.putBoolean(STOP_KEY, false);
-  Storage.put(DONE_KEY, '0');
-  Storage.put(TOAST_KEY, '0');
-  Storage.put(TITLE_KEY, '评论截流正在执行');
   let density = Device.width() / 360;
   if (density < 1) {
     density = 1;
@@ -49,9 +42,13 @@ function showRunBar() {
     logger.warn('rpa', '运行条打开失败');
     return;
   }
+  FloatPage.setData('runBar', { title: '评论截流正在执行' });
+  Events.on('run_stop', function () {
+    stopped = true;
+  });
   Events.on('script_stop', function () {
     FloatPage.close('runBar');
-    if (Storage.get(DONE_KEY) !== '1' && Storage.get(TOAST_KEY) !== '1') {
+    if (!finished) {
       System.toast('任务已关闭');
     }
   });
@@ -346,7 +343,7 @@ let task = {
           break;
         }
         if (r) {
-          Storage.put(DONE_KEY, '1');
+          finished = true;
           FloatPage.close('runBar');
           FloatDialogs.show('温馨提示', '已结束');
           System.exit();
