@@ -244,11 +244,19 @@ Page({
   },
 
   onModePlatform() {
+    if (this.data.mode === 'platform') {
+      return;
+    }
     this.persistSmart({ mode: 'platform' });
+    this.toast('当前已切换到自定义话术');
   },
 
   onModeSmart() {
+    if (this.data.mode === 'smart') {
+      return;
+    }
     this.persistSmart({ mode: 'smart' });
+    this.toast('当前已切换到AI智能话术');
   },
 
   onSmartSave(e) {

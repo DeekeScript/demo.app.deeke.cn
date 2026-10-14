@@ -191,7 +191,7 @@ function evaluate(target) {
   if (target.compat === 'specific' && target.versions.length > 0) {
     let matched = versionMatched(local.versionName, target.versions);
     if (!matched) {
-      let tip = '本机 ' + target.name + ' ' + (local.versionName || '未知版本') + ' 不在支持列表';
+      let tip = target.name + ' ' + (local.versionName || '未知版本') + ' 版本不匹配';
       return {
         ok: false,
         hasTarget: true,
@@ -199,7 +199,7 @@ function evaluate(target) {
         versionOk: false,
         localVersion: local.versionName,
         summary: summary,
-        detail: tip + '，建议更换为推荐版本',
+        detail: tip + '，建议更换推荐版本',
         tag: '版本不符',
         tagBg: '#FFF6E8',
         tagColor: '#A35B00',
