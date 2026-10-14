@@ -134,6 +134,44 @@ const User = {
         }
 
         throw new Error('找不到关注和已关注');
+    },
+
+    /**
+     * 返回用户昵称
+     * @returns {string}
+     */
+    getNickname() {
+        let nicknameTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).descContains('复制名字').findOne() || UiSelector().className('android.widget.TextView').clickable(true).isVisibleToUser(true).findOne();
+        if (nicknameTag) {
+            return nicknameTag.text();
+        }
+        throw new Error('找不到昵称');
+    },
+
+    /**
+     * 获取年龄
+     * @returns {number}
+     */
+    getAge() {
+        let ageTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).textContains('岁').findOne();
+        if (!ageTag) {
+            return 0;
+        }
+        return Common.numDeal(ageTag.text());
+    },
+
+    /**
+     * 获取性别。0女，1男，2未知
+     * @returns {number}
+     */
+    getGender() {
+        if (UiSelector().className('android.widget.TextView').isVisibleToUser(true).textContains('男').findOne()) {
+            return 1;
+        }
+        if (UiSelector().className('android.widget.TextView').isVisibleToUser(true).textContains('女').findOne()) {
+            return 0;
+        }
+        return 2;
     }
 };
 

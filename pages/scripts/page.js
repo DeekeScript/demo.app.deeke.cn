@@ -57,6 +57,19 @@ Page({
     focus: 'content',
     showCustomUrl: false,
     trialInput: '',
+    trialTab: 'comment',
+    showTrialComment: true,
+    showTrialDm: false,
+    trialCommentBg: '#FFFFFF',
+    trialCommentColor: '#0B6E6A',
+    trialDmBg: '#E4EEEC',
+    trialDmColor: '#667',
+    trialActionText: '生成评论',
+    trialComment: '',
+    trialVideo: '',
+    trialNickname: '',
+    trialGender: '未知',
+    trialAge: '',
     trialKind: '',
     trialText: '',
     showTrial: false,
@@ -287,14 +300,46 @@ Page({
     this.persistSmart(extra);
   },
 
-  trial(kind) {
+  trialTabStyle(tab) {
+    let commentOn = tab !== 'dm';
+    return {
+      trialTab: commentOn ? 'comment' : 'dm',
+      showTrialComment: commentOn,
+      showTrialDm: !commentOn,
+      trialCommentBg: commentOn ? '#FFFFFF' : '#E4EEEC',
+      trialCommentColor: commentOn ? '#0B6E6A' : '#667',
+      trialDmBg: commentOn ? '#E4EEEC' : '#FFFFFF',
+      trialDmColor: commentOn ? '#667' : '#0B6E6A',
+      trialActionText: commentOn ? '生成评论' : '生成私信'
+    };
+  },
+
+  onTrialTabComment() {
+    if (this.data.trialTab === 'comment') {
+      return;
+    }
+    let patch = this.trialTabStyle('comment');
+    patch.showTrial = false;
+    this.setData(patch);
+  },
+
+  onTrialTabDm() {
+    if (this.data.trialTab === 'dm') {
+      return;
+    }
+    let patch = this.trialTabStyle('dm');
+    patch.showTrial = false;
+    this.setData(patch);
+  },
+
+  trial(kind, input) {
     this.persistSmart();
     if (!smart.ready()) {
       this.toast('请先填写 API Key 和模型');
       return;
     }
     this.showLoading('正在生成…');
-    let res = smart.generate(kind, this.data.trialInput);
+    let res = smart.generate(kind, input);
     this.hideLoading();
     if (!res.ok) {
       this.setData({ showTrial: false });
@@ -308,12 +353,28 @@ Page({
     });
   },
 
-  onTrialComment() {
-    this.trial('comment');
+  onTrialGender(e) {
+    let value = e && e.value != null ? String(e.value) : '未知';
+    this.setData({ trialGender: value });
   },
 
-  onTrialDm() {
-    this.trial('dm');
+  onTrialGenerate() {
+    if (this.data.trialTab === 'dm') {
+      let comment = (this.data.trialComment || '').trim();
+      if (!comment) {
+        this.toast('请填写对方评论内容');
+        return;
+      }
+      this.trial('dm', {
+        comment: comment,
+        video: (this.data.trialVideo || '').trim(),
+        nickname: (this.data.trialNickname || '').trim(),
+        gender: this.data.trialGender || '未知',
+        age: (this.data.trialAge || '').trim()
+      });
+      return;
+    }
+    this.trial('comment', this.data.trialInput);
   },
 
   onFilterAll() {

@@ -290,7 +290,7 @@ module.exports = {
     return lines;
   },
 
-  buildAgent(conf) {
+  buildAgent(conf, focus) {
     let c = conf || this.load();
     let industry = this.industryName(c);
     let lines = this.styleLines(c);
@@ -301,8 +301,16 @@ module.exports = {
       '1. 只输出可直接发送的正文，不要标题、引号、解释、前后缀。\n' +
       '2. 必须用陈述句或感叹句。严禁疑问句、问号、「吗 / 呢 / 是不是 / 要不要」这类问法，不要让对方回答问题。\n' +
       '3. 口语、真诚、不油腻、不硬广。按「表情」配置决定是否带表情。\n' +
-      '4. 评论抓住视频一个具体细节；私信先提刷到内容，再给具体理由，最后用陈述句表示想交流。\n' +
-      '5. 严格遵守长度、称呼、获客方式和目的，不要跑偏成问卷或推销话术。';
+      (focus === 'dm'
+        ? '4. 这是私信：先接对方评论里的具体说法。视频标题只用来点明刚在哪条视频下看到对方；评论很短时用标题补具体内容，评论已经具体时标题轻轻带过。用昵称和性别把握称呼，按年龄调整语气。不要写成对视频的评论，也不要直接报出年龄。\n'
+        : '4. 评论抓住视频一个具体细节；私信先提刷到内容，再给具体理由，最后用陈述句表示想交流。\n') +
+      '5. 严格遵守长度、称呼、获客方式和目的，不要跑偏成问卷或推销话术。\n' +
+      '6. 性别、年龄、昵称是「未知」或「未提供」时不要猜，不要编成帅哥、美女、姐姐，也不要另起一个称呼。性别只决定称呼，年龄只定语气，不评价外貌和身材，不把年龄说出来。\n' +
+      '7. 不要编造关系。不要说看过对方以前的视频、用过对方的产品、是老粉、已经加过好友。只根据这次给到的评论和视频标题来写。\n' +
+      '8. 第一条不要出现微信、电话、二维码、链接。只有获客方式是「直接说明」，并且目的是「加好友」或「预约咨询」时，才可以用陈述句表示想继续交流，仍然不要留具体联系方式。\n' +
+      '9. 不要承诺结果，不说保证瘦、保证过、日入多少、名额不多了。行业效果只说到有印象，不给数字。\n' +
+      '10. 像对一个人说。不要「家人们」「宝子们」，不要话题标签和@，不要复制对方评论原文。\n' +
+      '11. 评论和私信各只抓一个点。评论抓视频里的一个细节，私信接评论里的一句具体说法。不要一口气夸三处，也不要把视频标题复述一遍。';
     return (
       '你是「' +
       industry +
@@ -420,6 +428,53 @@ module.exports = {
     return t.trim();
   },
 
+  dmProfile(input) {
+    if (!input || typeof input !== 'object') {
+      return null;
+    }
+    return {
+      comment: asText(input.comment).trim(),
+      nickname: asText(input.nickname).trim() || '未提供',
+      gender: asText(input.gender).trim() || '未知',
+      age: asText(input.age).trim() || '未知',
+      video: asText(input.video).trim() || '未提供'
+    };
+  },
+
+  userPrompt(kind, input, conf) {
+    let c = conf || this.load();
+    let sentence = this.pickStyle('sentence', c.sentence).label;
+    let tail =
+      '\n行业：' +
+      this.industryName(c) +
+      '\n句式：' +
+      sentence +
+      '\n必须使用陈述句，禁止任何问句和问号。\n只输出可直接发送的正文。';
+    if (kind === 'dm') {
+      let profile = this.dmProfile(input);
+      if (profile) {
+        return (
+          '请生成一条「私信」话术。对象是下面这位评论用户，不要写成视频评论。\n' +
+          '对方评论内容：' +
+          (profile.comment || '未提供') +
+          '\n昵称：' +
+          profile.nickname +
+          '\n性别：' +
+          profile.gender +
+          '\n年龄：' +
+          profile.age +
+          '\n视频标题：' +
+          profile.video +
+          '\n主线是对方评论。视频标题只作为刚刷到的场景：评论很短或很泛时，用标题补上具体内容；评论已经具体时，标题最多轻轻提一下，不要复述整段标题。称呼参考昵称和性别，语气参考年龄。' +
+          tail
+        );
+      }
+    }
+    let role = kind === 'dm' ? '私信' : '评论';
+    let scene = asText(input).trim() || '短视频获客，对方刚发布了一条有共鸣的内容';
+    return '请生成一条「' + role + '」话术。\n视频/场景：' + scene + tail;
+  },
+
   generate(kind, input) {
     let c = this.load();
     if (!this.ready()) {
@@ -429,24 +484,13 @@ module.exports = {
     if (!url) {
       return { ok: false, message: '请填写接口地址' };
     }
-    let role = kind === 'dm' ? '私信' : '评论';
-    let scene = asText(input).trim() || '短视频获客，对方刚发布了一条有共鸣的内容';
-    let user =
-      '请生成一条「' +
-      role +
-      '」话术。\n视频/场景：' +
-      scene +
-      '\n行业：' +
-      this.industryName(c) +
-      '\n句式：' +
-      this.pickStyle('sentence', c.sentence).label +
-      '\n必须使用陈述句，禁止任何问句和问号。\n只输出可直接发送的正文。';
+    let focus = kind === 'dm' && this.dmProfile(input) ? 'dm' : '';
     let body = {
       model: c.model,
       temperature: 0.75,
       messages: [
-        { role: 'system', content: this.buildAgent(c) },
-        { role: 'user', content: user }
+        { role: 'system', content: this.buildAgent(c, focus) },
+        { role: 'user', content: this.userPrompt(kind, input, c) }
       ]
     };
     let raw = null;

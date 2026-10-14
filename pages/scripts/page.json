@@ -1110,47 +1110,144 @@
               }
             },
             {
-              "type": "notice",
-              "text": "填一段视频文案或场景，看看实际会发出去什么样"
+              "type": "card",
+              "style": {
+                "padding": 4,
+                "radius": 10,
+                "background": "#E4EEEC",
+                "borderWidth": 0
+              },
+              "children": [
+                {
+                  "type": "row",
+                  "style": {
+                    "gap": 4
+                  },
+                  "children": [
+                    {
+                      "type": "button",
+                      "text": "评论",
+                      "size": "sm",
+                      "onTap": "onTrialTabComment",
+                      "style": {
+                        "background": "{{trialCommentBg}}",
+                        "color": "{{trialCommentColor}}",
+                        "radius": 8,
+                        "weight": 1
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "text": "私信",
+                      "size": "sm",
+                      "onTap": "onTrialTabDm",
+                      "style": {
+                        "background": "{{trialDmBg}}",
+                        "color": "{{trialDmColor}}",
+                        "radius": 8,
+                        "weight": 1
+                      }
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "type": "textarea",
-              "name": "trialInput",
-              "hint": "例如：分享了三招提升短视频完播率",
-              "minLines": 2,
-              "variant": "box"
-            },
-            {
-              "type": "row",
+              "type": "column",
+              "showIf": "showTrialComment",
               "style": {
                 "gap": 8
               },
               "children": [
                 {
-                  "type": "button",
-                  "text": "生成评论",
-                  "size": "sm",
-                  "onTap": "onTrialComment",
+                  "type": "notice",
+                  "text": "填一段视频文案或场景，看看评论会怎么写"
+                },
+                {
+                  "type": "textarea",
+                  "name": "trialInput",
+                  "hint": "例如：分享了三招提升短视频完播率",
+                  "minLines": 2,
+                  "variant": "box"
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "showIf": "showTrialDm",
+              "style": {
+                "gap": 8
+              },
+              "children": [
+                {
+                  "type": "notice",
+                  "text": "私信主要按对方评论来写，视频标题用来点明是在哪条视频下看到的"
+                },
+                {
+                  "type": "textarea",
+                  "name": "trialComment",
+                  "label": "评论内容",
+                  "hint": "对方在视频下的评论",
+                  "minLines": 2,
+                  "variant": "box"
+                },
+                {
+                  "type": "input",
+                  "name": "trialVideo",
+                  "label": "视频标题",
+                  "hint": "这条评论所在的视频，可空",
+                  "variant": "box"
+                },
+                {
+                  "type": "input",
+                  "name": "trialNickname",
+                  "label": "昵称",
+                  "hint": "例如：小鹿",
+                  "variant": "box"
+                },
+                {
+                  "type": "picker",
+                  "name": "trialGender",
+                  "label": "性别",
+                  "options": [
+                    {
+                      "label": "未知",
+                      "value": "未知"
+                    },
+                    {
+                      "label": "女",
+                      "value": "女"
+                    },
+                    {
+                      "label": "男",
+                      "value": "男"
+                    }
+                  ],
+                  "onChange": "onTrialGender",
                   "style": {
-                    "background": "#E8F6F4",
-                    "color": "#0B6E6A",
-                    "radius": 10,
-                    "weight": 1
+                    "color": "#0B6E6A"
                   }
                 },
                 {
-                  "type": "button",
-                  "text": "生成私信",
-                  "size": "sm",
-                  "onTap": "onTrialDm",
-                  "style": {
-                    "background": "#0B6E6A",
-                    "color": "#FFFFFF",
-                    "radius": 10,
-                    "weight": 1
-                  }
+                  "type": "input",
+                  "name": "trialAge",
+                  "label": "年龄",
+                  "hint": "例如：26",
+                  "variant": "box"
                 }
               ]
+            },
+            {
+              "type": "button",
+              "text": "{{trialActionText}}",
+              "size": "sm",
+              "onTap": "onTrialGenerate",
+              "style": {
+                "background": "#0B6E6A",
+                "color": "#FFFFFF",
+                "radius": 10,
+                "width": "100%"
+              }
             },
             {
               "type": "card",
