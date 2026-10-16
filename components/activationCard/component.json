@@ -5,19 +5,39 @@
     {
       "type": "card",
       "style": {
-        "padding": 10,
-        "gap": 6,
-        "radius": 12,
+        "padding": 12,
+        "gap": 8,
+        "radius": 16,
         "background": "#FFFFFF",
-        "marginBottom": 5,
+        "marginBottom": 8,
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
       "children": [
         {
-          "type": "text",
-          "text": "激活状态",
-          "style": { "fontSize": 12, "color": "#7A8A88" }
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "column",
+              "style": {
+                "width": 28,
+                "height": 28,
+                "radius": 8,
+                "background": "#0B6E6A",
+                "align": "center",
+                "valign": "center"
+              },
+              "children": [
+                { "type": "image", "src": "img/ic_shield.svg", "style": { "width": 16, "height": 16 } }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "激活状态",
+              "style": { "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
+            }
+          ]
         },
         {
           "type": "row",

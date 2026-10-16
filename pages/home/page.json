@@ -14,19 +14,39 @@
     {
       "type": "card",
       "style": {
-        "padding": 10,
+        "padding": 12,
         "gap": 8,
-        "radius": 12,
-        "background": "#FFFFFF",
-        "marginBottom": 5,
+        "radius": 16,
+        "background": "#F4FBFA",
+        "marginBottom": 8,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#D5E8E5"
       },
       "children": [
         {
-          "type": "text",
-          "text": "功能启动",
-          "style": { "fontSize": 12, "color": "#7A8A88" }
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "column",
+              "style": {
+                "width": 28,
+                "height": 28,
+                "radius": 8,
+                "background": "#0B6E6A",
+                "align": "center",
+                "valign": "center"
+              },
+              "children": [
+                { "type": "image", "src": "img/ic_bolt.svg", "style": { "width": 16, "height": 16 } }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "功能启动",
+              "style": { "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
+            }
+          ]
         },
         {
           "type": "row",
@@ -37,7 +57,7 @@
               "name": "agreeProtocol",
               "label": "我已阅读并同意",
               "onChange": "onAgreeChange",
-              "style": { "color": "#0B6E6A" }
+              "style": { "color": "#0B6E6A", "marginLeft": -7 }
             },
             {
               "type": "text",
@@ -65,18 +85,38 @@
       "type": "card",
       "showIf": "showTargetCard",
       "style": {
-        "padding": 10,
-        "gap": 6,
-        "radius": 12,
+        "padding": 12,
+        "gap": 8,
+        "radius": 16,
         "background": "#FFFFFF",
         "borderWidth": 1,
         "borderColor": "#E2EAEA"
       },
       "children": [
         {
-          "type": "text",
-          "text": "目标应用",
-          "style": { "fontSize": 12, "color": "#7A8A88" }
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            {
+              "type": "column",
+              "style": {
+                "width": 28,
+                "height": 28,
+                "radius": 8,
+                "background": "#0B6E6A",
+                "align": "center",
+                "valign": "center"
+              },
+              "children": [
+                { "type": "image", "src": "img/ic_target.svg", "style": { "width": 16, "height": 16 } }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "目标应用",
+              "style": { "fontSize": 14, "fontWeight": "bold", "color": "#1A2B2A" }
+            }
+          ]
         },
         {
           "type": "row",
