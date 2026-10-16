@@ -24,8 +24,13 @@ Page({
     couponApplied: '',
     couponHint: '',
     hasCouponHint: false,
+    couponIconSize: 0,
     showCouponApply: true,
     showCouponClear: false,
+    couponOpen: false,
+    couponChecking: false,
+    couponEntryText: '优惠码通道',
+    couponEntryColor: '#1677FF',
     activationCode: '',
     activateOpen: false,
     activateTip: '',
@@ -101,14 +106,50 @@ Page({
     this.toast('已复制激活码');
   },
 
+  couponEntry(item) {
+    if (item && item.discount != null && item.discount !== '') {
+      return { couponEntryText: '已减 ¥' + item.discount, couponEntryColor: '#0B6E6A' };
+    }
+    if (item && item.couponMiss) {
+      return { couponEntryText: '此套餐不可用', couponEntryColor: '#B42318' };
+    }
+    return { couponEntryText: '优惠码通道', couponEntryColor: '#1677FF' };
+  },
+
+  onOpenCoupon() {
+    this.setData({ couponOpen: true, couponHint: '', hasCouponHint: false, couponIconSize: 0 });
+  },
+
+  onCloseCoupon() {
+    this.setData({ couponOpen: false });
+  },
+
   onApplyCoupon() {
-    let code = String(this.data.couponCode || '').trim();
-    if (!code) {
-      this.toast('请输入优惠码');
+    if (this.data.couponChecking) {
       return;
     }
-    this.setData({ couponApplied: code });
-    this.loadPricing();
+    let code = String(this.data.couponCode || '').trim();
+    if (!code) {
+      this.setData({ couponHint: '请输入优惠码', hasCouponHint: true, couponIconSize: 16 });
+      return;
+    }
+    let page = this;
+    this.setData({
+      couponApplied: code,
+      couponChecking: true
+    });
+    setTimeout(function () {
+      try {
+        page.loadPricing({ quiet: true, fromCoupon: true });
+      } finally {
+        let ok = !!String(page.data.couponApplied || '').trim();
+        let patch = { couponChecking: false };
+        if (ok) {
+          patch.couponOpen = false;
+        }
+        page.setData(patch);
+      }
+    }, 50);
   },
 
   onClearCoupon() {
@@ -117,31 +158,38 @@ Page({
       couponApplied: '',
       couponHint: '',
       hasCouponHint: false,
+      couponIconSize: 0,
       showCouponApply: true,
       showCouponClear: false,
+      couponOpen: false,
       selectedCouponLine: '',
-      hasSelectedCouponLine: false
+      hasSelectedCouponLine: false,
+      couponEntryText: '优惠码通道',
+      couponEntryColor: '#1677FF'
     });
     this.loadPricing();
   },
 
   buildPlanSub(p, payPrice) {
-    let sub = (p.days || '') + ' 天';
-    if (p.originalPrice) {
-      sub += ' · 原价 ¥' + p.originalPrice;
+    let lines = [];
+    if (p.dailyPrice != null && !(p.couponPrice != null && !p.couponError)) {
+      lines.push('约 ¥' + p.dailyPrice + '/天');
     }
-    if (p.dailyPrice != null && p.couponPrice == null) {
-      sub += ' · 约 ¥' + p.dailyPrice + '/天';
+    if (p.originalPrice && payPrice != null && Number(p.originalPrice) > Number(payPrice)) {
+      lines.push('原价 ¥' + p.originalPrice);
     }
-    if (p.couponPrice != null && p.couponDiscount != null) {
-      sub += ' · 已减 ¥' + p.couponDiscount;
+    if (p.couponPrice != null && p.couponDiscount != null && !p.couponError) {
+      lines.push('已减 ¥' + p.couponDiscount);
     } else if (p.couponError) {
-      sub += ' · ' + (p.couponMessage || '本套餐不可用此券');
+      lines.push(p.couponMessage || '本套餐不可用此券');
     }
     if (p.price != null && payPrice != null && Number(payPrice) !== Number(p.price) && !p.couponError) {
-      sub = '原价 ¥' + p.price + (sub ? ' · ' + sub : '');
+      lines.unshift('标价 ¥' + p.price);
     }
-    return sub;
+    if (!lines.length && p.days) {
+      lines.push(p.days + ' 天');
+    }
+    return lines.join(' · ');
   },
 
   selectedCouponLineOf(item) {
@@ -163,6 +211,7 @@ Page({
   loadPricing(opt) {
     opt = opt || {};
     let quiet = !!opt.quiet;
+    let fromCoupon = !!opt.fromCoupon;
     let skipActivatePanel = !!opt.skipActivatePanel;
     if (!quiet) {
       this.showLoading('加载中…');
@@ -170,6 +219,18 @@ Page({
     let coupon = this.currentCoupon();
     let res = api.pricing(coupon);
     if (!res.ok) {
+      if (fromCoupon) {
+        this.setData({
+          couponApplied: '',
+          couponHint: res.message || '优惠码校验失败',
+          hasCouponHint: true,
+          couponIconSize: 16
+        });
+        if (!quiet) {
+          this.hideLoading();
+        }
+        return;
+      }
       this.setData({
         toolName: '价格加载失败',
         activationHint: (res.message || '请检查网络与工具编号') + (res.url ? ('\n' + res.url) : ''),
@@ -232,6 +293,7 @@ Page({
     let couponInfo = data.coupon || null;
     let couponHint = '';
     let couponOk = false;
+    let couponFailed = false;
     if (coupon) {
       if (couponInfo && couponInfo.valid) {
         couponOk = true;
@@ -242,10 +304,13 @@ Page({
           couponHint += '（立减 ¥' + couponInfo.value + '）';
         }
       } else {
+        couponFailed = true;
         couponHint = (couponInfo && (couponInfo.message || couponInfo.error)) || '优惠码无效';
         this.setData({ couponApplied: '' });
         coupon = '';
-        this.toast(couponHint);
+        if (!fromCoupon) {
+          this.toast(couponHint);
+        }
       }
     }
 
@@ -267,9 +332,10 @@ Page({
         price: price,
         listPrice: p.price,
         discount: hasCouponPrice ? p.couponDiscount : null,
+        couponMiss: !!(couponOk && !hasCouponPrice && p.couponError),
         priceText: '¥' + price,
-        cardBg: active ? '#E8F6F4' : '#FFFFFF',
-        borderColor: active ? '#0B6E6A' : '#E6EEEE'
+        cardBg: active ? '#E8F3FF' : '#FFFFFF',
+        borderColor: active ? '#1677FF' : '#E6EEEE'
       });
       if (active) {
         selected = p.plan;
@@ -282,6 +348,7 @@ Page({
       }
     }
     let selectedCouponLine = this.selectedCouponLineOf(selectedItem);
+    let entry = this.couponEntry(selectedItem);
     this.setData({
       toolName: data.name || config.toolCode,
       activationHint: st.text + ' · ' + st.detail,
@@ -290,15 +357,18 @@ Page({
       plansEmpty: plans.length === 0,
       showPayActions: plans.length > 0,
       showMock: showMock,
-      showCouponBox: true,
+      showCouponBox: false,
       plans: plans,
       selectedPlan: selectedItem ? selectedItem.plan : '',
       selectedPlanName: selectedItem ? selectedItem.name : '',
       selectedPrice: selectedItem ? selectedItem.price : '-',
       selectedCouponLine: selectedCouponLine,
       hasSelectedCouponLine: !!selectedCouponLine,
-      couponHint: couponHint,
-      hasCouponHint: !!couponHint,
+      couponHint: couponFailed ? couponHint : '',
+      hasCouponHint: couponFailed,
+      couponIconSize: couponFailed ? 16 : 0,
+      couponEntryText: entry.couponEntryText,
+      couponEntryColor: entry.couponEntryColor,
       showCouponApply: !couponOk,
       showCouponClear: couponOk,
       canApp: canApp,
@@ -328,22 +398,26 @@ Page({
         price: plans[i].price,
         listPrice: plans[i].listPrice,
         discount: plans[i].discount,
+        couponMiss: plans[i].couponMiss,
         priceText: plans[i].priceText,
-        cardBg: active ? '#E8F6F4' : '#FFFFFF',
-        borderColor: active ? '#0B6E6A' : '#E6EEEE'
+        cardBg: active ? '#E8F3FF' : '#FFFFFF',
+        borderColor: active ? '#1677FF' : '#E6EEEE'
       };
       if (active) {
         selectedItem = plans[i];
       }
     }
     let selectedCouponLine = this.selectedCouponLineOf(selectedItem);
+    let entry = this.couponEntry(selectedItem);
     this.setData({
       plans: plans,
       selectedPlan: item.plan,
       selectedPlanName: item.name,
       selectedPrice: item.price,
       selectedCouponLine: selectedCouponLine,
-      hasSelectedCouponLine: !!selectedCouponLine
+      hasSelectedCouponLine: !!selectedCouponLine,
+      couponEntryText: entry.couponEntryText,
+      couponEntryColor: entry.couponEntryColor
     });
   },
 

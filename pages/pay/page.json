@@ -42,21 +42,6 @@
       "children": [
         {
           "type": "card",
-          "style": {
-            "padding": 10,
-            "gap": 4,
-            "radius": 12,
-            "background": "#E8F6F4",
-            "borderWidth": 1,
-            "borderColor": "#D5EBE8"
-          },
-          "children": [
-            { "type": "text", "text": "售后保障", "style": { "fontWeight": "bold", "fontSize": 13, "color": "#0B6E6A" } },
-            { "type": "notice", "text": "有任何问题，请24小时内联系客服！" }
-          ]
-        },
-        {
-          "type": "card",
           "showIf": "isFree",
           "style": { "padding": 10, "gap": 4, "radius": 12, "background": "#E8F6F4", "borderWidth": 1, "borderColor": "#D5EBE8" },
           "children": [
@@ -68,12 +53,15 @@
           "type": "list",
           "bind": "plans",
           "showIf": "showPlans",
-          "style": { "gap": 4 },
+          "style": { "gap": 6 },
           "item": {
             "type": "card",
             "onTap": "onSelectPlan",
             "style": {
-              "padding": 10,
+              "paddingTop": 6,
+              "paddingBottom": 6,
+              "paddingLeft": 12,
+              "paddingRight": 12,
               "radius": 12,
               "background": "{{item.cardBg}}",
               "borderColor": "{{item.borderColor}}",
@@ -86,19 +74,93 @@
                 "children": [
                   {
                     "type": "column",
-                    "style": { "weight": 1, "gap": 2 },
+                    "style": { "weight": 1, "gap": 0 },
                     "children": [
-                      { "type": "text", "text": "{{item.name}}", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-                      { "type": "notice", "text": "{{item.sub}}" }
+                      {
+                        "type": "text",
+                        "text": "{{item.name}}",
+                        "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" }
+                      },
+                      {
+                        "type": "text",
+                        "text": "{{item.sub}}",
+                        "style": { "fontSize": 12, "color": "#7A8A88" }
+                      }
                     ]
                   },
-                  { "type": "text", "text": "{{item.priceText}}", "style": { "color": "#0B6E6A", "fontWeight": "bold", "fontSize": 18 } }
+                  {
+                    "type": "text",
+                    "text": "{{item.priceText}}",
+                    "style": { "color": "#1677FF", "fontWeight": "bold", "fontSize": 18 }
+                  }
                 ]
               }
             ]
           }
         },
         { "type": "empty", "text": "暂无可用套餐", "showIf": "plansEmpty" },
+        {
+          "type": "card",
+          "showIf": "showPayActions",
+          "style": {
+            "padding": 12,
+            "gap": 10,
+            "radius": 12,
+            "background": "#FFFFFF",
+            "borderWidth": 1,
+            "borderColor": "#E6EEEE"
+          },
+          "children": [
+            {
+              "type": "text",
+              "text": "选择支付方式",
+              "style": { "fontWeight": "bold", "fontSize": 14, "color": "#1A2B2A" }
+            },
+            {
+              "type": "row",
+              "style": { "valign": "center", "gap": 8 },
+              "children": [
+                {
+                  "type": "image",
+                  "src": "img/alipay_logo.png",
+                  "style": { "width": 42, "height": 42 }
+                },
+                {
+                  "type": "column",
+                  "style": { "weight": 1, "gap": 2 },
+                  "children": [
+                    {
+                      "type": "row",
+                      "style": { "valign": "center", "gap": 6 },
+                      "children": [
+                        {
+                          "type": "text",
+                          "text": "支付宝",
+                          "style": { "fontSize": 14, "color": "#1A2B2A" }
+                        },
+                        {
+                          "type": "image",
+                          "src": "img/recommend.png",
+                          "style": { "width": 32, "height": 24 }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "text": "10亿人都在用，真安全，真放心",
+                      "style": { "fontSize": 13, "color": "#999999" }
+                    }
+                  ]
+                },
+                {
+                  "type": "image",
+                  "src": "img/alipay_check.svg",
+                  "style": { "width": 22, "height": 22 }
+                }
+              ]
+            }
+          ]
+        },
         { "type": "space", "height": 12 }
       ]
     },
@@ -114,53 +176,42 @@
         "borderTopColor": "#E2EAEA"
       },
       "children": [
-        { "type": "notice", "text": "已选：{{selectedPlanName}} · ¥{{selectedPrice}}" },
         {
-          "type": "notice",
-          "showIf": "hasSelectedCouponLine",
-          "text": "{{selectedCouponLine}}",
-          "style": { "color": "#0B6E6A" }
-        },
-        {
-          "type": "column",
-          "showIf": "showCouponBox",
-          "style": { "gap": 4 },
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
           "children": [
             {
               "type": "row",
-              "style": { "valign": "center", "gap": 6 },
+              "style": { "weight": 1, "valign": "center", "gap": 8 },
               "children": [
                 {
-                  "type": "input",
-                  "name": "couponCode",
-                  "hint": "优惠码",
-                  "variant": "box",
-                  "size": "sm",
-                  "style": { "weight": 1, "radius": 8 }
+                  "type": "row",
+                  "style": { "valign": "center", "gap": 1 },
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "¥",
+                      "style": { "fontSize": 20, "fontWeight": "bold", "color": "#1677FF" }
+                    },
+                    {
+                      "type": "text",
+                      "text": "{{selectedPrice}}",
+                      "style": { "fontSize": 26, "fontWeight": "bold", "color": "#1677FF" }
+                    }
+                  ]
                 },
                 {
-                  "type": "button",
-                  "text": "使用",
-                  "size": "sm",
-                  "showIf": "showCouponApply",
-                  "onTap": "onApplyCoupon",
-                  "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
-                },
-                {
-                  "type": "button",
-                  "text": "清除",
-                  "size": "sm",
-                  "showIf": "showCouponClear",
-                  "onTap": "onClearCoupon",
-                  "style": { "background": "#F3F7F6", "color": "#556", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
+                  "type": "text",
+                  "text": "{{selectedPlanName}}",
+                  "style": { "fontSize": 13, "color": "#7A8A88" }
                 }
               ]
             },
             {
-              "type": "notice",
-              "showIf": "hasCouponHint",
-              "text": "{{couponHint}}",
-              "style": { "color": "#0B6E6A" }
+              "type": "text",
+              "text": "{{couponEntryText}}",
+              "onTap": "onOpenCoupon",
+              "style": { "fontSize": 13, "color": "{{couponEntryColor}}" }
             }
           ]
         },
@@ -190,6 +241,75 @@
     }
   ],
   "popups": [
+    {
+      "showIf": "couponOpen",
+      "position": "bottom",
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 10 },
+      "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center", "width": "100%" },
+          "children": [
+            { "type": "space", "style": { "width": 22 } },
+            {
+              "type": "text",
+              "text": "优惠码",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 16, "color": "#223", "align": "center" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseCoupon",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "gap": 8, "paddingTop": 12 },
+          "children": [
+            { "type": "notice", "text": "输入优惠码，享受更多优惠" },
+            {
+              "type": "input",
+              "name": "couponCode",
+              "hint": "请输入优惠码",
+              "variant": "box"
+            },
+            {
+              "type": "row",
+              "style": { "valign": "center", "gap": 4 },
+              "children": [
+                {
+                  "type": "image",
+                  "src": "img/ic_alert.svg",
+                  "style": { "width": "{{couponIconSize}}", "height": "{{couponIconSize}}" }
+                },
+                {
+                  "type": "text",
+                  "text": "{{couponHint}}",
+                  "style": { "fontSize": 12, "color": "#B42318" }
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "text": "确定",
+              "loading": "{{couponChecking}}",
+              "loadingText": "验证中",
+              "onTap": "onApplyCoupon",
+              "style": { "background": "#1677FF", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+            },
+            {
+              "type": "button",
+              "text": "清除优惠码",
+              "showIf": "showCouponClear",
+              "onTap": "onClearCoupon",
+              "style": { "background": "#F3F7F6", "color": "#556", "radius": 10, "width": "100%" }
+            }
+          ]
+        }
+      ]
+    },
     {
       "showIf": "activateOpen",
       "position": "bottom",
