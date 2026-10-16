@@ -1,9 +1,9 @@
 {
-  "name": "嘀客Demo",
+  "name": "获客助手",
   "packageName": "cn.deeke.demo.app",
   "versionCode": "100",
   "versionName": "1.0.0",
-  "icon": "img/icon.svg",
+  "icon": "img/logo.png",
   "homePage": "pages/home",
   "pages": [
     { "id": "scripts", "file": "pages/scripts", "title": "话术" },
