@@ -42,7 +42,7 @@ function showRunBar() {
     logger.warn('rpa', '运行条打开失败');
     return;
   }
-  FloatPage.setData('runBar', { title: '评论截流正在执行' });
+  FloatPage.setData('runBar', { title: '评论获客正在运行...' });
   Events.on('run_stop', function () {
     stopped = true;
   });
