@@ -52,7 +52,7 @@
           },
           "children": [
             { "type": "text", "text": "售后保障", "style": { "fontWeight": "bold", "fontSize": 13, "color": "#0B6E6A" } },
-            { "type": "notice", "text": "购买后若无法正常使用，请24小时内联系客服退款（需提供「我的」中的设备号）" }
+            { "type": "notice", "text": "有任何问题，请24小时内联系客服！" }
           ]
         },
         {

@@ -6,8 +6,8 @@
     "background": "#0B6E6A",
     "right": [
       {
-        "icon": "img/add.svg",
-        "text": "添加",
+        "icon": "{{addIcon}}",
+        "text": "{{addText}}",
         "onTap": "onOpenAdd"
       }
     ]
