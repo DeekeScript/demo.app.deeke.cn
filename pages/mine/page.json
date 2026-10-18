@@ -3,7 +3,13 @@
     "text": "我的",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#0B6E6A",
+    "right": [
+      {
+        "text": "客服",
+        "onTap": "onOpenSupport"
+      }
+    ]
   },
   "style": {
     "background": "#EEF2F1",
@@ -109,36 +115,6 @@
         "borderColor": "#E2EAEA"
       },
       "children": [
-        { "type": "text", "text": "客服支持", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        {
-          "type": "row",
-          "style": { "valign": "center", "gap": 8 },
-          "children": [
-            { "type": "text", "text": "微信", "style": { "fontSize": 13, "color": "#7A8A88" } },
-            { "type": "text", "text": "{{supportWechat}}", "style": { "weight": 1, "fontSize": 14, "color": "#1A2B2A", "fontWeight": "bold" } },
-            {
-              "type": "image",
-              "src": "img/copy.svg",
-              "onTap": "onCopyWechat",
-              "style": { "width": 22, "height": 22 }
-            }
-          ]
-        },
-        { "type": "notice", "text": "添加好友时请备注「D0001咨询」，便于快速定位问题" }
-      ]
-    },
-    {
-      "type": "card",
-      "style": {
-        "padding": 12,
-        "gap": 8,
-        "radius": 12,
-        "background": "#FFFFFF",
-        "marginBottom": 4,
-        "borderWidth": 1,
-        "borderColor": "#E2EAEA"
-      },
-      "children": [
         { "type": "text", "text": "设备信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
         { "type": "notice", "text": "售后请提供设备号和日志信息" },
         {
@@ -225,10 +201,54 @@
   ],
   "popups": [
     {
+      "showIf": "supportOpen",
+      "position": "center",
+      "width": "92%",
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 22, "gap": 16, "height": "wrap" },
+      "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            {
+              "type": "text",
+              "text": "客服微信",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 18, "color": "#1A2B2A" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseSupport",
+              "style": { "width": 24, "height": 24 }
+            }
+          ]
+        },
+        {
+          "type": "row",
+          "style": { "valign": "center", "gap": 8 },
+          "children": [
+            { "type": "text", "text": "微信", "style": { "fontSize": 15, "color": "#7A8A88" } },
+            {
+              "type": "text",
+              "text": "{{supportWechat}}",
+              "style": { "weight": 1, "fontSize": 20, "color": "#1A2B2A", "fontWeight": "bold" }
+            },
+            {
+              "type": "image",
+              "src": "img/copy.svg",
+              "onTap": "onCopyWechat",
+              "style": { "width": 22, "height": 22 }
+            }
+          ]
+        },
+        { "type": "notice", "text": "请备注D0001", "style": { "align": "center", "fontSize": 14 } }
+      ]
+    },
+    {
       "showIf": "guideOpen",
       "position": "center",
-      "width": "88%",
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10, "gap": 6, "height": "wrap" },
+      "width": "92%",
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 18, "gap": 14, "height": "wrap" },
       "body": [
         {
           "type": "accessGuide",
@@ -242,9 +262,9 @@
       "showIf": "updateOpen",
       "position": "center",
       "title": "{{updateTitle}}",
-      "width": "88%",
+      "width": "92%",
       "closeOnMask": false,
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10 },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 18 },
       "body": [
         {
           "type": "updateDialog",

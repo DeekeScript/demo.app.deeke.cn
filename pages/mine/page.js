@@ -21,6 +21,7 @@ Page({
     updateHint: '点击检查是否有新版本',
     hasUpdate: false,
     guideOpen: false,
+    supportOpen: false,
     updateOpen: false,
     updateTitle: '发现新版本'
   },
@@ -134,6 +135,14 @@ Page({
 
   onGoLogs() {
     this.navigate({ page: 'pages/logs' });
+  },
+
+  onOpenSupport() {
+    this.setData({ supportOpen: true });
+  },
+
+  onCloseSupport() {
+    this.setData({ supportOpen: false });
   },
 
   onCopyWechat() {

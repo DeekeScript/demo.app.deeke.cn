@@ -307,8 +307,8 @@
     {
       "showIf": "guideOpen",
       "position": "center",
-      "width": "88%",
-      "style": { "radius": 14, "background": "#FFFFFF", "padding": 10, "gap": 6, "height": "wrap" },
+      "width": "92%",
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 18, "gap": 14, "height": "wrap" },
       "body": [
         {
           "type": "accessGuide",

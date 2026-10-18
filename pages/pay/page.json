@@ -19,7 +19,7 @@
               "type": "image",
               "src": "img/back.svg",
               "onTap": "onBack",
-              "style": { "width": 26, "height": 26 }
+              "style": { "width": 32, "height": 32 }
             },
             {
               "type": "text",
@@ -27,10 +27,16 @@
               "style": { "weight": 1, "color": "#FFFFFF", "fontSize": 17, "fontWeight": "bold", "align": "center" }
             },
             {
-              "type": "image",
-              "src": "img/menu.svg",
+              "type": "column",
               "onTap": "onOpenActivate",
-              "style": { "width": 26, "height": 26 }
+              "style": { "width": 32, "height": 32, "align": "center", "valign": "center" },
+              "children": [
+                {
+                  "type": "image",
+                  "src": "img/menu.svg",
+                  "style": { "width": 26, "height": 26 }
+                }
+              ]
             }
           ]
         }
