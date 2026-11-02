@@ -261,17 +261,34 @@
     {
       "showIf": "updateOpen",
       "position": "center",
-      "title": "{{updateTitle}}",
       "width": "92%",
       "closeOnMask": false,
-      "style": { "radius": 16, "background": "#FFFFFF", "padding": 18 },
+      "style": { "radius": 16, "background": "#FFFFFF", "padding": 22, "gap": 16, "height": "wrap" },
       "body": [
+        {
+          "type": "row",
+          "style": { "valign": "center" },
+          "children": [
+            {
+              "type": "text",
+              "text": "{{updateTitle}}",
+              "style": { "weight": 1, "fontWeight": "bold", "fontSize": 18, "color": "#1A2B2A" }
+            },
+            {
+              "type": "image",
+              "src": "img/close.svg",
+              "onTap": "onCloseUpdate",
+              "style": { "width": 24, "height": 24 }
+            }
+          ]
+        },
         {
           "type": "updateDialog",
           "id": "updateDialog",
           "onChecked": "onUpdateChecked",
           "onSkip": "onSkipUpdate",
-          "onClose": "onCloseUpdate"
+          "onClose": "onCloseUpdate",
+          "style": { "width": "100%" }
         }
       ]
     }

@@ -48,14 +48,20 @@ module.exports = {
       if (!c) {
         continue;
       }
+      let text = String(c.changelog || '').trim();
+      if (!text) {
+        continue;
+      }
       let title = (c.version || '') + (c.forceUpdate ? '（强制）' : '');
-      let text = c.changelog || '';
       lines.push(title ? title + '：' + text : text);
     }
     if (!lines.length && data && data.latest && data.latest.changelog) {
-      lines.push(data.latest.changelog);
+      let text = String(data.latest.changelog).trim();
+      if (text) {
+        lines.push(text);
+      }
     }
-    return lines.length ? lines.join('\n') : '修复问题并优化体验';
+    return lines.join('\n');
   },
 
   today() {

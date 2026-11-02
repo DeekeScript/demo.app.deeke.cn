@@ -117,7 +117,7 @@ let task = {
     logger.info('rpa', '评论关键词：' + commentKw.join(','));
     let videoConfig = params.filterConfig();
     DyIndex.intoSearchPage();
-    tCommon.sleep(1500);
+    tCommon.sleep(3500);
     DySearch.intoSearchList(conf.searchTitle, 0, videoConfig);
     DySearch.intoSearchVideo();
 

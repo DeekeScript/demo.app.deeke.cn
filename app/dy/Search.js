@@ -14,8 +14,14 @@ const Search = {
 
         let iptTag = UiSelector().className('android.widget.EditText').filter(v => {
             return v.isEditable();
-        }).isVisibleToUser(true).findOne();
-        iptTag.setText(keyword);
+        }).findOne();
+        if (!iptTag) {
+            FloatDialogs.show('请10秒内输入搜索关键字');
+            Common.sleep(10000);
+        } else {
+            iptTag.setText(keyword);
+        }
+
         Common.sleep(1000 + 500 * Math.random());
 
         let searchBtnTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).text('搜索').findOne() || UiSelector().className('android.widget.TextView').isVisibleToUser(true).desc('搜索').findOne();

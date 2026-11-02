@@ -6,6 +6,7 @@ Component({
     updateSizeLine: '',
     hasUpdateSize: false,
     updateChangelog: '',
+    hasChangelog: false,
     canSkipUpdate: true,
     updateConfirmText: '立即更新',
     pendingLatest: null
@@ -20,6 +21,7 @@ Component({
       updateSizeLine: view.updateSizeLine || '',
       hasUpdateSize: !!view.hasUpdateSize,
       updateChangelog: view.updateChangelog || '',
+      hasChangelog: !!(view.updateChangelog && String(view.updateChangelog).trim()),
       canSkipUpdate: view.canSkipUpdate !== false,
       updateConfirmText: view.updateConfirmText || '立即更新',
       pendingLatest: view.pendingLatest || null
