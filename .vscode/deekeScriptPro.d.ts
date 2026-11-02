@@ -1511,6 +1511,29 @@ interface Dialogs {
 declare var Dialogs: Dialogs;
 
 /**
+ * 去掉文本里的不可见字符。保留普通空格，去掉零宽字符、方向标记和特殊空格。
+ * @see {@link https://script.deeke.cn/base/helper/helper.html DeekeScript Pro 文档}
+ */
+interface Helper {
+    /**
+     * 去掉不可见字符，保留普通空格。入参为 null 时返回空字符串
+     * @param {string} text 原始文本
+     * @returns {string} string
+     * @see {@link https://script.deeke.cn/base/helper/helper.html#stripinvisible-text DeekeScript Pro 文档}
+     */
+    stripInvisible(text: string): string;
+    /**
+     * 去掉不可见字符后再判断是否包含关键词。文本或关键词为 null，或关键词清理后为空时返回 false
+     * @param {string} text 原始文本
+     * @param {string} keyword 关键词
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/base/helper/helper.html#contains-text-keyword DeekeScript Pro 文档}
+     */
+    contains(text: string, keyword: string): boolean;
+}
+declare var Helper: Helper;
+
+/**
  * @see {@link https://script.deeke.cn/advance/encryption.html DeekeScript Pro 文档}
  */
 interface Encrypt {
@@ -2074,14 +2097,20 @@ interface DeekeFloatWindowMenuPatch {
     onTap?: string | DeekeFloatWindowMenuHandler;
 }
 
-/** deekeScript.json → floatWindow @see {@link https://script.deeke.cn/v2/config.html DeekeScript Pro 文档} */
+/**
+ * deekeScript.json → floatWindow。
+ * 不写 floatWindow：不展示悬浮球。
+ * 写了但 menus 为空或未写：系统默认球，连点两次停止。
+ * menus 有内容：自定义菜单。
+ * @see {@link https://script.deeke.cn/v2/config.html DeekeScript Pro 文档}
+ */
 interface DeekeFloatWindowConfig {
-    /** 展开菜单项，最多 5 个；不写则连点两次停止任务 */
+    /** 展开菜单项，最多 5 个。有内容才走自定义菜单；空数组或不写则连点两次停止 */
     menus?: DeekeFloatWindowMenuItem[];
 }
 
 /**
- * 项目悬浮球展开菜单（点「运行」进入项目后，或打包 App）。未配置 floatWindow.menus 时与开发器一致：连点两次停止任务。JSON 悬浮窗请用 FloatPage
+ * 项目悬浮球展开菜单（点「运行」进入项目后，或打包 App）。没写 floatWindow 不展示悬浮球；写了但没有菜单内容时连点两次停止任务。JSON 悬浮窗请用 FloatPage
  * @see {@link https://script.deeke.cn/v2/floatWindow.html DeekeScript Pro 文档}
  */
 interface FloatWindow {
@@ -2124,13 +2153,13 @@ declare var FloatWindow: FloatWindow;
  */
 interface FloatPage {
     /**
-     * 显示悬浮窗。id 为实例名；可用 path 指定加载的 floats 目录（多开可共用同一套 page）。width/height 默认约 80% 屏宽、高 500px；opacity 默认 0.5；touchable:false 点击穿透
+     * 显示悬浮窗。id 为实例名；可用 path 指定加载的 floats 目录（多开可共用同一套 page）。width/height 默认约 80% 屏宽、高 500px；opacity 默认 0.5；touchable:false 点击穿透；gestureTouchable:false 时 Gesture 坐标手势穿透、手指仍可点
      * @param {string} floatId 悬浮窗实例 id
-     * @param {{ x?: number; y?: number; width?: number; height?: number; path?: string; opacity?: number; background?: string; draggable?: boolean; focusable?: boolean; touchable?: boolean }} options 可选：x,y,width,height,path,opacity,background,draggable,focusable,touchable（可选）
+     * @param {{ x?: number; y?: number; width?: number; height?: number; path?: string; opacity?: number; background?: string; draggable?: boolean; focusable?: boolean; touchable?: boolean; gestureTouchable?: boolean }} options 可选：x,y,width,height,path,opacity,background,draggable,focusable,touchable,gestureTouchable（可选）
      * @returns {boolean} boolean
      * @see {@link https://script.deeke.cn/v2/floatPage.html#show-floatid-options DeekeScript Pro 文档}
      */
-    show(floatId: string, options?: { x?: number; y?: number; width?: number; height?: number; path?: string; opacity?: number; background?: string; draggable?: boolean; focusable?: boolean; touchable?: boolean }): boolean;
+    show(floatId: string, options?: { x?: number; y?: number; width?: number; height?: number; path?: string; opacity?: number; background?: string; draggable?: boolean; focusable?: boolean; touchable?: boolean; gestureTouchable?: boolean }): boolean;
     /**
      * 隐藏悬浮窗，实例与数据保留
      * @param {string} floatId 悬浮窗 id
@@ -2249,6 +2278,20 @@ interface FloatPage {
      * @see {@link https://script.deeke.cn/v2/floatPage.html#istouchable-floatid DeekeScript Pro 文档}
      */
     isTouchable(floatId: string): boolean | null;
+    /**
+     * Gesture.click / swipe 等坐标手势能不能点到这个悬浮窗。默认 true。false 时这些手势穿透，手指点击仍按 touchable
+     * @param {string} floatId 悬浮窗 id
+     * @param {boolean} gestureTouchable 坐标手势是否可点
+     * @see {@link https://script.deeke.cn/v2/floatPage.html#setgesturetouchable-floatid-gesturetouchable DeekeScript Pro 文档}
+     */
+    setGestureTouchable(floatId: string, gestureTouchable: boolean): void;
+    /**
+     * 坐标手势是否可点到这个悬浮窗
+     * @param {string} floatId 悬浮窗 id
+     * @returns {boolean | null} boolean | null
+     * @see {@link https://script.deeke.cn/v2/floatPage.html#isgesturetouchable-floatid DeekeScript Pro 文档}
+     */
+    isGestureTouchable(floatId: string): boolean | null;
     /**
      * 设置是否可通过顶部细条拖动
      * @param {string} floatId 悬浮窗 id
@@ -3326,7 +3369,7 @@ interface Images {
 declare var Images: Images;
 
 /**
- * 统一事件总线（按键、亮灭屏、无障碍、窗口切换；可用 emit 自定义）
+ * 统一事件总线（按键、亮灭屏、无障碍、窗口切换；可用 emit 自定义）。主脚本开始、停止会派发 script_start、script_stop
  * @see {@link https://script.deeke.cn/base/events/events.html DeekeScript Pro 文档}
  */
 interface Events {
