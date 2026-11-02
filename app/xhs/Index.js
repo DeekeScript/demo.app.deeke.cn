@@ -14,7 +14,7 @@ let Index = {
                     return true;
                 }
 
-                cityTags[i].click();
+                Common.click(cityTags[i], 0.2);
                 return true;
             }
         }
@@ -149,7 +149,7 @@ let Index = {
         if (!iptTag) {
             throw new Error('找不到搜索框，无法进入搜索页');
         }
-        iptTag.setText(account);
+        Common.inputText(iptTag, account);
         Log.log('输入内容', account);
         Common.sleep(2000 + 2000 * Math.random());
 

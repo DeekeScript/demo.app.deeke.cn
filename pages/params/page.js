@@ -13,7 +13,6 @@ let FIELDS = [
   'replyCommentRate',
   'privateRate',
   'focusRate',
-  'firstCommentRate',
   'intervalSec'
 ];
 
@@ -33,9 +32,8 @@ let FILTERS = [
     field: 'noteType',
     bind: 'typeOpts',
     options: [
-      { label: '不限', value: '0' },
       { label: '视频', value: '1' },
-      { label: '图文', value: '2' }
+      { label: '笔记', value: '2' }
     ]
   },
   {
@@ -72,7 +70,7 @@ let FILTERS = [
 Page({
   data: {
     noteSort: '0',
-    noteType: '0',
+    noteType: '2',
     noteTime: '0',
     noteRange: '0',
     noteDistance: '0',
@@ -82,7 +80,6 @@ Page({
     replyCommentRate: 0,
     privateRate: 0,
     focusRate: 0,
-    firstCommentRate: 0,
     intervalSec: 5,
     sortOpts: [],
     typeOpts: [],
@@ -113,7 +110,7 @@ Page({
   viewOf(p) {
     let view = {
       noteSort: String(p.noteSort),
-      noteType: String(p.noteType),
+      noteType: String(p.noteType === 1 || p.noteType === '1' ? '1' : '2'),
       noteTime: String(p.noteTime),
       noteRange: String(p.noteRange),
       noteDistance: String(p.noteDistance),
@@ -124,8 +121,7 @@ Page({
       replyCommentRate: p.replyCommentRate,
       privateRate: p.privateRate,
       focusRate: p.focusRate,
-      firstCommentRate: p.firstCommentRate,
-      intervalSec: p.intervalSec
+      intervalSec: Math.min(60, Math.max(5, Number(p.intervalSec) || 5))
     };
     for (let i = 0; i < FILTERS.length; i++) {
       let f = FILTERS[i];

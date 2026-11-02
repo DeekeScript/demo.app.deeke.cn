@@ -4,7 +4,7 @@ let Search = {
   /**
    * 搜索关键词；可选筛选（对齐小红书筛选面板）：
    * sort: 0综合 1最新 2最多点赞 3最多评论 4最多收藏
-   * type: 0不限 1视频 2图文
+   * type: 1视频 2图文/笔记（业务侧不再提供「不限」）
    * time: 0不限 1一天内 2一周内 3半年内
    * range: 0不限 1已看过 2未看过 3已关注
    * distance: 0不限 1同城 2附近
@@ -16,7 +16,7 @@ let Search = {
     if (!iptTag) {
       throw new Error('没有找到输入框');
     }
-    iptTag.setText(keyword);
+    Common.inputText(iptTag, keyword);
     Common.sleep(1500 + 1500 * Math.random());
 
     let searchBtnTag = UiSelector().className('android.widget.Button').filter(function (v) {
@@ -33,6 +33,45 @@ let Search = {
     this.applyFilter(config || {});
   },
 
+  /** 搜索结果顶栏：ActionBar$Tab 下子控件文案为「全部」，点击打开筛选面板 */
+  openResultFilter() {
+    let already =
+      UiSelector().text('收起').isVisibleToUser(true).findOne() ||
+      UiSelector().text('重置').isVisibleToUser(true).findOne();
+    if (already) {
+      return true;
+    }
+
+    let allTv = UiSelector().className('android.widget.TextView').text('全部').isVisibleToUser(true).filter(function (v) {
+      return v.parent() && v.parent().className() == 'androidx.appcompat.app.ActionBar$Tab';
+    }).findOne();
+    if (!allTv) {
+      Log.log('未找到全部 Tab');
+      return false;
+    }
+    let tab = allTv.parent();
+    Common.click(tab, 0.15);
+    Common.sleep(1500 + 800 * Math.random());
+
+    let opened =
+      UiSelector().text('收起').isVisibleToUser(true).findOne() ||
+      UiSelector().text('重置').isVisibleToUser(true).findOne() ||
+      UiSelector().text('最多点赞').isVisibleToUser(true).findOne();
+    if (!opened) {
+      // 若当前不在「全部」分类，第一次点击可能只是切 Tab，再点一次打开面板
+      Common.click(tab, 0.15);
+      Common.sleep(1500 + 800 * Math.random());
+      opened =
+        UiSelector().text('收起').isVisibleToUser(true).findOne() ||
+        UiSelector().text('重置').isVisibleToUser(true).findOne();
+    }
+    if (!opened) {
+      Log.log('点击全部 Tab 后未打开筛选面板');
+      return false;
+    }
+    return true;
+  },
+
   applyFilter(config) {
     let cfg = config || {};
     let sort = parseInt(cfg.sort, 10) || 0;
@@ -40,20 +79,14 @@ let Search = {
     let time = parseInt(cfg.time, 10) || 0;
     let range = parseInt(cfg.range, 10) || 0;
     let distance = parseInt(cfg.distance, 10) || 0;
-    if (sort === 0 && type === 0 && time === 0 && range === 0 && distance === 0) {
-      return false;
+    // 笔记类型必选：1视频 / 2图文；非法值按笔记处理
+    if (type !== 1 && type !== 2) {
+      type = 2;
     }
 
-    let filterTag =
-      UiSelector().descContains('筛选').clickable(true).isVisibleToUser(true).findOne() ||
-      UiSelector().text('筛选').isVisibleToUser(true).findOne() ||
-      UiSelector().desc('筛选').isVisibleToUser(true).findOne();
-    if (!filterTag) {
-      Log.log('未找到筛选入口，跳过');
+    if (!this.openResultFilter()) {
       return false;
     }
-    Common.click(filterTag, 0.15);
-    Common.sleep(1500 + 800 * Math.random());
 
     let sortMap = [
       ['综合'],
@@ -63,7 +96,7 @@ let Search = {
       ['最多收藏']
     ];
     let typeMap = [
-      ['不限'],
+      ['视频'],
       ['视频'],
       ['图文']
     ];
@@ -88,9 +121,8 @@ let Search = {
     if (sort !== 0) {
       this.clickFilterOption(sortMap[sort] || ['综合']);
     }
-    if (type !== 0) {
-      this.clickFilterOption(typeMap[type] || ['不限']);
-    }
+    // 始终应用笔记类型（视频/图文）
+    this.clickFilterOption(typeMap[type] || ['图文']);
     if (time !== 0) {
       this.clickFilterOption(timeMap[time] || ['不限']);
     }
@@ -103,9 +135,7 @@ let Search = {
 
     let confirm =
       UiSelector().text('收起').isVisibleToUser(true).findOne() ||
-      UiSelector().text('完成').isVisibleToUser(true).findOne() ||
-      UiSelector().descContains('筛选').isVisibleToUser(true).findOne() ||
-      filterTag;
+      UiSelector().text('完成').isVisibleToUser(true).findOne();
     if (confirm) {
       try {
         Common.click(confirm, 0.1);
@@ -119,10 +149,29 @@ let Search = {
   clickFilterOption(needles) {
     let arr = needles || [];
     for (let i = 0; i < arr.length; i++) {
-      let tag = UiSelector().text(arr[i]).isVisibleToUser(true).findOne() ||
-        UiSelector().textContains(arr[i]).isVisibleToUser(true).findOne();
-      if (tag) {
-        Common.click(tag, 0.15);
+      let tags = UiSelector().text(arr[i]).isVisibleToUser(true).find();
+      if (!tags || !tags.length) {
+        tags = UiSelector().textContains(arr[i]).isVisibleToUser(true).find();
+      }
+      if (!tags || !tags.length) {
+        continue;
+      }
+      // 面板选项高度约 96，顶栏小字约 61；优先点更大的，同高度取更靠下的
+      let best = null;
+      for (let j = 0; j < tags.length; j++) {
+        let t = tags[j];
+        if (!best) {
+          best = t;
+          continue;
+        }
+        let bh = best.bounds().height();
+        let th = t.bounds().height();
+        if (th > bh || (th === bh && t.bounds().top > best.bounds().top)) {
+          best = t;
+        }
+      }
+      if (best) {
+        Common.click(best, 0.15);
         Common.sleep(800 + 500 * Math.random());
         return true;
       }
@@ -215,29 +264,52 @@ let Search = {
   },
 
   /**
-   * 打开搜索结果中下一条未处理笔记；忽略 ignoreTitles。
+   * 在搜索列表中循环查找下一条未操作的图文/视频并进入。
+   * 当前屏没有则下滑继续找；swipeWorkOp 返回 false 表示已到底。
+   * @param {string[]} ignoreTitles 本轮已处理过的标题
+   * @returns {string|null} 进入的作品标题；到底或无法滑动则 null
    */
   intoNextNote(ignoreTitles) {
     let ignores = ignoreTitles || [];
-    let list = this.getList();
-    for (let i = 0; i < list.length; i++) {
-      let item = list[i];
-      if (!item || !item.tag) {
-        continue;
+    let guard = 50;
+    while (guard-- > 0) {
+      let list = this.getList();
+      Log.log('搜索列表条数', list ? list.length : 0, '剩余滑动轮次', guard);
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        if (!item || !item.tag) {
+          continue;
+        }
+        if (item.isLiving) {
+          continue;
+        }
+        let title = item.content || '';
+        if (!title) {
+          continue;
+        }
+        if (ignores.indexOf(title) !== -1) {
+          continue;
+        }
+        // 标题过长时 contents 可能只存了截断，两边都比一下
+        let shortTitle = title.length > 40 ? title.substring(0, 40) : title;
+        if (ignores.indexOf(shortTitle) !== -1) {
+          continue;
+        }
+        Log.log('进入未操作作品', shortTitle);
+        Common.click(item.tag, 0.25);
+        Common.sleep(3500 + 2000 * Math.random());
+        return title;
       }
-      if (item.isLiving) {
-        continue;
+
+      // 本屏都已操作过（或无可用项），继续下滑找新的
+      let swiped = Common.swipeWorkOp();
+      if (!swiped) {
+        Log.log('搜索列表滑动返回 false，已到底');
+        return null;
       }
-      let title = item.content || '';
-      if (ignores.indexOf(title) !== -1) {
-        continue;
-      }
-      Common.click(item.tag, 0.25);
-      Common.sleep(3500 + 2000 * Math.random());
-      return title || ('note_' + Date.now());
+      Common.sleep(1500 + 800 * Math.random());
     }
-    Common.swipeWorkOp();
-    Common.sleep(1500 + 800 * Math.random());
+    Log.log('intoNextNote 超过最大滑动次数，结束');
     return null;
   }
 };

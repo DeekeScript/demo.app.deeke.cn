@@ -8,10 +8,10 @@ Page({
     statusLabel: '未检查',
     statusBg: '#FFF0F0',
     statusColor: '#8A6A6A',
-    statusDetail: '点击下方按钮检查 HID 连接',
-    enableHint: '未连接时不能启用。请先检查连接状态。',
+    statusDetail: '点击下方按钮探测 HID 是否可连接',
+    enableHint: '探测未通过时不能启用。请先检查连接。',
     hidDialogOpen: false,
-    hidDialogText: '未检测到 HID 设备连接，请先连接后再启用。',
+    hidDialogText: 'HID 不可连接，请先配对设备后再启用。',
     _checking: false,
     _ready: false
   },
@@ -20,13 +20,13 @@ Page({
     let ok = connected === true;
     return {
       connected: ok,
-      statusLabel: ok ? '已连接' : '未连接',
+      statusLabel: ok ? '可连接' : '不可连接',
       statusBg: ok ? '#E8F8EF' : '#FFF0F0',
       statusColor: ok ? '#1B7A45' : '#C71C37',
-      statusDetail: detail || (ok ? '可以启用 HID' : '请先连接 HID 设备'),
+      statusDetail: detail || (ok ? '探测通过，运行时由 RPA 再连接' : '请先配对 HID 设备后再检查'),
       enableHint: ok
-        ? '已连接，可开启下方开关启用 HID。'
-        : '未连接时不能启用。请先检查连接状态。'
+        ? '探测通过，可开启下方开关启用 HID。'
+        : '探测未通过时不能启用。请先检查连接。'
     };
   },
 
@@ -47,7 +47,7 @@ Page({
     }
     this.setData({ _checking: true });
     if (showLoading) {
-      this.showLoading('正在检查 HID…');
+      this.showLoading('正在探测 HID，可能需要十几秒…');
     }
     let result = { ok: false, message: '未检测到 HID 设备连接' };
     try {
@@ -90,9 +90,9 @@ Page({
   onCheck() {
     let ok = this.refreshStatus(true);
     if (ok) {
-      this.toast('HID 已连接');
+      this.toast('HID 可连接');
     } else {
-      this.toast('HID 未连接');
+      this.toast('HID 不可连接');
     }
   },
 
@@ -111,8 +111,8 @@ Page({
 
     // 启用前必须已连接；再复查一次
     this.setData({ _checking: true, hidEnabled: true });
-    this.showLoading('正在检查 HID…');
-    let result = { ok: false, message: '未检测到 HID 设备连接，请先连接后再启用。' };
+    this.showLoading('正在探测 HID，可能需要十几秒…');
+    let result = { ok: false, message: 'HID 不可连接，请先配对设备后再启用。' };
     try {
       result = hid.checkConnected() || result;
     } catch (err) {
@@ -130,7 +130,7 @@ Page({
     if (!connected) {
       patch.hidEnabled = false;
       patch.hidDialogOpen = true;
-      patch.hidDialogText = result.message || '未检测到 HID 设备连接，未连接时不能启用。';
+      patch.hidDialogText = result.message || 'HID 不可连接，探测未通过时不能启用。';
       this.setData(patch);
       this.saveEnabled(false);
       return;

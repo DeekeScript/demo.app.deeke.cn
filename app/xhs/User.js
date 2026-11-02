@@ -14,12 +14,13 @@ let User = {
     },
 
     isPrivate() {
-        return UiSelector().className('').text('私密账号').findOne() ? true : false;
+        // 必须短超时，避免 findOne 无限等
+        return !!UiSelector().text('私密账号').isVisibleToUser(true).findOneBy(1500);
     },
 
     getNickname() {
-        let nicknameTag = UiSelector().className('android.widget.TextView').findOne();
-        return nicknameTag.text();
+        let nicknameTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).findOneBy(2000);
+        return nicknameTag ? nicknameTag.text() : '';
     },
 
     intoVideo() {
@@ -31,8 +32,7 @@ let User = {
             return false;
         }
 
-        //Common.click(videoTag, 0.3);//点击中间的60%
-        Gesture.click(videoTag.bounds().left + videoTag.bounds().width() * 0.7, videoTag.bounds().top + videoTag.bounds().height() * 0.6);
+        Common.tapAt(videoTag.bounds().left + videoTag.bounds().width() * 0.7, videoTag.bounds().top + videoTag.bounds().height() * 0.6);
         statistics.viewVideo();
         statistics.viewTargetVideo();
         Common.sleep(4000 + 3000 * Math.random());
@@ -86,7 +86,7 @@ let User = {
         }
     },
 
-    privateMsg(msg, imagePath) {
+    privateMsg(msg) {
         let sendTag = UiSelector().className('android.widget.TextView').text('发私信').filter(v => {
             return v.text() == '发私信';
         }).findOne() || UiSelector().className('android.widget.TextView').text('发消息').filter(v => {
@@ -101,15 +101,14 @@ let User = {
         Common.click(sendTag, 0.3);
         Common.sleep(2000 + 1000 * Math.random());
 
-        let res = this.privateMsgTwo(msg, imagePath);
+        let res = this.privateMsgTwo(msg);
         Common.back();
         return res;
     },
 
-    privateMsgTwo(msg, imagePath) {
-        let gallery = require('common/gallery.js');
+    /** 私信仅支持文字，不允许配图 */
+    privateMsgTwo(msg) {
         let text = String(msg || '').trim();
-        let image = String(imagePath || '').trim();
 
         let sendIptTag = UiSelector().className('android.widget.EditText').isVisibleToUser(true).findOne();
         if (sendIptTag) {
@@ -119,22 +118,8 @@ let User = {
         }
         if (text && sendIptTag) {
             Log.log('开始设置私信', text);
-            sendIptTag.setText(text);
+            Common.inputText(sendIptTag, text);
             Common.sleep(1500 + 1200 * Math.random());
-        }
-
-        if (image) {
-            gallery.stageLocalImage(image);
-            Common.sleep(1500);
-            let addImageTag =
-                UiSelector().desc('添加图片').isVisibleToUser(true).findOne() ||
-                UiSelector().descContains('图片').isVisibleToUser(true).findOne() ||
-                UiSelector().textContains('图片').isVisibleToUser(true).findOne();
-            if (addImageTag) {
-                gallery.pickFirstStaged(addImageTag);
-            } else {
-                Log.log('私信页未找到添加图片入口');
-            }
         }
 
         let sendBtnTags = UiSelector().className('android.widget.TextView').isVisibleToUser(true).text('发送').find();
@@ -157,9 +142,9 @@ let User = {
         return 2;
     },
 
-    //注意，粉丝关注有两种模式，一种是横版的，一种是关注和发私信两个按钮占据一行
+    // 注意：粉丝关注有两种模式；对齐 sampledata：TextView 需有 id，或 Button
     isFocus() {
-        let focusTag = UiSelector().filter(v => {
+        let focusTag = UiSelector().filter(function (v) {
             return (v.className() == 'android.widget.TextView' && v.id()) || v.className() == 'android.widget.Button';
         }).isVisibleToUser(true).textContains('关注').findOne();
         if (focusTag && focusTag.text() != '关注') {
@@ -174,11 +159,16 @@ let User = {
             return true;
         }
 
-        let focusTag = UiSelector().filter(v => {
+        let focusTag = UiSelector().filter(function (v) {
             return (v.className() == 'android.widget.TextView' && v.id()) || v.className() == 'android.widget.Button';
         }).isVisibleToUser(true).textContains('关注').findOne();
+        if (!focusTag) {
+            Log.log('关注按钮不可见，跳过');
+            return false;
+        }
         Common.click(focusTag, 0.2);
         statistics.focus();
+        Common.sleep(800 + 500 * Math.random());
         return true;
     },
 
@@ -281,7 +271,7 @@ let User = {
         Common.sleep(2000 + 1000 * Math.random());
         Common.log('图片', img);
         let tagBounds = Images.findTextPosition(img, '举报');
-        Gesture.click(tagBounds[0].left + tagBounds[0].width() * Math.random(), tagBounds[0].top + tagBounds[0].height() * Math.random());
+        Common.tapAt(tagBounds[0].left + tagBounds[0].width() * Math.random(), tagBounds[0].top + tagBounds[0].height() * Math.random());
         Common.sleep(2000 + 2000 * Math.random());
 
         let theAccountTag = UiSelector().text('这个账号').isVisibleToUser(true).findOne();
@@ -300,7 +290,7 @@ let User = {
         Common.sleep(2000 + 1000 * Math.random());
 
         let iptTag = UiSelector().className('android.widget.EditText').editable(true).isVisibleToUser(true).findOne();
-        iptTag.setText(msg);
+        Common.inputText(iptTag, msg);
         Common.sleep(1000 + 1000 * Math.random());
 
         if (imageFile) {

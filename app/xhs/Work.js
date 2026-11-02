@@ -1,5 +1,6 @@
 let Common = require("app/xhs/Common.js");
 let statistics = require("common/statistics.js");
+let XhsComment = require("app/xhs/Comment.js");
 
 let Work = {
     getCommentTag() {
@@ -104,60 +105,145 @@ let Work = {
         return Common.numDeal(tag ? tag.desc() : 0);//部分企业类图文没有评论标识，直接过滤（比如：有巢公寓武汉青年城）
     },
 
-    msg(type, msg, imagePath) {
+    /** 找已弹出的可编辑评论框 */
+    findEditableInput() {
+        return UiSelector().className('android.widget.EditText').filter(function (v) {
+            return v && (v.isFocused() || v.isEditable());
+        }).isVisibleToUser(true).findOne() ||
+            UiSelector().className('android.widget.EditText').isVisibleToUser(true).findOne();
+    },
+
+    /**
+     * 输入框下方工具栏：取第二个 android.widget.ImageView（加图入口）。
+     */
+    findAddImageBelowInput(iptTag) {
+        let bottom = 0;
+        try {
+            if (iptTag && iptTag.bounds) {
+                bottom = iptTag.bounds().bottom;
+            }
+        } catch (e) {}
+
+        let images = UiSelector().className('android.widget.ImageView').isVisibleToUser(true).filter(function (v) {
+            try {
+                return v.bounds().top >= bottom - 8;
+            } catch (e2) {
+                return false;
+            }
+        }).find();
+        if (!images || !images.length) {
+            return null;
+        }
+
+        let arr = [];
+        for (let i = 0; i < images.length; i++) {
+            arr.push(images[i]);
+        }
+        arr.sort(function (a, b) {
+            let dy = a.bounds().top - b.bounds().top;
+            if (Math.abs(dy) > 24) {
+                return dy;
+            }
+            return a.bounds().left - b.bounds().left;
+        });
+
+        // 只取输入框正下方一排（约 280px 内）
+        let row = [];
+        for (let j = 0; j < arr.length; j++) {
+            if (arr[j].bounds().top <= bottom + 280) {
+                row.push(arr[j]);
+            }
+        }
+        if (row.length >= 2) {
+            return row[1];
+        }
+        return arr.length >= 2 ? arr[1] : null;
+    },
+
+    /**
+     * 往已弹出的输入框填内容：HID 用粘贴，否则 setText；可带图后点发送。
+     * 回复场景点完「回复」后输入框已在，不要再去找「说点什么」。
+     */
+    fillCommentInput(msg, imagePath) {
         let gallery = require('common/gallery.js');
         let text = String(msg || '').trim();
         let image = String(imagePath || '').trim();
-        let inputTag = UiSelector().textContains('说点什么').className('android.widget.TextView').findOne() || UiSelector().className('android.widget.TextView').desc('评论框').findOne();
 
-        if (!inputTag) {
-            Log.log('没有找到输入框');
-            return false;
-        }
-
-        Common.click(inputTag, 0.15);
-        Common.sleep(1500 + 1000 * Math.random());
-
-        let iptTag = UiSelector().className('android.widget.EditText').filter(v => {
-            return v.isFocused();
-        }).isVisibleToUser(true).findOne() || UiSelector().className('android.widget.EditText').isVisibleToUser(true).findOne();
+        let iptTag = this.findEditableInput();
         if (text) {
             if (!iptTag) {
-                Log.log('输入框没有');
+                Log.log('没有找到可输入的评论框');
                 return false;
             }
-            iptTag.setText(text);
+            Common.inputText(iptTag, text);
             Common.sleep(1500 + 500 * Math.random());
         }
 
         if (image) {
-            gallery.stageLocalImage(image);
-            Common.sleep(1500);
-            let addImageTag =
-                UiSelector().desc('添加图片').isVisibleToUser(true).findOne() ||
-                UiSelector().descContains('图片').clickable(true).isVisibleToUser(true).findOne() ||
-                UiSelector().descContains('相册').isVisibleToUser(true).findOne();
-            if (addImageTag) {
-                gallery.pickFirstStaged(addImageTag);
+            Log.log('评论配图准备入库：' + image);
+            let stagedUri = gallery.stageLocalImage(image);
+            if (!stagedUri) {
+                Log.log('评论配图入库失败，跳过选图');
             } else {
-                Log.log('评论框未找到添加图片入口');
+                Common.sleep(800);
+                if (!iptTag) {
+                    iptTag = this.findEditableInput();
+                }
+                let addImageTag = this.findAddImageBelowInput(iptTag);
+                if (addImageTag) {
+                    Log.log('点击输入框下方第 2 个 ImageView 加图');
+                    gallery.pickFirstStaged(addImageTag);
+                } else {
+                    Log.log('评论框未找到加图 ImageView（输入框下第 2 个）');
+                }
             }
+        }
+
+        if (!text && !image) {
+            return false;
         }
 
         let sendTag = UiSelector().className('android.widget.TextView').text('发送').isVisibleToUser(true).findOne();
         if (!sendTag) {
+            Log.log('没有找到发送按钮');
+            gallery.deleteLastStaged();
             return false;
         }
 
         let res = Common.click(sendTag, 0.2);
         statistics.comment();
         Log.log('发送了');
-        Common.sleep(500 + 500 * Math.random());
+        // 配图可能较大，发完立刻删相册临时文件会导致发送失败/丢图
+        if (image) {
+            Common.sleep(3000 + 500 * Math.random());
+        } else {
+            Common.sleep(500 + 500 * Math.random());
+        }
+        gallery.deleteLastStaged();
         return res;
     },
 
+    /** 一级评论：先点「说点什么」打开输入框，再填内容 */
+    msg(type, msg, imagePath) {
+        let inputTag = UiSelector().textContains('说点什么').className('android.widget.TextView').findOne() ||
+            UiSelector().className('android.widget.TextView').desc('评论框').findOne();
+
+        if (!inputTag) {
+            // 输入框可能已经打开
+            if (this.findEditableInput()) {
+                return this.fillCommentInput(msg, imagePath);
+            }
+            Log.log('没有找到输入框');
+            return false;
+        }
+
+        Common.click(inputTag, 0.15);
+        Common.sleep(1500 + 1000 * Math.random());
+        return this.fillCommentInput(msg, imagePath);
+    },
+
     /**
-     * 回复某条评论（可带图）
+     * 回复某条评论（可带图）。点「回复」后键盘/输入框已弹出，直接填可编辑框。
      */
     replyComment(comment, msg, imagePath) {
         if (!comment) {
@@ -174,20 +260,69 @@ let Work = {
                 return v.text() && v.text().indexOf('回复') !== -1;
             }).findOne();
         }
-        if (replyTag) {
-            Common.click(replyTag, 0.2);
-            Common.sleep(1200 + 800 * Math.random());
+        if (!replyTag) {
+            Log.log('没有找到回复按钮');
+            return false;
         }
-        return this.msg(0, msg, imagePath);
+
+        Common.click(replyTag, 0.2);
+        Common.sleep(1200 + 800 * Math.random());
+        Common.log('正在回复：' + msg, imagePath);
+        return this.fillCommentInput(msg, imagePath);
     },
 
-    closeCommentWindow() {
-        let isVideo = this.isVideo();
-        if (isVideo) {
-            Common.back();
-            Common.sleep(1000 + 500 * Math.random());
+    /**
+     * 评论半屏是否打开。
+     * 注意：视频页未开评论时也会有「说点什么」，不能当弹层判断，否则 close 时 back 会退出视频。
+     */
+    isCommentPanelOpen() {
+        try {
+            if (UiSelector().className('android.widget.TextView').textContains('- 到底了 -').isVisibleToUser(true).findOneBy(350)) {
+                return true;
+            }
+        } catch (e) {}
+        try {
+            // 半屏评论列表：顶部明显在屏幕中部以下（排除全屏信息流）
+            let rv = UiSelector().className('androidx.recyclerview.widget.RecyclerView')
+                .filter(function (v) {
+                    let b = v.bounds();
+                    return b && b.top > Device.height() * 0.35 && b.top < Device.height() * 0.75 && b.bottom > Device.height() * 0.8;
+                }).isVisibleToUser(true).findOneBy(350);
+            if (rv) {
+                return true;
+            }
+        } catch (e2) {}
+        return false;
+    },
+
+    /**
+     * 关闭评论区。仅在弹层仍打开时关闭一次，避免多按返回退出视频。
+     * 优先点上方遮罩收起；失败再用一次 back。
+     * @param {boolean=} knownIsVideo 保留参数兼容调用方
+     */
+    closeCommentWindow(knownIsVideo) {
+        if (!this.isCommentPanelOpen()) {
+            Log.log('评论区未打开，跳过关闭');
+            return false;
         }
-        return true;
+
+        // 先点视频上方空白收起半屏评论（走 Common.tapAt，开启 HID 时用 Hid）
+        try {
+            let x = Device.width() * (0.45 + Math.random() * 0.1);
+            let y = Device.height() * (0.12 + Math.random() * 0.06);
+            Log.log('点击收起评论区', x, y);
+            Common.tapAt(x, y);
+            Common.sleep(900 + 400 * Math.random());
+        } catch (eTap) {}
+
+        if (!this.isCommentPanelOpen()) {
+            return true;
+        }
+
+        // 仍开着再 back 一次
+        Common.back();
+        Common.sleep(1000 + 500 * Math.random());
+        return !this.isCommentPanelOpen();
     },
 
     isLiving() {
@@ -261,12 +396,20 @@ let Work = {
                 continue;
             }
 
+            let zanTag = _childs[3].parent();
+            // 半露出屏幕的评论不要入列，后续点赞坐标会偏
+            if (!Common.isOnScreen(zanTag) || !Common.isOnScreen(_childs[0])) {
+                Log.log('评论未完全可见，跳过', _childs[0] ? _childs[0].text() : '');
+                continue;
+            }
+
             let arr = _childs[2].text().split(' ');
             Log.log('评论内容', _childs[1].text(), index, arr);
             childs.push({
                 content: _childs[1].text(),
                 ip: arr[arr.length - 2] || '-',
-                zanTag: _childs[3].parent(),
+                zanTag: zanTag,
+                zaned: XhsComment.isZaned(zanTag),
                 nicknameTag: _childs[0],
                 nickname: _childs[0].text(),
             });
@@ -374,7 +517,15 @@ let Work = {
 
     getNickname() {
         let tag = Common.id('nickNameTV').isVisibleToUser(true).findOne();
-        return tag ? tag.text() : '';
+        if (tag) {
+            return tag.text() || '';
+        }
+        // 视频昵称
+        tag = Common.id('matrixNickNameView').isVisibleToUser(true).findOne();
+        if (tag) {
+            return tag.text() || tag.desc() || '';
+        }
+        return '';
     },
 
     getContent() {
@@ -437,7 +588,7 @@ let Work = {
             }
         }
 
-        Gesture.click(tagBounds[0].left + tagBounds[0].width() * Math.random(), tagBounds[0].top + tagBounds[0].height() * Math.random());
+        Common.tapAt(tagBounds[0].left + tagBounds[0].width() * Math.random(), tagBounds[0].top + tagBounds[0].height() * Math.random());
         Common.sleep(2000 + 2000 * Math.random());
 
         let theAccountTag = UiSelector().text('对他人造成困扰或危害').isVisibleToUser(true).findOne();
@@ -464,7 +615,7 @@ let Work = {
             let tag = UiSelector().text('补充更多举报信息').isVisibleToUser(true).findOne();
             Common.click(tag, 0.2);
             Common.sleep(1000 + 1000 * Math.random());
-            UiSelector().editable(true).isVisibleToUser(true).findOne().setText(msg);
+            Common.inputText(UiSelector().editable(true).isVisibleToUser(true).findOne(), msg);
             Common.sleep(1000 + 1000 * Math.random());
 
             if (imageFile) {

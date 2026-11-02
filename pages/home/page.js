@@ -29,7 +29,8 @@ Page({
     stopHintOpen: false,
     guideOpen: false,
     updateOpen: false,
-    updateTitle: '发现新版本'
+    updateTitle: '发现新版本',
+    running: false
   },
 
   refreshTargetCard() {
@@ -93,6 +94,28 @@ Page({
     this.setData({ agreeProtocol: protocol.readAgreed() });
     this.refresh();
     this.autoCheckUpdate();
+    this.bindRpaAppOpened();
+  },
+
+  /** 脚本打开小红书后通知首页结束按钮 loading */
+  bindRpaAppOpened() {
+    if (this._boundRpaAppOpened) {
+      return;
+    }
+    this._boundRpaAppOpened = true;
+    let that = this;
+    Events.on('rpa_app_opened', function () {
+      that.clearRunning();
+    });
+  },
+
+  clearRunning() {
+    if (this._runningTimer) {
+      clearTimeout(this._runningTimer);
+      this._runningTimer = null;
+    }
+    this.setData({ running: false });
+    this._inRun = false;
   },
 
   onShow() {
@@ -195,27 +218,46 @@ Page({
   },
 
   onRun() {
-    if (this._inRun) {
+    if (this._inRun || this.data.running) {
       return;
     }
     this._inRun = true;
-    try {
-      this.runChecked();
-    } finally {
-      this._inRun = false;
-    }
+    this.setData({ running: true });
+    // 先渲染 loading，再做耗时检查；真正打开小红书后由 rpa 事件清掉
+    let that = this;
+    setTimeout(function () {
+      let started = false;
+      try {
+        started = that.runChecked() === true;
+      } catch (e) {
+        logger.warn('run', '启动异常：' + ((e && e.message) || e));
+        started = false;
+      }
+      if (!started) {
+        that.clearRunning();
+        return;
+      }
+      // 兜底：超时仍未收到打开事件则结束 loading
+      if (that._runningTimer) {
+        clearTimeout(that._runningTimer);
+      }
+      that._runningTimer = setTimeout(function () {
+        that.clearRunning();
+      }, 20000);
+    }, 50);
   },
 
+  /** @returns {boolean} 是否已拉起脚本 */
   runChecked() {
     if (!this.data.agreeProtocol) {
       logger.warn('run', '未勾选用户协议');
       this.setData({ agreeTipOpen: true });
-      return;
+      return false;
     }
     if (!params.hasConfigured()) {
       logger.warn('run', '首次未完成设置');
       this.setData({ paramsDialogOpen: true });
-      return;
+      return false;
     }
     let paid = activation.ensurePaid();
     if (!paid.ok) {
@@ -225,22 +267,22 @@ Page({
           payDialogOpen: true,
           payDialogText: '激活后才能正常使用本应用'
         });
-        return;
+        return false;
       }
       this.toast(paid.message || '检测失败');
-      return;
+      return false;
     }
     if (!Access.isAccessibilityServiceEnabled()) {
       logger.warn('run', '无障碍未开启');
       this.setData({ guideOpen: true });
-      return;
+      return false;
     }
     if (this._skipTargetGate) {
       logger.info('run', '用户选择仍要运行（跳过适配检测）');
       this._skipTargetGate = false;
     } else if (!this.hasSkipTargetRemind()) {
       if (this.data.targetDialogOpen) {
-        return;
+        return false;
       }
       let ready = target.ensureReady();
       if (ready.hasTarget && ready.needAction) {
@@ -252,7 +294,7 @@ Page({
           targetDialogText: tip,
           dismissTargetRemind: false
         });
-        return;
+        return false;
       }
     } else {
       logger.info('run', '已勾选不再提醒，跳过适配检测');
@@ -260,14 +302,20 @@ Page({
     if (!Access.isFloatWindowsEnabled()) {
       logger.warn('run', '悬浮窗未开启');
       permission.ensureFloat();
-      return;
+      return false;
+    }
+    // 评论配图需写入相册，开始前先拿媒体/图片权限
+    if (!permission.ensureMedia()) {
+      logger.warn('run', '媒体/图片权限未就绪');
+      this.toast('请允许照片权限后，再点开始运行');
+      return false;
     }
     if (!this.hasStopHint()) {
       logger.info('run', '首次运行，等待确认关闭方式');
       this.setData({ stopHintOpen: true });
-      return;
+      return false;
     }
     logger.info('run', '启动 tasks/rpa.js');
-    permission.runScript('tasks/rpa.js');
+    return permission.runScript('tasks/rpa.js') === true;
   }
 });

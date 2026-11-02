@@ -1,4 +1,5 @@
 let activation = require('../../common/activation.js');
+let config = require('../../common/config.js');
 
 function statusView(st) {
   let activated = !!(st && st.activated);
@@ -43,7 +44,15 @@ Component({
     this._refreshAt = now;
     let online = activation.checkOnline();
     if (!online.ok) {
-      let view = statusView(activation.formatStatus(activation.readCache()));
+      if (online.missingTool) {
+        this.paint({
+          statusTitle: '工具不存在',
+          statusDetail: '编号 ' + (config.toolCode || '') + ' 未发布或不存在',
+          showPayEntry: false
+        });
+        return;
+      }
+      let view = statusView(online.status || activation.formatStatus(null));
       if (online.message) {
         view.statusDetail = online.message;
       }

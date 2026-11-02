@@ -7,6 +7,8 @@ Page({
     newContent: '',
     newPhotos: [],
     newEnabled: true,
+    showAddImage: false,
+    addContentHint: '私信请填写文字',
     filter: 'all',
     rows: [],
     empty: false,
@@ -418,7 +420,9 @@ Page({
       newType: 'dm',
       newContent: '',
       newPhotos: [],
-      newEnabled: true
+      newEnabled: true,
+      showAddImage: false,
+      addContentHint: '私信请填写文字'
     });
   },
 
@@ -426,7 +430,22 @@ Page({
     this.setData({ addOpen: false });
   },
 
+  onNewTypeChange(e) {
+    let type = e && e.value != null ? String(e.value) : (this.data.newType || 'dm');
+    let isComment = type === 'comment';
+    this.setData({
+      newType: type,
+      showAddImage: isComment,
+      addContentHint: isComment ? '可空；文字和图片至少填一项' : '私信请填写文字',
+      newPhotos: isComment ? (this.data.newPhotos || []) : []
+    });
+  },
+
   onNewPhotos(e) {
+    if (this.data.newType !== 'comment') {
+      this.setData({ newPhotos: [] });
+      return;
+    }
     let photos = e && e.value != null ? e.value : [];
     if (!Array.isArray(photos)) {
       photos = [];
@@ -461,21 +480,26 @@ Page({
 
   onAdd() {
     let text = (this.data.newContent || '').trim();
-    let photos = this.data.newPhotos || [];
+    let type = this.data.newType === 'comment' ? 'comment' : 'dm';
     let image = '';
-    if (Array.isArray(photos) && photos.length) {
-      image = String(photos[0] || '').trim();
-    }
-    if (!text && !image) {
-      this.toast('文字和图片至少填写一项');
+    if (type === 'comment') {
+      let photos = this.data.newPhotos || [];
+      if (Array.isArray(photos) && photos.length) {
+        image = String(photos[0] || '').trim();
+      }
+      if (!text && !image) {
+        this.toast('文字和图片至少填写一项');
+        return;
+      }
+    } else if (!text) {
+      this.toast('私信必须填写文字');
       return;
     }
-    let type = this.data.newType === 'comment' ? 'comment' : 'dm';
     let enabled = this.data.newEnabled !== false;
     let list = scripts.load();
-    list.push({ content: text, image: image, type: type, enabled: enabled });
+    list.push({ content: text, image: type === 'comment' ? image : '', type: type, enabled: enabled });
     scripts.save(list);
-    this.setData({ addOpen: false, newContent: '', newPhotos: [], newEnabled: true });
+    this.setData({ addOpen: false, newContent: '', newPhotos: [], newEnabled: true, showAddImage: false });
     this.refresh();
     this.toast(enabled ? '已添加' : '已添加（停用）');
   },

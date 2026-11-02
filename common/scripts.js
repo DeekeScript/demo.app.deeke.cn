@@ -9,12 +9,12 @@ module.exports = {
 
   defaults() {
     return [
-      { content: '你好，刚刷到你的笔记，很有共鸣', image: '', type: 'dm', enabled: true },
-      { content: '方便加个好友交流一下吗？', image: '', type: 'dm', enabled: true },
-      { content: '看你做得挺专业，想请教几个细节', image: '', type: 'dm', enabled: true },
-      { content: '这篇对我帮助很大，方便聊聊经验吗？', image: '', type: 'dm', enabled: true },
-      { content: '你好，我对这类内容很感兴趣，想认识一下', image: '', type: 'dm', enabled: true },
-      { content: '如果方便的话，后续想多交流学习', image: '', type: 'dm', enabled: true },
+      { content: '你好，刚刷到你的笔记，很有共鸣', type: 'dm', enabled: true },
+      { content: '方便加个好友交流一下吗？', type: 'dm', enabled: true },
+      { content: '看你做得挺专业，想请教几个细节', type: 'dm', enabled: true },
+      { content: '这篇对我帮助很大，方便聊聊经验吗？', type: 'dm', enabled: true },
+      { content: '你好，我对这类内容很感兴趣，想认识一下', type: 'dm', enabled: true },
+      { content: '如果方便的话，后续想多交流学习', type: 'dm', enabled: true },
       { content: '学到了，感谢分享', image: '', type: 'comment', enabled: true },
       { content: '写得很清楚，支持一下', image: '', type: 'comment', enabled: true },
       { content: '这个角度很新颖，收藏了', image: '', type: 'comment', enabled: true },
@@ -30,14 +30,21 @@ module.exports = {
     }
     let type = item.type === 'comment' ? 'comment' : 'dm';
     let content = String(item.content || '').trim();
-    let image = String(item.image || item.imagePath || '').trim();
-    if (Array.isArray(item.photos) && item.photos.length) {
-      image = String(item.photos[0] || '').trim() || image;
+    // 私信不允许配图
+    let image = '';
+    if (type === 'comment') {
+      image = String(item.image || item.imagePath || '').trim();
+      if (Array.isArray(item.photos) && item.photos.length) {
+        image = String(item.photos[0] || '').trim() || image;
+      }
     }
     if (!content && !image) {
       return null;
     }
-    let hasImage = !!image;
+    if (type === 'dm' && !content) {
+      return null;
+    }
+    let hasImage = type === 'comment' && !!image;
     return {
       content: content,
       image: image,
@@ -82,17 +89,40 @@ module.exports = {
     return list;
   },
 
+  /** 清空全部自定义话术（含旧版缓存），保留空列表，不会再自动灌默认话术 */
+  clearAll() {
+    try { Storage.remove(this.legacyListKey); } catch (e) {}
+    try { Storage.remove(this.legacyListKeyV2); } catch (e2) {}
+    try { Storage.remove(this.dmListKey); } catch (e3) {}
+    try { Storage.remove(this.commentListKey); } catch (e4) {}
+    Storage.putObj(this.listKey, []);
+    Storage.putBoolean(this.listKey + '.inited', true);
+  },
+
   load() {
+    // 一次性清空历史话术（用户请求）；只执行一次
+    let wipeKey = this.listKey + '.wipeEmpty.20261103';
+    if (Storage.getBoolean(wipeKey) !== true) {
+      this.clearAll();
+      Storage.putBoolean(wipeKey, true);
+      return [];
+    }
+
+    // 用独立标记区分「从未初始化」和「用户主动清空」；空数组必须保留
+    let inited = Storage.getBoolean(this.listKey + '.inited') === true;
     let raw = Storage.getObj(this.listKey);
-    if (!raw || !raw.length) {
+    if (!inited || raw == null) {
       raw = Storage.getObj(this.legacyListKeyV2) || Storage.getObj(this.legacyListKey) || [];
-      if (!raw.length) {
+      if (!Array.isArray(raw) || !raw.length) {
         raw = this.migrateFromLegacy();
       }
-      if (!raw.length || raw.length < 10) {
+      if (!Array.isArray(raw) || !raw.length) {
         raw = this.defaults();
       }
       this.save(raw);
+    }
+    if (!Array.isArray(raw)) {
+      raw = [];
     }
     let list = [];
     for (let i = 0; i < raw.length; i++) {
@@ -112,13 +142,14 @@ module.exports = {
       if (n) {
         out.push({
           content: n.content,
-          image: n.image,
+          image: n.type === 'comment' ? n.image : '',
           type: n.type,
           enabled: n.enabled
         });
       }
     }
     Storage.putObj(this.listKey, out);
+    Storage.putBoolean(this.listKey + '.inited', true);
   },
 
   filter(list, filterType) {

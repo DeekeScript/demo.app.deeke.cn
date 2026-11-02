@@ -68,7 +68,7 @@
             {
               "type": "grid",
               "bind": "typeOpts",
-              "columns": 3,
+              "columns": 2,
               "style": { "gap": 8 },
               "item": {
                 "type": "card",
@@ -275,21 +275,10 @@
         },
         {
           "type": "slider",
-          "name": "firstCommentRate",
-          "label": "回复作品首评频率",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "unit": "%",
-          "onChange": "onAutoSave",
-          "style": { "color": "#FF2442" }
-        },
-        {
-          "type": "slider",
           "name": "intervalSec",
           "label": "操作间隔",
           "min": 5,
-          "max": 100,
+          "max": 60,
           "step": 5,
           "unit": "秒",
           "onChange": "onAutoSave",

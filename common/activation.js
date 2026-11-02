@@ -14,7 +14,9 @@ let PLAN_LABELS = {
 };
 
 module.exports = {
-  cacheKey: config.storagePrefix + 'activation',
+  // 按工具编号分开存，避免换编号后仍显示上一个工具的「已开通」
+  cacheKey: config.storagePrefix + 'activation.' + String(config.toolCode || ''),
+  legacyCacheKey: config.storagePrefix + 'activation',
 
   planLabel(data) {
     if (!data) {
@@ -99,6 +101,13 @@ module.exports = {
 
   clearCache() {
     Storage.remove(this.cacheKey);
+    if (this.legacyCacheKey && this.legacyCacheKey !== this.cacheKey) {
+      Storage.remove(this.legacyCacheKey);
+    }
+  },
+
+  missingToolMessage(message) {
+    return String(message || '').indexOf('工具不存在') >= 0;
   },
 
   formatStatus(data) {
@@ -125,7 +134,18 @@ module.exports = {
   checkOnline() {
     let res = api.checkActivation();
     if (!res.ok) {
-      return { ok: false, message: res.message || '检测失败', status: this.formatStatus(this.readCache()) };
+      let message = res.message || '检测失败';
+      let missingTool = this.missingToolMessage(message);
+      // 编号对不上时，旧缓存里的「已开通 · 30天」不能再当当前状态
+      if (missingTool) {
+        this.clearCache();
+      }
+      return {
+        ok: false,
+        missingTool: missingTool,
+        message: message,
+        status: this.formatStatus(missingTool ? null : this.readCache())
+      };
     }
     this.saveCache(res.data);
     return { ok: true, data: res.data, status: this.formatStatus(res.data) };

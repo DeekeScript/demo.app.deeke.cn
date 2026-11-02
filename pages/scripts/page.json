@@ -1475,6 +1475,7 @@
           "type": "radio",
           "name": "newType",
           "label": "类型",
+          "onChange": "onNewTypeChange",
           "options": [
             {
               "label": "私信",
@@ -1493,13 +1494,14 @@
           "type": "textarea",
           "name": "newContent",
           "label": "文字",
-          "hint": "可空；文字和图片至少填一项",
+          "hint": "{{addContentHint}}",
           "minLines": 3,
           "variant": "box",
           "size": "sm"
         },
         {
           "type": "column",
+          "showIf": "showAddImage",
           "style": {
             "width": 148,
             "gap": 6
@@ -1507,7 +1509,7 @@
           "children": [
             {
               "type": "text",
-              "text": "配图",
+              "text": "配图（仅评论）",
               "style": {
                 "fontSize": 14,
                 "color": "#2B1A1A"

@@ -1,8 +1,112 @@
+let params = require('../../common/params.js');
+
 let Common = {
     //封装的方法
     logs: [],
     id(name) {
         return UiSelector().id('com.xingin.xhs:id/' + name);
+    },
+
+    _hidSkipUntil: 0,
+
+    /** 设置页「启用 HID」开关 */
+    useHid() {
+        try {
+            return params.load().hidEnabled === true;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    /**
+     * 控件是否真正可点：对用户可见，且中心点在屏幕内。
+     * 不可见时点坐标容易点到别的地方。
+     */
+    isOnScreen(tag) {
+        try {
+            if (!tag) {
+                return false;
+            }
+            if (tag.isVisibleToUser && !tag.isVisibleToUser()) {
+                return false;
+            }
+            let b = tag.bounds();
+            if (!b || b.width() <= 1 || b.height() <= 1) {
+                return false;
+            }
+            let w = Device.width();
+            let h = Device.height();
+            let cx = b.centerX();
+            let cy = b.centerY();
+            if (cx < 2 || cy < 2 || cx > w - 2 || cy > h - 2) {
+                return false;
+            }
+            if (b.bottom <= 0 || b.top >= h || b.right <= 0 || b.left >= w) {
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    ensureHidConnected() {
+        if (!this.useHid()) {
+            return false;
+        }
+        try {
+            if (Hid.isConnected()) {
+                return true;
+            }
+            let now = Date.now();
+            if (now < (this._hidSkipUntil || 0)) {
+                Log.log('[HID点击] 近期连接失败，暂用普通点击');
+                return false;
+            }
+            Hid.initBluetooth();
+            // 短超时，避免每次点击卡几十秒
+            if (!Hid.connectAndWait(true, 0, 5000)) {
+                this._hidSkipUntil = now + 60000;
+                Log.log('[HID点击] 连接失败，60 秒内回退普通点击');
+                return false;
+            }
+            this._hidSkipUntil = 0;
+            Log.log('[HID点击] 已连接：' + String(Hid.getName() || ''));
+            return true;
+        } catch (e) {
+            this._hidSkipUntil = Date.now() + 60000;
+            Log.log('[HID点击] 连接异常：' + ((e && e.message) || e));
+            return false;
+        }
+    },
+
+    /**
+     * 统一点击：开启 HID 时用 Hid.tap，否则 Gesture.click。
+     * 日志带 [HID点击] / [普通点击] 标识。
+     */
+    tapAt(x, y) {
+        let xi = Math.round(Number(x) || 0);
+        let yi = Math.round(Number(y) || 0);
+        let w = Device.width();
+        let h = Device.height();
+        if (xi < 0 || yi < 0 || xi > w || yi > h) {
+            Log.log('[跳过点击] 坐标不在屏内 x=' + xi + ' y=' + yi);
+            return false;
+        }
+        if (this.useHid() && this.ensureHidConnected()) {
+            Log.log('[HID点击] x=' + xi + ' y=' + yi);
+            try {
+                Hid.tap(xi, yi);
+                return true;
+            } catch (e) {
+                Log.log('[HID点击] 异常，回退普通点击：' + ((e && e.message) || e));
+                Gesture.click(xi, yi);
+                return false;
+            }
+        }
+        Log.log('[普通点击] x=' + xi + ' y=' + yi);
+        Gesture.click(xi, yi);
+        return true;
     },
 
     aId(name) {
@@ -120,6 +224,10 @@ let Common = {
     },
 
     click(tag, rate) {
+        if (!this.isOnScreen(tag)) {
+            Log.log('[跳过点击] 控件不可见或不在屏内');
+            return false;
+        }
         if (!rate) {
             rate = 0.05;
         }
@@ -127,15 +235,21 @@ let Common = {
         let p = 1 - rate * 2;
         let width = tag.bounds().width() * rate + Math.random() * (tag.bounds().width() * p);
         let height = tag.bounds().height() * rate + Math.random() * (tag.bounds().height() * p);
+        let x = tag.bounds().left + Math.round(width);
+        let y = tag.bounds().top + Math.round(height);
 
         try {
-            Gesture.click(tag.bounds().left + Math.round(width), tag.bounds().top + Math.round(height));
+            if (!this.tapAt(x, y)) {
+                return false;
+            }
         } catch (e) {
             this.log(e);
             try {
-                Gesture.click(tag.bounds().left + Math.round(width), tag.bounds().top);
-            } catch (e) {
-                this.log(e);
+                if (!this.tapAt(tag.bounds().left + Math.round(width), tag.bounds().top)) {
+                    return false;
+                }
+            } catch (e2) {
+                this.log(e2);
                 return false;
             }
         }
@@ -145,8 +259,76 @@ let Common = {
     },
 
     gClick(x, y) {
-        Log.log('点击位置：', x, y);
-        Gesture.click(x, y);
+        this.tapAt(x, y);
+    },
+
+    /**
+     * 统一输入：开启 HID 时先聚焦再 Hid.paste，否则 setText。
+     */
+    inputText(tag, text) {
+        if (!tag) {
+            return false;
+        }
+        let t = String(text == null ? '' : text);
+        if (!t) {
+            return true;
+        }
+        if (this.useHid() && this.ensureHidConnected()) {
+            try {
+                try {
+                    if (!tag.isFocused || !tag.isFocused()) {
+                        this.click(tag, 0.15);
+                        this.sleep(500 + 300 * Math.random());
+                    }
+                } catch (eFocus) {
+                    this.click(tag, 0.15);
+                    this.sleep(500);
+                }
+                Log.log('[HID粘贴] 长度=' + t.length);
+                Hid.paste(t);
+                return true;
+            } catch (e) {
+                Log.log('[HID粘贴] 异常，回退 setText：' + ((e && e.message) || e));
+            }
+        }
+        try {
+            Log.log('[普通输入] setText 长度=' + t.length);
+            tag.setText(t);
+            return true;
+        } catch (e2) {
+            Log.log('[普通输入] setText 失败：' + ((e2 && e2.message) || e2));
+            return false;
+        }
+    },
+
+    /**
+     * 坐标滑动：开启 HID 时用 Hid.swipe，否则 Gesture.swipe。
+     * （勿与下方 swipe(type, sensitivity) 混淆）
+     */
+    swipeAt(x1, y1, x2, y2, duration) {
+        let a = Math.round(Number(x1) || 0);
+        let b = Math.round(Number(y1) || 0);
+        let c = Math.round(Number(x2) || 0);
+        let d = Math.round(Number(y2) || 0);
+        let ms = Math.round(Number(duration) || 300);
+        if (this.useHid() && this.ensureHidConnected()) {
+            try {
+                // swipex 时长不能砍太狠：ms/4 时视频流经常滑不动
+                let hidMs = Math.max(120, Math.floor(ms * 0.85));
+                Log.log('[HID滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ') ms=' + hidMs);
+                if (typeof Hid.swipex === 'function') {
+                    Hid.swipex(a, b, c, d, hidMs);
+                } else {
+                    Hid.swipe(a, b, c, d);
+                }
+                return true;
+            } catch (e) {
+                Log.log('[HID滑动] 异常，回退 Gesture：' + ((e && e.message) || e));
+            }
+        }
+        Log.log('[普通滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ')');
+        Gesture.swipe(a, b, c, d, ms);
+        return true;
     },
 
     clickRange(tag, top, bottom) {
@@ -230,10 +412,10 @@ let Common = {
         let bottom = Device.height() * 2 / 3 * sensitivity + Device.height() / 6 * Math.random();
         let top = Device.height() / 12 + Device.height() / 12 * Math.random();
         if (!type) {
-            Gesture.swipe(left, bottom, left, top, 200 + 100 * Math.random());//从下往上推，清除
+            this.swipeAt(left, bottom, left, top, 200 + 100 * Math.random());//从下往上推，清除
             return true;
         }
-        Gesture.swipe(left, top, left, bottom, 200 + 100 * Math.random());//从上往下滑
+        this.swipeAt(left, top, left, bottom, 200 + 100 * Math.random());//从上往下滑
     },
 
     swipeRecommendListOp() {

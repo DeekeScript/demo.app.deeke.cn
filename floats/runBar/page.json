@@ -20,7 +20,7 @@
           "type": "text",
           "text": "●",
           "style": {
-            "color": "#8ECCC4",
+            "color": "#FFFFFF",
             "fontSize": 10,
             "opacity": "{{dotOpacity}}"
           }
