@@ -108,7 +108,7 @@ Page({
 
   couponEntry(item) {
     if (item && item.discount != null && item.discount !== '') {
-      return { couponEntryText: '已减 ¥' + item.discount, couponEntryColor: '#0B6E6A' };
+      return { couponEntryText: '已减 ¥' + item.discount, couponEntryColor: '#FF2442' };
     }
     if (item && item.couponMiss) {
       return { couponEntryText: '此套餐不可用', couponEntryColor: '#B42318' };
@@ -335,7 +335,7 @@ Page({
         couponMiss: !!(couponOk && !hasCouponPrice && p.couponError),
         priceText: '¥' + price,
         cardBg: active ? '#E8F3FF' : '#FFFFFF',
-        borderColor: active ? '#1677FF' : '#E6EEEE'
+        borderColor: active ? '#1677FF' : '#F5D0D0'
       });
       if (active) {
         selected = p.plan;
@@ -401,7 +401,7 @@ Page({
         couponMiss: plans[i].couponMiss,
         priceText: plans[i].priceText,
         cardBg: active ? '#E8F3FF' : '#FFFFFF',
-        borderColor: active ? '#1677FF' : '#E6EEEE'
+        borderColor: active ? '#1677FF' : '#F5D0D0'
       };
       if (active) {
         selectedItem = plans[i];

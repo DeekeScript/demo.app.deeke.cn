@@ -3,7 +3,7 @@
     "text": "话术",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A",
+    "background": "#FF2442",
     "right": [
       {
         "icon": "{{addIcon}}",
@@ -13,7 +13,7 @@
     ]
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -22,7 +22,7 @@
       "style": {
         "padding": 4,
         "radius": 14,
-        "background": "#E4EEEC",
+        "background": "#FFE8EC",
         "marginBottom": 8,
         "borderWidth": 0
       },
@@ -166,57 +166,86 @@
               "radius": 12,
               "background": "#FFFFFF",
               "borderWidth": 1,
-              "borderColor": "#E2EAEA"
+              "borderColor": "#F5D0D0"
             },
             "children": [
               {
-                "type": "row",
+                "type": "column",
                 "style": {
                   "gap": 8,
-                  "valign": "center"
+                  "width": "100%"
                 },
                 "children": [
                   {
-                    "type": "tag",
-                    "text": "{{item.typeLabel}}",
+                    "type": "row",
                     "style": {
-                      "background": "{{item.typeBg}}",
-                      "color": "{{item.typeColor}}",
-                      "radius": 4
-                    }
-                  },
-                  {
-                    "type": "column",
-                    "style": {
-                      "weight": 1,
-                      "gap": 2
+                      "gap": 8,
+                      "valign": "center",
+                      "width": "100%"
                     },
                     "children": [
                       {
-                        "type": "text",
-                        "text": "{{item.content}}",
+                        "type": "tag",
+                        "text": "{{item.typeLabel}}",
                         "style": {
-                          "fontSize": 14,
-                          "color": "#1A2B2A"
+                          "background": "{{item.typeBg}}",
+                          "color": "{{item.typeColor}}",
+                          "radius": 4
                         }
                       },
                       {
-                        "type": "notice",
-                        "text": "{{item.statusText}}"
+                        "type": "text",
+                        "text": "{{item.statusText}}",
+                        "style": {
+                          "fontSize": 12,
+                          "color": "#8A6A6A",
+                          "weight": 1
+                        }
+                      },
+                      {
+                        "type": "button",
+                        "text": "⋮",
+                        "size": "sm",
+                        "onTap": "onMore",
+                        "style": {
+                          "background": "#FFF0F0",
+                          "color": "#445",
+                          "radius": 8,
+                          "fontSize": 16
+                        }
                       }
                     ]
                   },
                   {
-                    "type": "button",
-                    "text": "⋮",
-                    "size": "sm",
-                    "onTap": "onMore",
+                    "type": "row",
                     "style": {
-                      "background": "#F3F7F6",
-                      "color": "#445",
-                      "radius": 8,
-                      "fontSize": 16
-                    }
+                      "gap": 10,
+                      "valign": "top",
+                      "width": "100%"
+                    },
+                    "children": [
+                      {
+                        "type": "image",
+                        "showIf": "item.showImage",
+                        "src": "{{item.image}}",
+                        "fit": "cover",
+                        "onTap": "onPreviewImage",
+                        "style": {
+                          "width": 56,
+                          "height": 56,
+                          "radius": 8
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": "{{item.previewText}}",
+                        "style": {
+                          "fontSize": 14,
+                          "color": "#2B1A1A",
+                          "weight": 1
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -232,7 +261,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA",
+            "borderColor": "#F5D0D0",
             "align": "center"
           },
           "children": [
@@ -269,7 +298,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -292,7 +321,7 @@
               "size": "sm",
               "onChange": "onSmartSave",
               "style": {
-                "color": "#0B6E6A"
+                "color": "#FF2442"
               }
             }
           ]
@@ -305,7 +334,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -330,7 +359,7 @@
                   "onTap": "onOpenApiKeyGuide",
                   "style": {
                     "fontSize": 12,
-                    "color": "#0B6E6A"
+                    "color": "#FF2442"
                   }
                 }
               ]
@@ -367,7 +396,7 @@
               ],
               "onChange": "onProviderChange",
               "style": {
-                "color": "#0B6E6A"
+                "color": "#FF2442"
               }
             },
             {
@@ -406,7 +435,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -432,7 +461,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -508,7 +537,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -575,7 +604,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -642,7 +671,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -709,7 +738,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -776,7 +805,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -843,7 +872,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -910,7 +939,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -977,7 +1006,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -1044,7 +1073,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -1064,7 +1093,7 @@
                 },
                 {
                   "type": "notice",
-                  "text": "评论时抓住视频的哪一点"
+                  "text": "评论时抓住笔记的哪一点"
                 }
               ]
             },
@@ -1111,7 +1140,7 @@
             "radius": 14,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E2EAEA"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -1128,7 +1157,7 @@
               "style": {
                 "padding": 4,
                 "radius": 10,
-                "background": "#E4EEEC",
+                "background": "#FFE8EC",
                 "borderWidth": 0
               },
               "children": [
@@ -1175,12 +1204,12 @@
               "children": [
                 {
                   "type": "notice",
-                  "text": "填一段视频文案或场景，看看评论会怎么写"
+                  "text": "填一段笔记文案或场景，看看评论会怎么写"
                 },
                 {
                   "type": "textarea",
                   "name": "trialInput",
-                  "hint": "例如：分享了三招提升短视频完播率",
+                  "hint": "例如：分享了三招提升笔记互动率",
                   "minLines": 2,
                   "variant": "box"
                 }
@@ -1195,21 +1224,21 @@
               "children": [
                 {
                   "type": "notice",
-                  "text": "私信主要按对方评论来写，视频标题用来点明是在哪条视频下看到的"
+                  "text": "私信主要按对方评论来写，笔记标题用来点明是在哪条笔记下看到的"
                 },
                 {
                   "type": "textarea",
                   "name": "trialComment",
                   "label": "评论内容",
-                  "hint": "对方在视频下的评论",
+                  "hint": "对方在笔记下的评论",
                   "minLines": 2,
                   "variant": "box"
                 },
                 {
                   "type": "input",
                   "name": "trialVideo",
-                  "label": "视频标题",
-                  "hint": "这条评论所在的视频，可空",
+                  "label": "笔记标题",
+                  "hint": "这条评论所在的笔记，可空",
                   "variant": "box"
                 },
                 {
@@ -1239,7 +1268,7 @@
                   ],
                   "onChange": "onTrialGender",
                   "style": {
-                    "color": "#0B6E6A"
+                    "color": "#FF2442"
                   }
                 },
                 {
@@ -1257,7 +1286,7 @@
               "size": "sm",
               "onTap": "onTrialGenerate",
               "style": {
-                "background": "#0B6E6A",
+                "background": "#FF2442",
                 "color": "#FFFFFF",
                 "radius": 10,
                 "width": "100%"
@@ -1280,7 +1309,7 @@
                   "text": "{{trialKind}}",
                   "style": {
                     "fontSize": 12,
-                    "color": "#0B6E6A",
+                    "color": "#FF2442",
                     "fontWeight": "bold"
                   }
                 },
@@ -1331,17 +1360,80 @@
       ],
       "onChange": "onMenuAction",
       "cancelText": "取消"
-    }
+    },
   ],
   "popups": [
+    {
+      "showIf": "viewerOpen",
+      "position": "center",
+      "mask": true,
+      "closeOnMask": false,
+      "width": "100%",
+      "height": "100%",
+      "style": {
+        "background": "#111111",
+        "radius": 0,
+        "padding": 16,
+        "paddingTop": 40,
+        "gap": 16
+      },
+      "body": [
+        {
+          "type": "row",
+          "style": {
+            "width": "100%",
+            "valign": "center",
+            "paddingBottom": 8
+          },
+          "children": [
+            {
+              "type": "text",
+              "text": "预览",
+              "style": {
+                "weight": 1,
+                "fontSize": 15,
+                "color": "#FFFFFF",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "button",
+              "text": "×",
+              "size": "sm",
+              "onTap": "onCloseViewer",
+              "style": {
+                "width": 40,
+                "height": 40,
+                "radius": 20,
+                "background": "#FFFFFF",
+                "color": "#111111",
+                "fontSize": 22,
+                "align": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "src": "{{viewerUrl}}",
+          "fit": "contain",
+          "style": {
+            "width": "100%",
+            "height": 560,
+            "radius": 8
+          }
+        }
+      ]
+    },
     {
       "showIf": "addOpen",
       "position": "bottom",
       "style": {
         "radius": 16,
         "background": "#FFFFFF",
-        "padding": 10,
-        "gap": 8
+        "padding": 12,
+        "paddingBottom": 16,
+        "gap": 10
       },
       "body": [
         {
@@ -1394,17 +1486,46 @@
             }
           ],
           "style": {
-            "color": "#0B6E6A"
+            "color": "#FF2442"
           }
         },
         {
           "type": "textarea",
           "name": "newContent",
-          "label": "内容",
-          "hint": "输入一条话术",
+          "label": "文字",
+          "hint": "可空；文字和图片至少填一项",
           "minLines": 3,
           "variant": "box",
           "size": "sm"
+        },
+        {
+          "type": "column",
+          "style": {
+            "width": 148,
+            "gap": 6
+          },
+          "children": [
+            {
+              "type": "text",
+              "text": "配图",
+              "style": {
+                "fontSize": 14,
+                "color": "#2B1A1A"
+              }
+            },
+            {
+              "type": "imageUploader",
+              "name": "newPhotos",
+              "max": 1,
+              "columns": 1,
+              "addText": "+",
+              "onChange": "onNewPhotos",
+              "style": {
+                "width": 148,
+                "height": 148
+              }
+            }
+          ]
         },
         {
           "type": "switch",
@@ -1412,7 +1533,7 @@
           "label": "启用状态",
           "size": "sm",
           "style": {
-            "color": "#0B6E6A"
+            "color": "#FF2442"
           }
         },
         {
@@ -1421,7 +1542,7 @@
           "size": "md",
           "onTap": "onAdd",
           "style": {
-            "background": "#0B6E6A",
+            "background": "#FF2442",
             "color": "#FFFFFF",
             "radius": 10,
             "width": "100%"

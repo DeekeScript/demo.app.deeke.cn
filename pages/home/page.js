@@ -14,7 +14,7 @@ Page({
     targetSummary: '',
     targetDetail: '',
     targetTag: '',
-    targetTagBg: '#EEF2F1',
+    targetTagBg: '#FFF5F5',
     targetTagColor: '#667',
     agreeProtocol: protocol.readAgreed(),
     protocolOpen: false,

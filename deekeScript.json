@@ -1,6 +1,6 @@
 {
   "name": "获客助手",
-  "packageName": "cn.deeke.demo.app",
+  "packageName": "cn.deeke.demo.xhs",
   "versionCode": "100",
   "versionName": "1.0.0",
   "icon": "img/logo.png",
@@ -27,26 +27,26 @@
   ],
   "window": {
     "style": {
-      "background": "#EEF2F1",
+      "background": "#FFF5F5",
       "padding": 10
     },
     "title": {
       "fontSize": 17,
       "color": "#FFFFFF",
-      "background": "#0B6E6A"
+      "background": "#FF2442"
     },
     "statusBar": {
-      "background": "#0B6E6A",
+      "background": "#FF2442",
       "color": "light"
     },
     "theme": {
-      "primary": "#0B6E6A"
+      "primary": "#FF2442"
     },
     "tabBar": {
-      "color": "#7A8A88",
-      "selectedColor": "#0B6E6A",
+      "color": "#8A6A6A",
+      "selectedColor": "#FF2442",
       "background": "#FFFFFF",
-      "borderColor": "#E6EEEE"
+      "borderColor": "#F5D0D0"
     }
   }
 }

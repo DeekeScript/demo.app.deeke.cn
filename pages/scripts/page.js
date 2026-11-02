@@ -5,6 +5,7 @@ Page({
   data: {
     newType: 'dm',
     newContent: '',
+    newPhotos: [],
     newEnabled: true,
     filter: 'all',
     rows: [],
@@ -13,11 +14,11 @@ Page({
     menuOpenEnabled: false,
     menuOpenDisabled: false,
     menuIndex: -1,
-    filterAllBg: '#0B6E6A',
+    filterAllBg: '#FF2442',
     filterAllColor: '#FFFFFF',
-    filterDmBg: '#EEF2F1',
+    filterDmBg: '#FFF5F5',
     filterDmColor: '#556',
-    filterCommentBg: '#EEF2F1',
+    filterCommentBg: '#FFF5F5',
     filterCommentColor: '#556',
     mode: 'platform',
     addIcon: 'img/add.svg',
@@ -25,11 +26,11 @@ Page({
     showPlatform: true,
     showSmart: false,
     modePlatformBg: '#FFFFFF',
-    modePlatformColor: '#0B6E6A',
-    modePlatformSub: '#7A8A88',
-    modeSmartBg: '#E4EEEC',
+    modePlatformColor: '#FF2442',
+    modePlatformSub: '#8A6A6A',
+    modeSmartBg: '#FFE8EC',
     modeSmartColor: '#667',
-    modeSmartSub: '#99A8A6',
+    modeSmartSub: '#B89A9A',
     dmSmart: true,
     provider: 'deepseek',
     apiKey: '',
@@ -63,8 +64,8 @@ Page({
     showTrialComment: true,
     showTrialDm: false,
     trialCommentBg: '#FFFFFF',
-    trialCommentColor: '#0B6E6A',
-    trialDmBg: '#E4EEEC',
+    trialCommentColor: '#FF2442',
+    trialDmBg: '#FFE8EC',
     trialDmColor: '#667',
     trialActionText: '生成评论',
     trialComment: '',
@@ -75,6 +76,8 @@ Page({
     trialKind: '',
     trialText: '',
     showTrial: false,
+    viewerOpen: false,
+    viewerUrl: '',
     _ready: false
   },
 
@@ -86,12 +89,12 @@ Page({
       showSmart: smartOn,
       addIcon: smartOn ? '' : 'img/add.svg',
       addText: smartOn ? '' : '添加',
-      modePlatformBg: smartOn ? '#E4EEEC' : '#FFFFFF',
-      modePlatformColor: smartOn ? '#667' : '#0B6E6A',
-      modePlatformSub: smartOn ? '#99A8A6' : '#7A8A88',
-      modeSmartBg: smartOn ? '#FFFFFF' : '#E4EEEC',
-      modeSmartColor: smartOn ? '#0B6E6A' : '#667',
-      modeSmartSub: smartOn ? '#7A8A88' : '#99A8A6'
+      modePlatformBg: smartOn ? '#FFE8EC' : '#FFFFFF',
+      modePlatformColor: smartOn ? '#667' : '#FF2442',
+      modePlatformSub: smartOn ? '#B89A9A' : '#8A6A6A',
+      modeSmartBg: smartOn ? '#FFFFFF' : '#FFE8EC',
+      modeSmartColor: smartOn ? '#FF2442' : '#667',
+      modeSmartSub: smartOn ? '#8A6A6A' : '#B89A9A'
     };
   },
 
@@ -115,8 +118,8 @@ Page({
         field: field,
         value: opts[i].value,
         label: opts[i].label,
-        bg: on ? '#0B6E6A' : '#FFFFFF',
-        border: '#0B6E6A',
+        bg: on ? '#FF2442' : '#FFFFFF',
+        border: '#FF2442',
         color: on ? '#FFFFFF' : '#334443'
       });
     }
@@ -205,11 +208,11 @@ Page({
 
   filterStyle(active) {
     return {
-      allBg: active === 'all' ? '#0B6E6A' : '#EEF2F1',
+      allBg: active === 'all' ? '#FF2442' : '#FFF5F5',
       allColor: active === 'all' ? '#FFFFFF' : '#556',
-      dmBg: active === 'dm' ? '#0B6E6A' : '#EEF2F1',
+      dmBg: active === 'dm' ? '#FF2442' : '#FFF5F5',
       dmColor: active === 'dm' ? '#FFFFFF' : '#556',
-      commentBg: active === 'comment' ? '#0B6E6A' : '#EEF2F1',
+      commentBg: active === 'comment' ? '#FF2442' : '#FFF5F5',
       commentColor: active === 'comment' ? '#FFFFFF' : '#556'
     };
   },
@@ -224,6 +227,9 @@ Page({
       }
       shown.push({
         content: all[i].content,
+        previewText: all[i].previewText,
+        image: all[i].image || '',
+        showImage: all[i].hasImage === true,
         type: all[i].type,
         typeLabel: all[i].typeLabel,
         typeBg: all[i].typeBg,
@@ -316,10 +322,10 @@ Page({
       trialTab: commentOn ? 'comment' : 'dm',
       showTrialComment: commentOn,
       showTrialDm: !commentOn,
-      trialCommentBg: commentOn ? '#FFFFFF' : '#E4EEEC',
-      trialCommentColor: commentOn ? '#0B6E6A' : '#667',
-      trialDmBg: commentOn ? '#E4EEEC' : '#FFFFFF',
-      trialDmColor: commentOn ? '#667' : '#0B6E6A',
+      trialCommentBg: commentOn ? '#FFFFFF' : '#FFE8EC',
+      trialCommentColor: commentOn ? '#FF2442' : '#667',
+      trialDmBg: commentOn ? '#FFE8EC' : '#FFFFFF',
+      trialDmColor: commentOn ? '#667' : '#FF2442',
       trialActionText: commentOn ? '生成评论' : '生成私信'
     };
   },
@@ -411,6 +417,7 @@ Page({
       addOpen: true,
       newType: 'dm',
       newContent: '',
+      newPhotos: [],
       newEnabled: true
     });
   },
@@ -419,18 +426,56 @@ Page({
     this.setData({ addOpen: false });
   },
 
+  onNewPhotos(e) {
+    let photos = e && e.value != null ? e.value : [];
+    if (!Array.isArray(photos)) {
+      photos = [];
+    }
+    this.setData({ newPhotos: photos });
+  },
+
+  onPreviewImage(e) {
+    let item = e && e.item ? e.item : null;
+    let src = '';
+    if (item && item.image) {
+      src = String(item.image || '').trim();
+    }
+    if (!src && e && e.value) {
+      src = String(e.value || '').trim();
+    }
+    if (!src) {
+      return;
+    }
+    this.setData({
+      viewerOpen: true,
+      viewerUrl: src
+    });
+  },
+
+  onCloseViewer() {
+    this.setData({
+      viewerOpen: false,
+      viewerUrl: ''
+    });
+  },
+
   onAdd() {
     let text = (this.data.newContent || '').trim();
-    if (!text) {
-      this.toast('请输入话术内容');
+    let photos = this.data.newPhotos || [];
+    let image = '';
+    if (Array.isArray(photos) && photos.length) {
+      image = String(photos[0] || '').trim();
+    }
+    if (!text && !image) {
+      this.toast('文字和图片至少填写一项');
       return;
     }
     let type = this.data.newType === 'comment' ? 'comment' : 'dm';
     let enabled = this.data.newEnabled !== false;
     let list = scripts.load();
-    list.push({ content: text, type: type, enabled: enabled });
+    list.push({ content: text, image: image, type: type, enabled: enabled });
     scripts.save(list);
-    this.setData({ addOpen: false, newContent: '', newEnabled: true });
+    this.setData({ addOpen: false, newContent: '', newPhotos: [], newEnabled: true });
     this.refresh();
     this.toast(enabled ? '已添加' : '已添加（停用）');
   },

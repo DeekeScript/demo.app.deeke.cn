@@ -11,7 +11,7 @@
         "background": "#FFFFFF",
         "marginBottom": 8,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -24,7 +24,7 @@
                 "width": 28,
                 "height": 28,
                 "radius": 8,
-                "background": "#0B6E6A",
+                "background": "#FF2442",
                 "align": "center",
                 "valign": "center"
               },
@@ -54,7 +54,7 @@
               "showIf": "showPayEntry",
               "size": "sm",
               "onTap": "onGoPay",
-              "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#FFE8EC", "color": "#FF2442", "radius": 8 }
             }
           ]
         },

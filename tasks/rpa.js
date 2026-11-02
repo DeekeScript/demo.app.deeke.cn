@@ -6,12 +6,13 @@ let params = require('../common/params.js');
 let logger = require('../common/logger.js');
 let machine = require('../common/machine.js');
 let statistics = require('../common/statistics.js');
-let tCommon = require('../app/dy/Common.js');
-let DyUser = require('../app/dy/User.js');
-let DySearch = require('../app/dy/Search.js');
-let DyVideo = require('../app/dy/Video.js');
-let DyIndex = require('../app/dy/Index.js');
-let DyComment = require('../app/dy/Comment.js');
+let gallery = require('../common/gallery.js');
+let tCommon = require('../app/xhs/Common.js');
+let XhsUser = require('../app/xhs/User.js');
+let XhsSearch = require('../app/xhs/Search.js');
+let XhsWork = require('../app/xhs/Work.js');
+let XhsIndex = require('../app/xhs/Index.js');
+let XhsComment = require('../app/xhs/Comment.js');
 
 let stopped = false;
 let finished = false;
@@ -60,10 +61,10 @@ let task = {
 
   pickOne(list) {
     if (!list || !list.length) {
-      return '';
+      return null;
     }
     let i = Math.floor(Math.random() * list.length);
-    return list[i] || '';
+    return list[i] || null;
   },
 
   getMsg(type, input) {
@@ -82,20 +83,20 @@ let task = {
           age: ''
         };
       } else if (!payload) {
-        payload = '短视频评论';
+        payload = '小红书笔记评论';
       }
       let gen = smart.generate(type === 1 ? 'dm' : 'comment', payload);
       if (gen.ok && gen.text) {
-        return { msg: gen.text };
+        return { msg: gen.text, image: '' };
       }
       logger.warn('rpa', (type === 1 ? '智能私信' : '智能评论') + '失败：' + (gen.message || '') + '，改用自定义话术');
     }
     let list = scripts.enabledByType(type === 1 ? 'dm' : 'comment');
-    let msg = this.pickOne(list);
-    if (!msg) {
+    let item = this.pickOne(list);
+    if (!item) {
       return false;
     }
-    return { msg: msg };
+    return { msg: item.content || '', image: item.image || '' };
   },
 
   includesKw(str, kw) {
@@ -107,19 +108,24 @@ let task = {
     return false;
   },
 
-  msgText(type, title) {
+  msgPayload(type, title) {
     let res = this.getMsg(type, title);
-    return res && res.msg ? res.msg : '';
+    if (!res) {
+      return null;
+    }
+    if (!res.msg && !res.image) {
+      return null;
+    }
+    return res;
   },
 
   testTask(input, sleepSecond, conf) {
     let commentKw = tCommon.splitKeyword(input);
     logger.info('rpa', '评论关键词：' + commentKw.join(','));
-    let videoConfig = params.filterConfig();
-    DyIndex.intoSearchPage();
+    let filterConfig = params.filterConfig();
+    XhsIndex.intoSearchPage();
     tCommon.sleep(1500);
-    DySearch.intoSearchList(conf.searchTitle, 0, videoConfig);
-    DySearch.intoSearchVideo();
+    XhsSearch.intoSearchList(conf.searchTitle, filterConfig);
 
     let rateCount = conf.privateRate + conf.focusRate + conf.zanCommentRate + conf.replyCommentRate;
     let zanCommentRate = 0;
@@ -134,50 +140,66 @@ let task = {
     }
     logger.info('rpa', '频率合计=' + rateCount + ' 赞评=' + zanCommentRate + ' 关注=' + focuRate + ' 回复=' + backCommentRate);
 
-    let rps = 0;
+    let emptyRounds = 0;
     while (true) {
-      tCommon.sleep(4000 + Math.random() * 2000);
-      if (DyVideo.isLiving()) {
-        logger.info('rpa', '直播，下一个');
-        DyVideo.next();
-        continue;
+      if (taskStopped()) {
+        return false;
       }
-
-      let title = DyVideo.getContent();
-      let commentCount = DyVideo.getCommentCount();
-      statistics.viewVideo();
-      if (commentCount === 0 || this.contents.includes(title)) {
-        logger.info('rpa', '下一个视频');
-        if (rps++ > 3) {
+      tCommon.sleep(2000 + Math.random() * 1500);
+      let title = XhsSearch.intoNextNote(this.contents);
+      if (!title) {
+        emptyRounds++;
+        logger.info('rpa', '没有更多笔记，滑动重试 ' + emptyRounds);
+        if (emptyRounds > 5) {
           return true;
         }
-        DyVideo.next();
         continue;
       }
-      rps = 0;
+      emptyRounds = 0;
+
+      if (XhsWork.isLiving && XhsWork.isLiving()) {
+        logger.info('rpa', '直播，返回下一个');
+        tCommon.back();
+        tCommon.sleep(1200);
+        this.contents.push(title);
+        continue;
+      }
+
+      let commentCount = XhsWork.getCommentCount();
+      statistics.viewVideo();
+      if (!commentCount) {
+        logger.info('rpa', '无评论，下一个笔记');
+        this.contents.push(title);
+        tCommon.back();
+        tCommon.sleep(1200);
+        continue;
+      }
 
       statistics.viewTargetVideo();
-      DyVideo.openComment(!!commentCount);
+      let isVideo = XhsWork.isVideo();
+      XhsWork.openComment();
       tCommon.sleep(2000 + 1000 * Math.random());
 
       let firstComment = true;
-      while (true) {
-        let comments = DyComment.getList();
-        if (comments.length == 0) {
-          DyComment.closeCommentWindow();
-          tCommon.sleep(1000);
+      let pageGuard = commentCount + 5;
+      while (pageGuard-- > 0) {
+        if (taskStopped()) {
+          return false;
+        }
+        let comments = XhsWork.getCommenList();
+        if (!comments || comments.length === 0) {
           logger.info('rpa', '没有评论内容');
           break;
         }
 
         for (let k in comments) {
           if (firstComment && Math.random() * 100 <= conf.firstCommentRate) {
-            let firstMsg = this.msgText(0, title);
+            let firstMsg = this.msgPayload(0, title);
             if (firstMsg) {
-              DyComment.backMsg(comments[k], firstMsg);
+              XhsWork.replyComment(comments[k], firstMsg.msg, firstMsg.image);
               logger.info('rpa', '首评');
               tCommon.sleep(1000);
-              comments = DyComment.getList();
+              comments = XhsWork.getCommenList();
             }
             firstComment = false;
             continue;
@@ -187,23 +209,25 @@ let task = {
             continue;
           }
 
-          if (!comments[k]['content'] || !this.includesKw(comments[k]['content'], commentKw) || this.nicknames.includes(comments[k].nickname)) {
+          let ctn = comments[k].content || '';
+          let nickname = comments[k].nickname || '';
+          if (!ctn || !this.includesKw(ctn, commentKw) || this.nicknames.includes(nickname)) {
             continue;
           }
 
-          if (machine.get('task_dy_toker_video_' + comments[k].nickname, 'bool')) {
+          if (machine.get('task_xhs_toker_note_' + nickname, 'bool')) {
             logger.info('rpa', '重复昵称，跳过');
             continue;
           }
 
-          logger.info('rpa', '命中关键词：' + comments[k]['content']);
+          logger.info('rpa', '命中关键词：' + ctn);
           let opRate = Math.random();
           let refresh = false;
           if (opRate <= zanCommentRate) {
             try {
               logger.info('rpa', '点赞评论');
-              if (!DyComment.isZan()) {
-                DyComment.clickZan(comments[k]);
+              if (comments[k].zanTag) {
+                XhsComment.clickZan(comments[k].zanTag);
                 tCommon.sleep(1000 + 1000 * Math.random());
               }
             } catch (e) {
@@ -211,50 +235,46 @@ let task = {
               continue;
             }
           } else if (opRate <= zanCommentRate + backCommentRate) {
-            let reply = this.msgText(0, title);
+            let reply = this.msgPayload(0, title);
             if (reply) {
-              DyComment.backMsg(comments[k], reply);
+              XhsWork.replyComment(comments[k], reply.msg, reply.image);
               logger.info('rpa', '回复评论');
               refresh = true;
             }
           } else {
-            DyComment.intoUserPage(comments[k]);
-            if (DyUser.isPrivate()) {
+            XhsComment.intoUserPage(comments[k].nicknameTag);
+            if (XhsUser.isPrivate()) {
               tCommon.back();
             } else {
               if (opRate <= zanCommentRate + backCommentRate + privateRate) {
-                let nickname = comments[k].nickname || '';
+                let nick = nickname;
                 let age = 0;
                 let gender = 2;
                 try {
-                  nickname = DyUser.getNickname() || nickname;
+                  nick = XhsUser.getNickname() || nick;
                 } catch (e) {
                   logger.warn('rpa', '读取昵称失败：' + ((e && e.message) || e));
                 }
                 try {
-                  age = DyUser.getAge() || 0;
-                } catch (e) {
-                  logger.warn('rpa', '读取年龄失败：' + ((e && e.message) || e));
-                }
+                  age = XhsUser.getAge() || 0;
+                } catch (e2) {}
                 try {
-                  gender = DyUser.getGender();
-                } catch (e) {
-                  logger.warn('rpa', '读取性别失败：' + ((e && e.message) || e));
-                }
+                  gender = XhsUser.getGender();
+                } catch (e3) {}
                 let person = {
-                  comment: comments[k].content || '',
-                  nickname: nickname,
+                  comment: ctn,
+                  nickname: nick,
                   gender: ['女', '男', '未知'][gender] || '未知',
                   age: age ? String(age) : '',
                   video: title || ''
                 };
-                logger.info('rpa', '私信依据 昵称=' + person.nickname + ' 性别=' + person.gender + ' 年龄=' + (person.age || '未知'));
-                let dm = this.msgText(1, person);
+                logger.info('rpa', '私信依据 昵称=' + person.nickname + ' 性别=' + person.gender);
+                let dm = this.msgPayload(1, person);
                 if (dm) {
-                  DyUser.privateMsg(dm);
+                  XhsUser.privateMsg(dm.msg, dm.image);
                 }
               } else {
-                DyUser.focus();
+                XhsUser.focus();
                 logger.info('rpa', '关注');
               }
               tCommon.sleep(1000 + 1000 * Math.random());
@@ -262,38 +282,46 @@ let task = {
             }
           }
 
-          this.nicknames.push(comments[k].nickname);
-          machine.set('task_dy_toker_video_' + comments[k].nickname, true);
+          this.nicknames.push(nickname);
+          machine.set('task_xhs_toker_note_' + nickname, true);
           tCommon.sleep(sleepSecond * 1000);
           if (refresh) {
-            comments = DyComment.getList();
+            comments = XhsWork.getCommenList();
             refresh = false;
           }
         }
 
         logger.info('rpa', '下一页评论');
-        if (!DyComment.swipeTop()) {
-          tCommon.back();
-          tCommon.sleep(1000);
-          logger.info('rpa', '评论扫描完了');
+        if (UiSelector().className('android.widget.TextView').textContains('- 到底了 -').isVisibleToUser(true).findOne()) {
+          logger.info('rpa', '评论扫描完了，已到底');
+          break;
+        }
+        if (!XhsWork.commentListSwipe()) {
+          logger.info('rpa', '评论无法继续滑动');
           break;
         }
         tCommon.sleep(1500 + 500 * Math.random());
       }
 
+      if (isVideo) {
+        tCommon.back();
+        tCommon.sleep(1000);
+      }
+      tCommon.back();
+      tCommon.sleep(1500 + 500 * Math.random());
+
       let retryCount = 3;
       while (retryCount-- > 0) {
-        if (!UiSelector().text('搜索').findOne()) {
-          logger.info('rpa', '找不到视频的搜索，返回');
+        if (!UiSelector().text('搜索').findOne() && !UiSelector().descContains('搜索').findOne()) {
+          logger.info('rpa', '找不到搜索页，返回');
           tCommon.back();
-          tCommon.sleep(1500 + 500 * Math.random());
+          tCommon.sleep(1200);
           continue;
         }
         break;
       }
-      logger.info('rpa', '下一个视频');
+      logger.info('rpa', '下一个笔记');
       this.contents.push(title);
-      DyVideo.next();
     }
   },
 
@@ -315,7 +343,7 @@ let task = {
     let title = String(conf.searchTitle || '').trim();
     let input = String(conf.commentKeyword || '').trim();
     if (!title) {
-      FloatDialogs.show('请输入视频搜索关键词');
+      FloatDialogs.show('请输入笔记搜索关键词');
       Engines.closeAll();
       return;
     }
@@ -325,7 +353,8 @@ let task = {
       return;
     }
 
-    logger.info('rpa', '开始评论截流II');
+    gallery.cleanupRecent();
+    logger.info('rpa', '开始小红书评论截流');
     logger.info('rpa', '参数 ' + params.summary());
     showRunBar();
 
@@ -344,6 +373,7 @@ let task = {
         }
         if (r) {
           finished = true;
+          gallery.cleanupRecent();
           FloatPage.close('runBar');
           FloatDialogs.show('温馨提示', '已结束');
           System.exit();
@@ -357,6 +387,7 @@ let task = {
         tCommon.closeAlert(1);
       }
     }
+    gallery.cleanupRecent();
     Engines.closeAll();
   }
 };

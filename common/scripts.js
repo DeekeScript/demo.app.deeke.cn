@@ -1,26 +1,26 @@
 let config = require('./config.js');
 
 module.exports = {
-  listKey: config.storagePrefix + 'scripts.list.v2',
-  // 兼容旧版双列表 / 旧单列表
+  listKey: config.storagePrefix + 'scripts.list.v3',
+  legacyListKeyV2: config.storagePrefix + 'scripts.list.v2',
   legacyListKey: config.storagePrefix + 'scripts.list',
   dmListKey: config.storagePrefix + 'scripts.dmList',
   commentListKey: config.storagePrefix + 'scripts.commentList',
 
   defaults() {
     return [
-      { content: '你好，刚刷到你的内容，很有共鸣', type: 'dm', enabled: true },
-      { content: '方便加个好友交流一下吗？', type: 'dm', enabled: true },
-      { content: '看你做得挺专业，想请教几个细节', type: 'dm', enabled: true },
-      { content: '这篇对我帮助很大，方便聊聊经验吗？', type: 'dm', enabled: true },
-      { content: '你好，我对这类内容很感兴趣，想认识一下', type: 'dm', enabled: true },
-      { content: '如果方便的话，后续想多交流学习', type: 'dm', enabled: true },
-      { content: '学到了，感谢分享', type: 'comment', enabled: true },
-      { content: '写得很清楚，支持一下', type: 'comment', enabled: true },
-      { content: '这个角度很新颖，收藏了', type: 'comment', enabled: true },
-      { content: '干货满满，期待更多更新', type: 'comment', enabled: true },
-      { content: '讲得很实用，马上试试', type: 'comment', enabled: true },
-      { content: '内容质量很高，已关注', type: 'comment', enabled: true }
+      { content: '你好，刚刷到你的笔记，很有共鸣', image: '', type: 'dm', enabled: true },
+      { content: '方便加个好友交流一下吗？', image: '', type: 'dm', enabled: true },
+      { content: '看你做得挺专业，想请教几个细节', image: '', type: 'dm', enabled: true },
+      { content: '这篇对我帮助很大，方便聊聊经验吗？', image: '', type: 'dm', enabled: true },
+      { content: '你好，我对这类内容很感兴趣，想认识一下', image: '', type: 'dm', enabled: true },
+      { content: '如果方便的话，后续想多交流学习', image: '', type: 'dm', enabled: true },
+      { content: '学到了，感谢分享', image: '', type: 'comment', enabled: true },
+      { content: '写得很清楚，支持一下', image: '', type: 'comment', enabled: true },
+      { content: '这个角度很新颖，收藏了', image: '', type: 'comment', enabled: true },
+      { content: '干货满满，期待更多更新', image: '', type: 'comment', enabled: true },
+      { content: '讲得很实用，马上试试', image: '', type: 'comment', enabled: true },
+      { content: '内容质量很高，已关注', image: '', type: 'comment', enabled: true }
     ];
   },
 
@@ -29,13 +29,27 @@ module.exports = {
       return null;
     }
     let type = item.type === 'comment' ? 'comment' : 'dm';
+    let content = String(item.content || '').trim();
+    let image = String(item.image || item.imagePath || '').trim();
+    if (Array.isArray(item.photos) && item.photos.length) {
+      image = String(item.photos[0] || '').trim() || image;
+    }
+    if (!content && !image) {
+      return null;
+    }
+    let hasImage = !!image;
     return {
-      content: String(item.content || '').trim(),
+      content: content,
+      image: image,
+      hasImage: hasImage,
+      showImage: hasImage,
+      showPlaceholder: !hasImage,
       type: type,
       typeLabel: type === 'comment' ? '评论' : '私信',
-      typeBg: type === 'comment' ? '#EEF2FF' : '#E8F6F4',
-      typeColor: type === 'comment' ? '#3D5AFE' : '#0B6E6A',
-      enabled: item.enabled === true
+      typeBg: type === 'comment' ? '#FFF0F3' : '#FFE8EC',
+      typeColor: type === 'comment' ? '#C71C37' : '#FF2442',
+      enabled: item.enabled === true,
+      previewText: content || '（仅图片）'
     };
   },
 
@@ -46,20 +60,22 @@ module.exports = {
     for (let i = 0; i < dmList.length; i++) {
       let n = this.normalizeItem({
         content: dmList[i].content,
+        image: dmList[i].image || '',
         type: 'dm',
         enabled: dmList[i].enabled !== false
       });
-      if (n && n.content) {
+      if (n) {
         list.push(n);
       }
     }
     for (let j = 0; j < commentList.length; j++) {
       let n2 = this.normalizeItem({
         content: commentList[j].content,
+        image: commentList[j].image || '',
         type: 'comment',
         enabled: commentList[j].enabled !== false
       });
-      if (n2 && n2.content) {
+      if (n2) {
         list.push(n2);
       }
     }
@@ -69,11 +85,10 @@ module.exports = {
   load() {
     let raw = Storage.getObj(this.listKey);
     if (!raw || !raw.length) {
-      raw = Storage.getObj(this.legacyListKey) || [];
+      raw = Storage.getObj(this.legacyListKeyV2) || Storage.getObj(this.legacyListKey) || [];
       if (!raw.length) {
         raw = this.migrateFromLegacy();
       }
-      // 旧默认只有 4 条，升级为更完整的默认库
       if (!raw.length || raw.length < 10) {
         raw = this.defaults();
       }
@@ -82,7 +97,7 @@ module.exports = {
     let list = [];
     for (let i = 0; i < raw.length; i++) {
       let n = this.normalizeItem(raw[i]);
-      if (n && n.content) {
+      if (n) {
         list.push(n);
       }
     }
@@ -94,9 +109,10 @@ module.exports = {
     let arr = list || [];
     for (let i = 0; i < arr.length; i++) {
       let n = this.normalizeItem(arr[i]);
-      if (n && n.content) {
+      if (n) {
         out.push({
           content: n.content,
+          image: n.image,
           type: n.type,
           enabled: n.enabled
         });
@@ -123,8 +139,11 @@ module.exports = {
     let list = this.load();
     let out = [];
     for (let i = 0; i < list.length; i++) {
-      if (list[i].enabled && list[i].type === type && list[i].content) {
-        out.push(list[i].content);
+      if (list[i].enabled && list[i].type === type && (list[i].content || list[i].image)) {
+        out.push({
+          content: list[i].content,
+          image: list[i].image
+        });
       }
     }
     return out;
@@ -156,7 +175,7 @@ module.exports = {
     let smart = require('./smartScripts.js');
     let conf = smart.load();
     if (conf.mode === 'smart') {
-      let dm = conf.dmSmart ? '智能私信' : '平台私信';
+      let dm = conf.dmSmart ? '智能私信' : '固定私信';
       return smart.ready() ? 'AI智能话术 · 评论智能 · ' + dm : 'AI智能话术 · 待配置 Key';
     }
     let c = this.counts();

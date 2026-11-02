@@ -3,10 +3,10 @@
     "text": "适配下载",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#FF2442"
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -20,7 +20,7 @@
         "background": "#FFFFFF",
         "marginBottom": 5,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "text", "text": "暂无适配信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
@@ -37,13 +37,13 @@
         "background": "#FFFFFF",
         "marginBottom": 5,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
           "type": "text",
           "text": "目标应用",
-          "style": { "fontSize": 12, "color": "#7A8A88" }
+          "style": { "fontSize": 12, "color": "#8A6A6A" }
         },
         {
           "type": "row",
@@ -62,7 +62,7 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "本机状态", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "本机状态", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             {
               "type": "tag",
               "text": "{{localTag}}",
@@ -77,7 +77,7 @@
           "size": "sm",
           "showIf": "showOfficial",
           "onTap": "onOpenOfficial",
-          "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8, "width": "100%" }
+          "style": { "background": "#FFF0F0", "color": "#FF2442", "radius": 8, "width": "100%" }
         }
       ]
     },
@@ -91,7 +91,7 @@
         "background": "#FFFFFF",
         "marginBottom": 5,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "text", "text": "支持的版本", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
@@ -120,7 +120,7 @@
                             "type": "tag",
                             "text": "推荐",
                             "showIf": "item.isRecommended",
-                            "style": { "background": "#E8F6F4", "color": "#0B6E6A", "radius": 4 }
+                            "style": { "background": "#FFE8EC", "color": "#FF2442", "radius": 4 }
                           }
                         ]
                       },
@@ -134,7 +134,7 @@
                     "size": "sm",
                     "showIf": "item.hasDownload",
                     "onTap": "onDownloadVersion",
-                    "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
+                    "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 8, "paddingLeft": 12, "paddingRight": 12 }
                   }
                 ]
               }
@@ -153,7 +153,7 @@
         "background": "#FFFFFF",
         "marginBottom": 5,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "text", "text": "适配说明", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
@@ -186,7 +186,7 @@
         "radius": 12,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "notice", "text": "{{disclaimer}}" }

@@ -1,3 +1,3 @@
-let tCommon = require('../app/dy/Common.js');
+let tCommon = require('../app/xhs/Common.js');
 
 tCommon.closeAlert();

@@ -18,10 +18,11 @@ module.exports = {
 
   defaults() {
     return {
-      videoSort: 0,
-      videoTime: 0,
-      videoMinute: 0,
-      videoRandom: 0,
+      noteSort: 0,
+      noteType: 0,
+      noteTime: 0,
+      noteRange: 0,
+      noteDistance: 0,
       searchTitle: '',
       commentKeyword: '',
       zanCommentRate: 0,
@@ -40,10 +41,11 @@ module.exports = {
       return d;
     }
     return {
-      videoSort: this.num(saved.videoSort, d.videoSort),
-      videoTime: this.num(saved.videoTime, d.videoTime),
-      videoMinute: this.num(saved.videoMinute, d.videoMinute),
-      videoRandom: this.num(saved.videoRandom, d.videoRandom),
+      noteSort: this.num(saved.noteSort != null ? saved.noteSort : saved.videoSort, d.noteSort),
+      noteType: this.num(saved.noteType, d.noteType),
+      noteTime: this.num(saved.noteTime != null ? saved.noteTime : saved.videoTime, d.noteTime),
+      noteRange: this.num(saved.noteRange != null ? saved.noteRange : saved.videoRandom, d.noteRange),
+      noteDistance: this.num(saved.noteDistance, d.noteDistance),
       searchTitle: saved.searchTitle != null ? String(saved.searchTitle) : d.searchTitle,
       commentKeyword: saved.commentKeyword != null ? String(saved.commentKeyword) : d.commentKeyword,
       zanCommentRate: this.num(saved.zanCommentRate, d.zanCommentRate),
@@ -67,10 +69,11 @@ module.exports = {
     let d = this.defaults();
     let src = data || {};
     Storage.putObj(this.key, {
-      videoSort: this.num(src.videoSort, d.videoSort),
-      videoTime: this.num(src.videoTime, d.videoTime),
-      videoMinute: this.num(src.videoMinute, d.videoMinute),
-      videoRandom: this.num(src.videoRandom, d.videoRandom),
+      noteSort: this.num(src.noteSort, d.noteSort),
+      noteType: this.num(src.noteType, d.noteType),
+      noteTime: this.num(src.noteTime, d.noteTime),
+      noteRange: this.num(src.noteRange, d.noteRange),
+      noteDistance: this.num(src.noteDistance, d.noteDistance),
       searchTitle: String(src.searchTitle != null ? src.searchTitle : ''),
       commentKeyword: String(src.commentKeyword != null ? src.commentKeyword : ''),
       zanCommentRate: this.num(src.zanCommentRate, d.zanCommentRate),
@@ -86,10 +89,11 @@ module.exports = {
   filterConfig() {
     let p = this.load();
     return {
-      sort: p.videoSort,
-      time: p.videoTime,
-      minute: p.videoMinute,
-      random: p.videoRandom
+      sort: p.noteSort,
+      type: p.noteType,
+      time: p.noteTime,
+      range: p.noteRange,
+      distance: p.noteDistance
     };
   },
 

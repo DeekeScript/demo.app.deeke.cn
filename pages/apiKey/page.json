@@ -3,10 +3,10 @@
     "text": "获取 API Key",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#FF2442"
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -22,7 +22,7 @@
         "radius": 14,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -71,8 +71,8 @@
           "size": "sm",
           "onTap": "onOpenSign",
           "style": {
-            "background": "#E8F6F4",
-            "color": "#0B6E6A",
+            "background": "#FFE8EC",
+            "color": "#FF2442",
             "radius": 10,
             "width": "100%"
           }
@@ -87,7 +87,7 @@
         "radius": 14,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -136,8 +136,8 @@
           "size": "sm",
           "onTap": "onOpenTopUp",
           "style": {
-            "background": "#E8F6F4",
-            "color": "#0B6E6A",
+            "background": "#FFE8EC",
+            "color": "#FF2442",
             "radius": 10,
             "width": "100%"
           }
@@ -152,7 +152,7 @@
         "radius": 14,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -205,7 +205,7 @@
           "size": "sm",
           "onTap": "onOpenKeys",
           "style": {
-            "background": "#0B6E6A",
+            "background": "#FF2442",
             "color": "#FFFFFF",
             "radius": 10,
             "width": "100%"

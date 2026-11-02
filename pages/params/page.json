@@ -3,10 +3,10 @@
     "text": "设置",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#FF2442"
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -20,16 +20,15 @@
         "background": "#FFFFFF",
         "marginBottom": 4,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
-        { "type": "text", "text": "搜索筛选", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-        { "type": "notice", "text": "对应抖音搜索页筛选。点选卡片即可，选中为主色底、白字。全部选「不限 / 综合」时不会点开筛选。" },
+        { "type": "text", "text": "搜索筛选", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#2B1A1A" } },
         {
           "type": "column",
           "style": { "gap": 6 },
           "children": [
-            { "type": "text", "text": "排序依据", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            { "type": "text", "text": "排序依据", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             {
               "type": "grid",
               "bind": "sortOpts",
@@ -59,7 +58,37 @@
           "type": "column",
           "style": { "gap": 6 },
           "children": [
-            { "type": "text", "text": "发布时间", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            { "type": "text", "text": "笔记类型", "style": { "fontSize": 13, "color": "#8A6A6A" } },
+            {
+              "type": "grid",
+              "bind": "typeOpts",
+              "columns": 3,
+              "style": { "gap": 8 },
+              "item": {
+                "type": "card",
+                "value": "{{item.value}}",
+                "onTap": "onPickFilter",
+                "style": {
+                  "padding": 10,
+                  "radius": 10,
+                  "gap": 0,
+                  "align": "center",
+                  "background": "{{item.bg}}",
+                  "borderWidth": 1,
+                  "borderColor": "{{item.border}}"
+                },
+                "children": [
+                  { "type": "text", "text": "{{item.label}}", "style": { "fontSize": 12, "align": "center", "color": "{{item.color}}" } }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "style": { "gap": 6 },
+          "children": [
+            { "type": "text", "text": "发布时间", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             {
               "type": "grid",
               "bind": "timeOpts",
@@ -89,10 +118,10 @@
           "type": "column",
           "style": { "gap": 6 },
           "children": [
-            { "type": "text", "text": "视频时长", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            { "type": "text", "text": "搜索范围", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             {
               "type": "grid",
-              "bind": "minuteOpts",
+              "bind": "rangeOpts",
               "columns": 2,
               "style": { "gap": 8 },
               "item": {
@@ -119,11 +148,11 @@
           "type": "column",
           "style": { "gap": 6 },
           "children": [
-            { "type": "text", "text": "搜索范围", "style": { "fontSize": 13, "color": "#5A6B69" } },
+            { "type": "text", "text": "位置距离", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             {
               "type": "grid",
-              "bind": "randomOpts",
-              "columns": 2,
+              "bind": "distanceOpts",
+              "columns": 3,
               "style": { "gap": 8 },
               "item": {
                 "type": "card",
@@ -156,15 +185,15 @@
         "background": "#FFFFFF",
         "marginBottom": 4,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
-        { "type": "text", "text": "关键词", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "text", "text": "关键词", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#2B1A1A" } },
         {
           "type": "input",
           "name": "searchTitle",
-          "label": "视频搜索关键词",
-          "hint": "必填，用于搜索视频",
+          "label": "笔记搜索关键词",
+          "hint": "必填，用于搜索笔记",
           "onChange": "onAutoSave",
           "onBlur": "onAutoSave"
         },
@@ -189,10 +218,10 @@
         "radius": 12,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
-        { "type": "text", "text": "操作频率", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
+        { "type": "text", "text": "操作频率", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#2B1A1A" } },
         { "type": "notice", "text": "评论赞、回复评论、私信、关注四者按概率只执行其中一个" },
         {
           "type": "slider",
@@ -203,7 +232,7 @@
           "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         },
         {
           "type": "slider",
@@ -214,7 +243,7 @@
           "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         },
         {
           "type": "slider",
@@ -225,7 +254,7 @@
           "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         },
         {
           "type": "slider",
@@ -236,7 +265,7 @@
           "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         },
         {
           "type": "slider",
@@ -247,7 +276,7 @@
           "step": 1,
           "unit": "%",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         },
         {
           "type": "slider",
@@ -258,7 +287,7 @@
           "step": 5,
           "unit": "秒",
           "onChange": "onAutoSave",
-          "style": { "color": "#0B6E6A" }
+          "style": { "color": "#FF2442" }
         }
       ]
     }

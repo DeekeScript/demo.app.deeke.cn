@@ -3,13 +3,13 @@
     "hidden": true
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 0
   },
   "body": [
     {
       "type": "column",
-      "style": { "sticky": "top", "background": "#0B6E6A", "padding": 10 },
+      "style": { "sticky": "top", "background": "#FF2442", "padding": 10 },
       "children": [
         {
           "type": "row",
@@ -49,9 +49,9 @@
         {
           "type": "card",
           "showIf": "isFree",
-          "style": { "padding": 10, "gap": 4, "radius": 12, "background": "#E8F6F4", "borderWidth": 1, "borderColor": "#D5EBE8" },
+          "style": { "padding": 10, "gap": 4, "radius": 12, "background": "#FFE8EC", "borderWidth": 1, "borderColor": "#D5EBE8" },
           "children": [
-            { "type": "title", "text": "免费使用", "style": { "color": "#0B6E6A" } },
+            { "type": "title", "text": "免费使用", "style": { "color": "#FF2442" } },
             { "type": "notice", "text": "{{freeHint}}" }
           ]
         },
@@ -90,7 +90,7 @@
                       {
                         "type": "text",
                         "text": "{{item.sub}}",
-                        "style": { "fontSize": 12, "color": "#7A8A88" }
+                        "style": { "fontSize": 12, "color": "#8A6A6A" }
                       }
                     ]
                   },
@@ -114,7 +114,7 @@
             "radius": 12,
             "background": "#FFFFFF",
             "borderWidth": 1,
-            "borderColor": "#E6EEEE"
+            "borderColor": "#F5D0D0"
           },
           "children": [
             {
@@ -179,7 +179,7 @@
         "gap": 8,
         "background": "#FFFFFF",
         "borderTopWidth": 1,
-        "borderTopColor": "#E2EAEA"
+        "borderTopColor": "#F5D0D0"
       },
       "children": [
         {
@@ -209,7 +209,7 @@
                 {
                   "type": "text",
                   "text": "{{selectedPlanName}}",
-                  "style": { "fontSize": 13, "color": "#7A8A88" }
+                  "style": { "fontSize": 13, "color": "#8A6A6A" }
                 }
               ]
             },
@@ -233,7 +233,7 @@
           "text": "支付宝扫码支付",
           "size": "md",
           "onTap": "onPayQr",
-          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+          "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 10, "width": "100%" }
         },
         {
           "type": "button",
@@ -241,7 +241,7 @@
           "size": "sm",
           "showIf": "showMock",
           "onTap": "onPayMock",
-          "style": { "background": "#F3F7F6", "color": "#556", "width": "100%", "radius": 8 }
+          "style": { "background": "#FFF0F0", "color": "#556", "width": "100%", "radius": 8 }
         }
       ]
     }
@@ -310,7 +310,7 @@
               "text": "清除优惠码",
               "showIf": "showCouponClear",
               "onTap": "onClearCoupon",
-              "style": { "background": "#F3F7F6", "color": "#556", "radius": 10, "width": "100%" }
+              "style": { "background": "#FFF0F0", "color": "#556", "radius": 10, "width": "100%" }
             }
           ]
         }
@@ -331,14 +331,14 @@
             {
               "type": "text",
               "text": "{{savedActivationCode}}",
-              "style": { "fontSize": 18, "fontWeight": "bold", "color": "#0B6E6A", "align": "center" }
+              "style": { "fontSize": 18, "fontWeight": "bold", "color": "#FF2442", "align": "center" }
             },
             {
               "type": "button",
               "text": "复制激活码",
               "size": "sm",
               "onTap": "onCopyActivateCode",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+              "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 10, "width": "100%" }
             }
           ]
         },
@@ -364,7 +364,7 @@
               "type": "button",
               "text": "立即激活",
               "onTap": "onActivateCode",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+              "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 10, "width": "100%" }
             }
           ]
         }
@@ -416,7 +416,7 @@
           "text": "我已支付",
           "size": "sm",
           "onTap": "onCheckOrder",
-          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+          "style": { "background": "#FF2442", "color": "#FFFFFF", "width": "100%", "radius": 8 }
         }
       ]
     }

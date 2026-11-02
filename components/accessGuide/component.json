@@ -22,12 +22,12 @@
     },
     {
       "type": "column",
-      "style": { "width": "100%", "background": "#F7FAF9", "radius": 12, "padding": 16, "gap": 12, "borderWidth": 1, "borderColor": "#E2EAEA" },
+      "style": { "width": "100%", "background": "#F7FAF9", "radius": 12, "padding": 16, "gap": 12, "borderWidth": 1, "borderColor": "#F5D0D0" },
       "children": [
         {
           "type": "text",
           "text": "已下载的应用",
-          "style": { "fontSize": 15, "color": "#7A8A88", "align": "left" }
+          "style": { "fontSize": 15, "color": "#8A6A6A", "align": "left" }
         },
         {
           "type": "row",
@@ -41,7 +41,7 @@
             {
               "type": "text",
               "text": "已关闭 >",
-              "style": { "fontSize": 15, "color": "#0B6E6A" }
+              "style": { "fontSize": 15, "color": "#FF2442" }
             }
           ]
         }
@@ -52,7 +52,7 @@
       "text": "去打开",
       "size": "md",
       "onTap": "onOpenAccessibility",
-      "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+      "style": { "background": "#FF2442", "color": "#FFFFFF", "width": "100%", "radius": 8 }
     }
   ]
 }

@@ -3,7 +3,7 @@
     "text": "我的",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A",
+    "background": "#FF2442",
     "right": [
       {
         "text": "客服",
@@ -12,7 +12,7 @@
     ]
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -26,7 +26,7 @@
         "background": "#FFFFFF",
         "marginBottom": 4,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "text", "text": "运行权限", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
@@ -48,7 +48,7 @@
               "size": "sm",
               "showIf": "showAccessBtn",
               "onTap": "onOpenGuide",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         },
@@ -69,7 +69,7 @@
               "size": "sm",
               "showIf": "showFloatBtn",
               "onTap": "onOpenFloat",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         },
@@ -97,7 +97,7 @@
               "size": "sm",
               "onTap": "onBattery",
               "showIf": "showBatteryBtn",
-              "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         }
@@ -112,7 +112,7 @@
         "background": "#FFFFFF",
         "marginBottom": 4,
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         { "type": "text", "text": "设备信息", "style": { "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
@@ -121,7 +121,7 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "设备号", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             { "type": "text", "text": "{{deviceId}}", "style": { "weight": 1, "fontSize": 12, "color": "#1A2B2A" } },
             {
               "type": "image",
@@ -135,7 +135,7 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "工具编号", "style": { "fontSize": 13, "color": "#7A8A88" } },
+            { "type": "text", "text": "工具编号", "style": { "fontSize": 13, "color": "#8A6A6A" } },
             { "type": "text", "text": "{{toolCode}}", "style": { "weight": 1, "fontSize": 13, "color": "#1A2B2A" } }
           ]
         },
@@ -149,7 +149,7 @@
               "text": "查看 / 导出",
               "size": "sm",
               "onTap": "onGoLogs",
-              "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
+              "style": { "background": "#FFF0F0", "color": "#FF2442", "radius": 8 }
             }
           ]
         }
@@ -163,7 +163,7 @@
         "radius": 12,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -171,7 +171,7 @@
           "style": { "valign": "center", "gap": 8 },
           "children": [
             { "type": "text", "text": "版本与更新", "style": { "weight": 1, "fontWeight": "bold", "fontSize": 15, "color": "#1A2B2A" } },
-            { "type": "text", "text": "{{localVersion}}", "style": { "fontSize": 12, "color": "#7A8A88" } }
+            { "type": "text", "text": "{{localVersion}}", "style": { "fontSize": 12, "color": "#8A6A6A" } }
           ]
         },
         { "type": "notice", "text": "{{updateHint}}" },
@@ -184,7 +184,7 @@
               "text": "检查更新",
               "size": "sm",
               "onTap": "onCheckUpdate",
-              "style": { "weight": 1, "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8 }
+              "style": { "weight": 1, "background": "#FFF0F0", "color": "#FF2442", "radius": 8 }
             },
             {
               "type": "button",
@@ -192,7 +192,7 @@
               "size": "sm",
               "showIf": "hasUpdate",
               "onTap": "onDoUpdate",
-              "style": { "weight": 1, "background": "#0B6E6A", "color": "#FFFFFF", "radius": 8 }
+              "style": { "weight": 1, "background": "#FF2442", "color": "#FFFFFF", "radius": 8 }
             }
           ]
         }
@@ -227,7 +227,7 @@
           "type": "row",
           "style": { "valign": "center", "gap": 8 },
           "children": [
-            { "type": "text", "text": "微信", "style": { "fontSize": 15, "color": "#7A8A88" } },
+            { "type": "text", "text": "微信", "style": { "fontSize": 15, "color": "#8A6A6A" } },
             {
               "type": "text",
               "text": "{{supportWechat}}",

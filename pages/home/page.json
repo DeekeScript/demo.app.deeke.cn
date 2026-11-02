@@ -3,10 +3,10 @@
     "text": "工作台",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#FF2442"
   },
   "style": {
-    "background": "#EEF2F1",
+    "background": "#FFF5F5",
     "padding": 10
   },
   "body": [
@@ -33,7 +33,7 @@
                 "width": 28,
                 "height": 28,
                 "radius": 8,
-                "background": "#0B6E6A",
+                "background": "#FF2442",
                 "align": "center",
                 "valign": "center"
               },
@@ -57,13 +57,13 @@
               "name": "agreeProtocol",
               "label": "我已阅读并同意",
               "onChange": "onAgreeChange",
-              "style": { "color": "#0B6E6A", "marginLeft": -7 }
+              "style": { "color": "#FF2442", "marginLeft": -7 }
             },
             {
               "type": "text",
               "text": "《用户协议》",
               "onTap": "onOpenProtocol",
-              "style": { "fontSize": 13, "color": "#0B6E6A", "fontWeight": "bold" }
+              "style": { "fontSize": 13, "color": "#FF2442", "fontWeight": "bold" }
             }
           ]
         },
@@ -72,12 +72,12 @@
           "text": "开始运行",
           "size": "md",
           "onTap": "onRun",
-          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
+          "style": { "background": "#FF2442", "color": "#FFFFFF", "radius": 10, "width": "100%" }
         },
         {
           "type": "notice",
           "text": "运行前自动检查激活、适配与权限",
-          "style": { "color": "#7A8A88" }
+          "style": { "color": "#8A6A6A" }
         }
       ]
     },
@@ -90,7 +90,7 @@
         "radius": 16,
         "background": "#FFFFFF",
         "borderWidth": 1,
-        "borderColor": "#E2EAEA"
+        "borderColor": "#F5D0D0"
       },
       "children": [
         {
@@ -103,7 +103,7 @@
                 "width": 28,
                 "height": 28,
                 "radius": 8,
-                "background": "#0B6E6A",
+                "background": "#FF2442",
                 "align": "center",
                 "valign": "center"
               },
@@ -141,7 +141,7 @@
           "text": "查看支持版本与下载",
           "size": "sm",
           "onTap": "onGoTarget",
-          "style": { "background": "#F3F7F6", "color": "#0B6E6A", "radius": 8, "width": "100%" }
+          "style": { "background": "#FFF0F0", "color": "#FF2442", "radius": 8, "width": "100%" }
         }
       ]
     },
@@ -153,18 +153,18 @@
       "confirmText": "知道了",
       "hideCancel": true,
       "onConfirm": "onCloseAgreeTip",
-      "style": { "color": "#0B6E6A" }
+      "style": { "color": "#FF2442" }
     },
     {
       "type": "dialog",
       "showIf": "paramsDialogOpen",
       "title": "请先完成设置",
-      "text": "请先到「设置」填写视频搜索关键词和评论关键词。",
+      "text": "请先到「设置」填写笔记搜索关键词和评论关键词。",
       "confirmText": "去设置",
       "cancelText": "取消",
       "onConfirm": "onGoParams",
       "onCancel": "onCloseParamsDialog",
-      "style": { "color": "#0B6E6A" }
+      "style": { "color": "#FF2442" }
     },
     {
       "type": "dialog",
@@ -175,7 +175,7 @@
       "cancelText": "取消",
       "onConfirm": "onGoPay",
       "onCancel": "onClosePayDialog",
-      "style": { "color": "#0B6E6A" }
+      "style": { "color": "#FF2442" }
     },
     {
       "type": "dialog",
@@ -187,7 +187,7 @@
       "closeOnMask": false,
       "onConfirm": "onConfirmStopHint",
       "onCancel": "onCancelStopHint",
-      "style": { "color": "#0B6E6A" }
+      "style": { "color": "#FF2442" }
     }
   ],
   "popups": [
@@ -228,7 +228,7 @@
           "label": "不再提醒",
           "onChange": "onDismissTargetRemind",
           "style": {
-            "color": "#0B6E6A"
+            "color": "#FF2442"
           }
         },
         {
@@ -243,7 +243,7 @@
               "size": "sm",
               "onTap": "onContinueDespiteTarget",
               "style": {
-                "background": "#F3F7F6",
+                "background": "#FFF0F0",
                 "color": "#334443",
                 "radius": 10,
                 "weight": 1
@@ -255,7 +255,7 @@
               "size": "sm",
               "onTap": "onGoTarget",
               "style": {
-                "background": "#0B6E6A",
+                "background": "#FF2442",
                 "color": "#FFFFFF",
                 "radius": 10,
                 "weight": 1
@@ -300,7 +300,7 @@
           "text": "我已阅读",
           "size": "sm",
           "onTap": "onCloseProtocol",
-          "style": { "background": "#0B6E6A", "color": "#FFFFFF", "width": "100%", "radius": 8 }
+          "style": { "background": "#FF2442", "color": "#FFFFFF", "width": "100%", "radius": 8 }
         }
       ]
     },

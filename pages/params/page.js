@@ -1,10 +1,11 @@
 let params = require('../../common/params.js');
 
 let FIELDS = [
-  'videoSort',
-  'videoTime',
-  'videoMinute',
-  'videoRandom',
+  'noteSort',
+  'noteType',
+  'noteTime',
+  'noteRange',
+  'noteDistance',
   'searchTitle',
   'commentKeyword',
   'zanCommentRate',
@@ -17,16 +18,27 @@ let FIELDS = [
 
 let FILTERS = [
   {
-    field: 'videoSort',
+    field: 'noteSort',
     bind: 'sortOpts',
     options: [
-      { label: '综合排序', value: '0' },
-      { label: '最新发布', value: '1' },
-      { label: '最多点赞', value: '2' }
+      { label: '综合', value: '0' },
+      { label: '最新', value: '1' },
+      { label: '最多点赞', value: '2' },
+      { label: '最多评论', value: '3' },
+      { label: '最多收藏', value: '4' }
     ]
   },
   {
-    field: 'videoTime',
+    field: 'noteType',
+    bind: 'typeOpts',
+    options: [
+      { label: '不限', value: '0' },
+      { label: '视频', value: '1' },
+      { label: '图文', value: '2' }
+    ]
+  },
+  {
+    field: 'noteTime',
     bind: 'timeOpts',
     options: [
       { label: '不限', value: '0' },
@@ -36,33 +48,33 @@ let FILTERS = [
     ]
   },
   {
-    field: 'videoMinute',
-    bind: 'minuteOpts',
+    field: 'noteRange',
+    bind: 'rangeOpts',
     options: [
       { label: '不限', value: '0' },
-      { label: '1分钟以下', value: '1' },
-      { label: '1-5分钟', value: '2' },
-      { label: '5分钟以上', value: '3' }
+      { label: '已看过', value: '1' },
+      { label: '未看过', value: '2' },
+      { label: '已关注', value: '3' }
     ]
   },
   {
-    field: 'videoRandom',
-    bind: 'randomOpts',
+    field: 'noteDistance',
+    bind: 'distanceOpts',
     options: [
       { label: '不限', value: '0' },
-      { label: '关注的人', value: '1' },
-      { label: '最近看过', value: '2' },
-      { label: '还未看过', value: '3' }
+      { label: '同城', value: '1' },
+      { label: '附近', value: '2' }
     ]
   }
 ];
 
 Page({
   data: {
-    videoSort: '0',
-    videoTime: '0',
-    videoMinute: '0',
-    videoRandom: '0',
+    noteSort: '0',
+    noteType: '0',
+    noteTime: '0',
+    noteRange: '0',
+    noteDistance: '0',
     searchTitle: '',
     commentKeyword: '',
     zanCommentRate: 0,
@@ -72,9 +84,10 @@ Page({
     firstCommentRate: 0,
     intervalSec: 5,
     sortOpts: [],
+    typeOpts: [],
     timeOpts: [],
-    minuteOpts: [],
-    randomOpts: [],
+    rangeOpts: [],
+    distanceOpts: [],
     _ready: false
   },
 
@@ -87,9 +100,9 @@ Page({
         field: field,
         value: options[i].value,
         label: options[i].label,
-        bg: on ? '#0B6E6A' : '#FFFFFF',
-        border: '#0B6E6A',
-        color: on ? '#FFFFFF' : '#334443'
+        bg: on ? '#FF2442' : '#FFFFFF',
+        border: '#FF2442',
+        color: on ? '#FFFFFF' : '#553333'
       });
     }
     return list;
@@ -97,10 +110,11 @@ Page({
 
   viewOf(p) {
     let view = {
-      videoSort: String(p.videoSort),
-      videoTime: String(p.videoTime),
-      videoMinute: String(p.videoMinute),
-      videoRandom: String(p.videoRandom),
+      noteSort: String(p.noteSort),
+      noteType: String(p.noteType),
+      noteTime: String(p.noteTime),
+      noteRange: String(p.noteRange),
+      noteDistance: String(p.noteDistance),
       searchTitle: p.searchTitle,
       commentKeyword: p.commentKeyword,
       zanCommentRate: p.zanCommentRate,

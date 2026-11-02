@@ -8,9 +8,9 @@ Page({
     accessText: '',
     floatText: '',
     batteryText: '',
-    accessColor: '#7A8A88',
-    floatColor: '#7A8A88',
-    batteryColor: '#7A8A88',
+    accessColor: '#8A6A6A',
+    floatColor: '#8A6A6A',
+    batteryColor: '#8A6A6A',
     showAccessBtn: true,
     showFloatBtn: true,
     showBatteryBtn: true,
@@ -27,7 +27,7 @@ Page({
   },
 
   statusColor(ok) {
-    return ok ? '#0B6E6A' : '#C65A12';
+    return ok ? '#FF2442' : '#C65A12';
   },
 
   applyUpdateResult(result) {

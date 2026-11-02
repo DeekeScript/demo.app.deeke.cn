@@ -146,7 +146,7 @@ function evaluate(target) {
       summary: '',
       detail: '',
       tag: '',
-      tagBg: '#EEF2F1',
+      tagBg: '#FFF5F5',
       tagColor: '#667',
       needAction: false,
       message: ''
@@ -166,8 +166,8 @@ function evaluate(target) {
       summary: summary,
       detail: '请按下方列表安装适配版本（后台未配置包名，无法检测本机）',
       tag: compatLabel,
-      tagBg: '#E8F6F4',
-      tagColor: '#0B6E6A',
+      tagBg: '#FFE8EC',
+      tagColor: '#FF2442',
       needAction: false,
       message: ''
     };
@@ -217,8 +217,8 @@ function evaluate(target) {
     summary: summary,
     detail: '本机已安装 ' + target.name + (local.versionName ? (' ' + local.versionName) : '') + ' · ' + compatLabel,
     tag: '已就绪',
-    tagBg: '#E8F6F4',
-    tagColor: '#0B6E6A',
+    tagBg: '#FFE8EC',
+    tagColor: '#FF2442',
     needAction: false,
     message: ''
   };
