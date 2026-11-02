@@ -1,0 +1,168 @@
+{
+  "title": {
+    "text": "HID 设置",
+    "fontSize": 17,
+    "color": "#FFFFFF",
+    "background": "#FF2442"
+  },
+  "style": {
+    "background": "#FFF5F5",
+    "padding": 10
+  },
+  "body": [
+    {
+      "type": "card",
+      "style": {
+        "padding": 12,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 4,
+        "borderWidth": 1,
+        "borderColor": "#F5D0D0"
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": "使用说明",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": 15,
+            "color": "#2B1A1A"
+          }
+        },
+        {
+          "type": "notice",
+          "text": "启用 HID 主要为了提升程序稳定性：通过蓝牙硬件执行点击/滑动，更加接近真人操作"
+        },
+        {
+          "type": "text",
+          "text": "1. 打开手机蓝牙，并将 HID 设备配对连接。",
+          "style": { "fontSize": 13, "color": "#553333" }
+        },
+        {
+          "type": "text",
+          "text": "2. 如系统提示蓝牙权限，请允许「附近的设备 / 蓝牙」。",
+          "style": { "fontSize": 13, "color": "#553333" }
+        },
+        {
+          "type": "text",
+          "text": "3. 点「检查连接」确认状态为已连接后，再打开「启用 HID」。",
+          "style": { "fontSize": 13, "color": "#553333" }
+        },
+        {
+          "type": "text",
+          "text": "4. 未连接时无法启用；连接断开后请重新检查并启用。",
+          "style": { "fontSize": 13, "color": "#553333" }
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "style": {
+        "padding": 12,
+        "gap": 10,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "marginBottom": 4,
+        "borderWidth": 1,
+        "borderColor": "#F5D0D0"
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": "连接状态",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": 15,
+            "color": "#2B1A1A"
+          }
+        },
+        {
+          "type": "row",
+          "style": {
+            "valign": "center",
+            "gap": 8,
+            "width": "100%"
+          },
+          "children": [
+            {
+              "type": "tag",
+              "text": "{{statusLabel}}",
+              "style": {
+                "background": "{{statusBg}}",
+                "color": "{{statusColor}}",
+                "radius": 4
+              }
+            },
+            {
+              "type": "text",
+              "text": "{{statusDetail}}",
+              "style": {
+                "fontSize": 13,
+                "color": "#8A6A6A",
+                "weight": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "button",
+          "text": "检查连接",
+          "size": "md",
+          "onTap": "onCheck",
+          "style": {
+            "background": "#FF2442",
+            "color": "#FFFFFF",
+            "radius": 10,
+            "width": "100%"
+          }
+        }
+      ]
+    },
+    {
+      "type": "card",
+      "style": {
+        "padding": 12,
+        "gap": 8,
+        "radius": 12,
+        "background": "#FFFFFF",
+        "borderWidth": 1,
+        "borderColor": "#F5D0D0"
+      },
+      "children": [
+        {
+          "type": "text",
+          "text": "启用开关",
+          "style": {
+            "fontWeight": "bold",
+            "fontSize": 15,
+            "color": "#2B1A1A"
+          }
+        },
+        {
+          "type": "notice",
+          "text": "{{enableHint}}"
+        },
+        {
+          "type": "switch",
+          "name": "hidEnabled",
+          "label": "启用 HID",
+          "size": "sm",
+          "onChange": "onHidChange",
+          "style": { "color": "#FF2442" }
+        }
+      ]
+    },
+    {
+      "type": "dialog",
+      "showIf": "hidDialogOpen",
+      "title": "无法启用",
+      "text": "{{hidDialogText}}",
+      "confirmText": "知道了",
+      "hideCancel": true,
+      "onConfirm": "onCloseHidDialog",
+      "style": { "color": "#FF2442" }
+    }
+  ]
+}

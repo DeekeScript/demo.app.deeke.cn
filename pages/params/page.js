@@ -6,6 +6,7 @@ let FIELDS = [
   'noteTime',
   'noteRange',
   'noteDistance',
+  'hidEnabled',
   'searchTitle',
   'commentKeyword',
   'zanCommentRate',
@@ -88,6 +89,7 @@ Page({
     timeOpts: [],
     rangeOpts: [],
     distanceOpts: [],
+    hidEnabled: false,
     _ready: false
   },
 
@@ -115,6 +117,7 @@ Page({
       noteTime: String(p.noteTime),
       noteRange: String(p.noteRange),
       noteDistance: String(p.noteDistance),
+      hidEnabled: p.hidEnabled === true,
       searchTitle: p.searchTitle,
       commentKeyword: p.commentKeyword,
       zanCommentRate: p.zanCommentRate,
@@ -187,5 +190,9 @@ Page({
       this.setData(patch);
     }
     this.persist(extra);
+  },
+
+  onOpenHid() {
+    this.navigate({ page: 'pages/hid' });
   }
 });
