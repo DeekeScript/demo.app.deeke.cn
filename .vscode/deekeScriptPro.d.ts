@@ -415,6 +415,13 @@ interface Audio {
      */
     play(source: string): boolean;
     /**
+     * 加载并播放音频，播放结束后释放播放器
+     * @param {string} source 音频资源路径
+     * @returns {boolean} 是否成功
+     * @see {@link https://script.deeke.cn/base/audio/audio.html#playandrelease-source DeekeScript Pro 文档}
+     */
+    playAndRelease(source: string): boolean;
+    /**
      * 播放当前已加载的音频
      * @returns {boolean} 是否成功
      * @see {@link https://script.deeke.cn/base/audio/audio.html#play DeekeScript Pro 文档}
@@ -703,6 +710,11 @@ interface DeekeScriptJson {
      * @see {@link https://script.deeke.cn/base/deekeScriptJson/deekeScriptJson.html#tojson DeekeScript Pro 文档}
      */
     toJson(): object;
+    /**
+     * 清除已缓存的 deekeScript.json
+     * @see {@link https://script.deeke.cn/base/deekeScriptJson/deekeScriptJson.html#clear DeekeScript Pro 文档}
+     */
+    clear(): void;
 }
 declare var DeekeScriptJson: DeekeScriptJson;
 
@@ -1558,6 +1570,14 @@ interface Encrypt {
      * @see {@link https://script.deeke.cn/advance/encryption.html#sha256-input DeekeScript Pro 文档}
      */
     sha256(input: string): string;
+    /**
+     * HmacSHA256，返回十六进制字符串
+     * @param {string} key 密钥
+     * @param {string} data 数据
+     * @returns {string} string
+     * @see {@link https://script.deeke.cn/advance/encryption.html#hmac_sha256-key-data DeekeScript Pro 文档}
+     */
+    hmac_sha256(key: string, data: string): string;
     /**
      * base64 encode
      * @param {string|byte[]} input input
@@ -2477,14 +2497,8 @@ interface Hid {
      */
     swipex(x1: number, y1: number, x2: number, y2: number, radian?: number, step?: number, downTimeout?: number, upTimeout?: number, timeout?: number, upDownTimes?: number): boolean;
     /**
-     * 获取服务器HID激活码。
-     * @returns {string} 激活码字符串
-     * @see {@link https://script.deeke.cn/hid/method.html#gethidzcm DeekeScript Pro 文档}
-     */
-    getHidZcm(): string;
-    /**
-     * 获取插件版本号。
-     * @returns {number} 插件版本号
+     * 固件版本号。
+     * @returns {number} 版本号
      * @see {@link https://script.deeke.cn/hid/method.html#ver DeekeScript Pro 文档}
      */
     ver(): number;
@@ -2551,12 +2565,11 @@ interface Hid {
      */
     tap(x: number, y: number): boolean;
     /**
-     * 初始化蓝牙模块。
-     * @param {any} ctx 上下文对象
-     * @returns {boolean} 是否成功
-     * @see {@link https://script.deeke.cn/hid/method.html#initbluetooth-ctx DeekeScript Pro 文档}
+     * 检查本机蓝牙已打开且有连接权限。无参数
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/hid/method.html#initbluetooth DeekeScript Pro 文档}
      */
-    initBluetooth(ctx: any): boolean;
+    initBluetooth(): boolean;
     /**
      * 获取已连接蓝牙设备名称。
      * @returns {string} 设备名称
@@ -2723,13 +2736,13 @@ interface Hid {
      */
     setBattery(lv: number): boolean;
     /**
-     * 连接蓝牙设备。
-     * @param {boolean} autoconnect 是否自动连接
-     * @param {number} index 设备索引
-     * @returns {boolean} 是否成功
+     * 连接蓝牙设备。都不传时自动连接第 0 个已配对设备
+     * @param {boolean} autoconnect 是否自动连接，默认 true（可选）
+     * @param {number} index 设备索引，默认 0（可选）
+     * @returns {boolean} boolean
      * @see {@link https://script.deeke.cn/hid/method.html#connect-autoconnect-index DeekeScript Pro 文档}
      */
-    connect(autoconnect: boolean, index: number): boolean;
+    connect(autoconnect?: boolean, index?: number): boolean;
     /**
      * 获取已连接的蓝牙设备。
      * @returns {any} 蓝牙设备对象或null
@@ -2834,22 +2847,22 @@ interface Hid {
      */
     clear(): boolean;
     /**
-     * 截屏找图后点击中心。
+     * 截屏找图后点击中心。结果只有 x、y、centerX、centerY。
      * @param {string} templateFile 模板图路径
      * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
+     * @returns {HidMatch | null} 匹配结果或 null
      * @see {@link https://script.deeke.cn/hid/method.html#tapimage-templatefile-threshold DeekeScript Pro 文档}
      */
-    tapImage(templateFile: string, threshold?: number): ImageMatch | null;
+    tapImage(templateFile: string, threshold?: number): HidMatch | null;
     /**
      * 找图后长按。
      * @param {string} templateFile 模板图路径
      * @param {number} durationMs 按住毫秒（默认800）（可选）
      * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
+     * @returns {HidMatch | null} 匹配结果或 null
      * @see {@link https://script.deeke.cn/hid/method.html#pressimage-templatefile-durationms-threshold DeekeScript Pro 文档}
      */
-    pressImage(templateFile: string, durationMs?: number, threshold?: number): ImageMatch | null;
+    pressImage(templateFile: string, durationMs?: number, threshold?: number): HidMatch | null;
     /**
      * 截屏找色后点击色块中心。
      * @param {string} color rgba/rgb/#RRGGBB
@@ -2864,10 +2877,10 @@ interface Hid {
      * @param {number} timeoutMs 超时毫秒（默认10000）（可选）
      * @param {number} intervalMs 轮询间隔（默认500）（可选）
      * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
+     * @returns {HidMatch | null} 匹配结果或 null
      * @see {@link https://script.deeke.cn/hid/method.html#waitimage-templatefile-timeoutms-intervalms-threshold DeekeScript Pro 文档}
      */
-    waitImage(templateFile: string, timeoutMs?: number, intervalMs?: number, threshold?: number): ImageMatch | null;
+    waitImage(templateFile: string, timeoutMs?: number, intervalMs?: number, threshold?: number): HidMatch | null;
     /**
      * 等待颜色出现。
      * @param {string} color 颜色
@@ -2947,10 +2960,10 @@ interface Hid {
      * @param {string} templateFile 模板图路径
      * @param {number} maxTimes 最大滑动次数（默认10）（可选）
      * @param {number} threshold 匹配阈值（默认0.8）（可选）
-     * @returns {ImageMatch | null} 匹配结果或 null
+     * @returns {HidMatch | null} 匹配结果或 null
      * @see {@link https://script.deeke.cn/hid/method.html#swipeuntilimage-x1-y1-x2-y2-templatefile-maxtimes-threshold DeekeScript Pro 文档}
      */
-    swipeUntilImage(x1: number, y1: number, x2: number, y2: number, templateFile: string, maxTimes?: number, threshold?: number): ImageMatch | null;
+    swipeUntilImage(x1: number, y1: number, x2: number, y2: number, templateFile: string, maxTimes?: number, threshold?: number): HidMatch | null;
 }
 declare var Hid: Hid;
 
@@ -2975,6 +2988,23 @@ interface Http {
      * @see {@link https://script.deeke.cn/base/http/http.html#get-url-headers DeekeScript Pro 文档}
      */
     get(url: string, headers: object): string | null;
+    /**
+     * 带请求头的 GET
+     * @param {string} url 请求地址
+     * @param {object} header 请求头
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/http/http.html#getheaders-url-header DeekeScript Pro 文档}
+     */
+    getHeaders(url: string, header: object): string | null;
+    /**
+     * 带请求头的 POST
+     * @param {string} url 请求地址
+     * @param {object} json 请求内容
+     * @param {object} header 请求头
+     * @returns {string | null} string | null
+     * @see {@link https://script.deeke.cn/base/http/http.html#postheaders-url-json-header DeekeScript Pro 文档}
+     */
+    postHeaders(url: string, json: object, header: object): string | null;
     /**
      * @param {string} url 请求地址
      * @param {string[]} files files
@@ -3644,6 +3674,22 @@ interface MediaStore {
      */
     getImages(): any[];
     /**
+     * 按目录获取图片。支持 /storage/emulated/0/Pictures/WeiXin、Pictures/WeiXin、DCIM/Camera、Screenshots
+     * @param {string} path 目录
+     * @returns {any[]} 图片信息数组
+     * @see {@link https://script.deeke.cn/base/mediaStore/mediaStore.html#getimagesbypath-path DeekeScript Pro 文档}
+     */
+    getImagesByPath(path: string): any[];
+    /**
+     * 把 content:// 图片复制进相册
+     * @param {string} contentUriString 源 content Uri
+     * @param {string} displayName 显示名称（可选）（可选）
+     * @param {string} relativePath 相对目录（可选，默认 Pictures）（可选）
+     * @returns {string | null} 保存后的 Uri 或路径，失败返回 null
+     * @see {@link https://script.deeke.cn/base/mediaStore/mediaStore.html#savecontentimagetogallery-contenturistring-displayname-relativepath DeekeScript Pro 文档}
+     */
+    saveContentImageToGallery(contentUriString: string, displayName?: string, relativePath?: string): string | null;
+    /**
      * 保存图片到相册
      * @param {string} sourcePath 源图片路径
      * @param {string} displayName 显示名称（可选）（可选）
@@ -4184,6 +4230,11 @@ interface SocketIoClient {
      * @see {@link https://script.deeke.cn/base/socket/client.html#setreconnect-bool DeekeScript Pro 文档}
      */
     setReconnect(bool: boolean): void;
+    /**
+     * 关闭全部 Socket.IO 连接
+     * @see {@link https://script.deeke.cn/base/socket/client.html#closeall DeekeScript Pro 文档}
+     */
+    closeAll(): void;
 }
 declare var SocketIoClient: SocketIoClient;
 
@@ -4359,6 +4410,14 @@ interface Sqlite {
      */
     query(sql: string, args?: Array): Array;
     /**
+     * 执行查询并返回第一行第一列。无数据返回 null，适合 COUNT、SUM
+     * @param {string} sql SELECT 语句，可用 ? 占位符
+     * @param {Array} args 可选绑定参数数组（可选）
+     * @returns {any} any
+     * @see {@link https://script.deeke.cn/base/sqlite/sqlite.html#scalar-sql-args DeekeScript Pro 文档}
+     */
+    scalar(sql: string, args?: Array): any;
+    /**
      * 执行非查询 SQL（INSERT/UPDATE/DELETE/DDL 等）
      * @param {string} sql SQL 语句
      * @param {Array} args 可选绑定参数数组（可选）
@@ -4508,6 +4567,13 @@ interface Storage {
      * @see {@link https://script.deeke.cn/base/storage/storage.html#contains-key DeekeScript Pro 文档}
      */
     contains(key: string): boolean;
+    /**
+     * 字符串键是否已写入
+     * @param {string} key 键
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/base/storage/storage.html#exist-key DeekeScript Pro 文档}
+     */
+    exist(key: string): boolean;
 }
 declare var Storage: Storage;
 
@@ -4616,6 +4682,18 @@ interface System {
      * @see {@link https://script.deeke.cn/base/system/funcs.html#setaccessibilitymode-mode DeekeScript Pro 文档}
      */
     setAccessibilityMode(mode: string): void;
+    /**
+     * 获取当前无障碍模式字符串。未设置时返回 fast。是否处于快速模式用 isAccessibilityQuick()
+     * @returns {string} string
+     * @see {@link https://script.deeke.cn/base/system/funcs.html#getaccessibilitymode DeekeScript Pro 文档}
+     */
+    getAccessibilityMode(): string;
+    /**
+     * 当前是否为无障碍快速模式
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/base/system/funcs.html#isaccessibilityquick DeekeScript Pro 文档}
+     */
+    isAccessibilityQuick(): boolean;
     /**
      * 设置屏幕是否保持常亮
      * @param {boolean} keepOn 是否保持屏幕常亮
@@ -4740,6 +4818,33 @@ interface TextAndRegion {
      * @see {@link https://script.deeke.cn/base/textAndRegion/textAndRegion.html DeekeScript Pro 文档}
      */
     confidence: number;
+}
+
+/**
+ * Hid 找图结果，只有左上角和中心点
+ * @see {@link https://script.deeke.cn/base/hidMatch/hidMatch.html DeekeScript Pro 文档}
+ */
+interface HidMatch {
+    /**
+     * 左上角 X
+     * @see {@link https://script.deeke.cn/base/hidMatch/hidMatch.html DeekeScript Pro 文档}
+     */
+    x: number;
+    /**
+     * 左上角 Y
+     * @see {@link https://script.deeke.cn/base/hidMatch/hidMatch.html DeekeScript Pro 文档}
+     */
+    y: number;
+    /**
+     * 中心 X
+     * @see {@link https://script.deeke.cn/base/hidMatch/hidMatch.html DeekeScript Pro 文档}
+     */
+    centerX: number;
+    /**
+     * 中心 Y
+     * @see {@link https://script.deeke.cn/base/hidMatch/hidMatch.html DeekeScript Pro 文档}
+     */
+    centerY: number;
 }
 
 /**
@@ -5133,6 +5238,18 @@ interface UiObject {
      * @see {@link https://script.deeke.cn/base/uiObject/uiObject.html#gethinttext DeekeScript Pro 文档}
      */
     getHintText(): string;
+    /**
+     * 控件是否对无障碍重要。快速模式会过滤非重要控件
+     * @returns {boolean} boolean
+     * @see {@link https://script.deeke.cn/base/uiObject/uiObject.html#isimportantforaccessibility DeekeScript Pro 文档}
+     */
+    isImportantForAccessibility(): boolean;
+    /**
+     * 返回底层 AccessibilityNodeInfo
+     * @returns {any} any
+     * @see {@link https://script.deeke.cn/base/uiObject/uiObject.html#getaccessibilitynodeinfo DeekeScript Pro 文档}
+     */
+    getAccessibilityNodeInfo(): any;
 }
 
 /**

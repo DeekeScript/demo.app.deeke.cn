@@ -139,7 +139,7 @@ let Search = {
     if (confirm) {
       try {
         Common.click(confirm, 0.1);
-      } catch (e) {}
+      } catch (e) { }
     }
     Common.sleep(1500 + 800 * Math.random());
     Log.log('筛选已应用', sort, type, time, range, distance);
@@ -216,7 +216,192 @@ let Search = {
     return true;
   },
 
+  /** 把单个 UiObject 收成可序列化字段（不含父子，由递归写入） */
+  nodeToPlain(n) {
+    let item = {};
+    try {
+      item.className = String(n.className() || '');
+    } catch (e1) {
+      item.className = '';
+    }
+    try {
+      item.text = String(n.text() || '');
+    } catch (e2) {
+      item.text = '';
+    }
+    try {
+      item.desc = String(n.desc() || '');
+    } catch (e3) {
+      item.desc = '';
+    }
+    try {
+      item.id = String(n.id() || '');
+    } catch (e4) {
+      item.id = '';
+    }
+    try {
+      item.packageName = String(n.getPackageName() || '');
+    } catch (e5) {
+      item.packageName = '';
+    }
+    try {
+      item.childCount = n.getChildCount();
+    } catch (e6) {
+      item.childCount = 0;
+    }
+    try {
+      let b = n.bounds();
+      item.bounds = [b.left, b.top, b.right, b.bottom];
+    } catch (e7) {
+      item.bounds = null;
+    }
+    try {
+      item.clickable = !!n.isClickable();
+    } catch (e8) {
+      item.clickable = false;
+    }
+    try {
+      item.scrollable = !!n.isScrollable();
+    } catch (e9) {
+      item.scrollable = false;
+    }
+    try {
+      item.editable = !!n.isEditable();
+    } catch (e10) {
+      item.editable = false;
+    }
+    try {
+      item.selected = !!n.isSelected();
+    } catch (e11) {
+      item.selected = false;
+    }
+    try {
+      item.enabled = !!n.isEnabled();
+    } catch (e12) {
+      item.enabled = true;
+    }
+    try {
+      item.visibleToUser = !!n.isVisibleToUser();
+    } catch (e13) {
+      item.visibleToUser = true;
+    }
+    try {
+      item.drawingOrder = n.getDrawingOrder();
+    } catch (e14) {
+      item.drawingOrder = -1;
+    }
+    return item;
+  },
+
+  /**
+   * 从节点出发递归建树，子节点挂在 children 数组下。
+   * 注意：必须用 children().getChildren(i)，直接 n.getChildren(i) 会返回 null。
+   */
+  walkNodeTree(n, counter) {
+    if (!n) {
+      return null;
+    }
+    let item = this.nodeToPlain(n);
+    item.index = counter.count++;
+    item.children = [];
+
+    let childColl = null;
+    let count = 0;
+    try {
+      childColl = n.children();
+      count = childColl.length();
+    } catch (eCnt) {
+      count = 0;
+    }
+    for (let i = 0; i < count; i++) {
+      let child = null;
+      try {
+        child = childColl.getChildren(i);
+      } catch (eChild) {
+        child = null;
+      }
+      if (!child) {
+        continue;
+      }
+      let childNode = this.walkNodeTree(child, counter);
+      if (childNode) {
+        item.children.push(childNode);
+      }
+    }
+    return item;
+  },
+
+  /** 递归遍历界面节点树，以 JSON 打到 rpa 运行日志（无入参、不另建文件） */
+  dumpScreenNodesJson() {
+    try {
+      let logger = require('common/logger.js');
+      let counter = { count: 0 };
+      let tree = [];
+
+      // 真正的根：没有 parent 的节点；再按 children 往下走
+      let roots = UiSelector()
+        .filter(function (v) {
+          try {
+            return !v.parent();
+          } catch (e) {
+            return false;
+          }
+        })
+        .find();
+
+      let rootTotal = 0;
+      try {
+        rootTotal = roots && roots.length ? roots.length : 0;
+      } catch (eR) {
+        rootTotal = 0;
+      }
+
+      // 若筛不出根，退化为整屏最大的 FrameLayout / 第一个节点
+      if (!rootTotal) {
+        let fallback =
+          UiSelector().className('android.widget.FrameLayout').filter(function (v) {
+            try {
+              let b = v.bounds();
+              return b && b.left <= 0 && b.top <= 0 && b.width() >= Device.width() * 0.9 && b.height() >= Device.height() * 0.9;
+            } catch (e2) {
+              return false;
+            }
+          }).findOne() ||
+          UiSelector().findOne();
+        if (fallback) {
+          roots = [fallback];
+          rootTotal = 1;
+        }
+      }
+
+      for (let i = 0; i < rootTotal; i++) {
+        let rootNode = this.walkNodeTree(roots[i], counter);
+        if (rootNode) {
+          tree.push(rootNode);
+        }
+      }
+
+      let payload = {
+        screenWidth: Device.width(),
+        screenHeight: Device.height(),
+        count: counter.count,
+        nodes: tree
+      };
+      logger.info('rpa', 'search.getList nodes JSON begin count=' + counter.count + ' roots=' + tree.length);
+      logger.info('rpa', JSON.stringify(payload));
+      logger.info('rpa', 'search.getList nodes JSON end');
+    } catch (e) {
+      try {
+        require('common/logger.js').warn('rpa', 'dumpScreenNodesJson 异常：' + ((e && e.message) || e));
+      } catch (e2) {
+        Log.log('dumpScreenNodesJson 异常：' + ((e && e.message) || e));
+      }
+    }
+  },
+
   getList() {
+    // this.dumpScreenNodesJson();
+
     let tags = UiSelector().className('android.widget.FrameLayout').isVisibleToUser(true).filter(function (v) {
       return v && v.parent() != null && v.parent().className() == 'androidx.recyclerview.widget.RecyclerView' && v.getChildCount() >= 1;
     }).find();
@@ -224,19 +409,18 @@ let Search = {
     let childs = [];
     for (let i in tags) {
       let children = tags[i].children();
-      let child = children.findOne(UiSelector().className('android.widget.TextView').filter(function (v) {
-        return v.text() != '赞助' && v.parent() && v.parent().className() == 'android.widget.FrameLayout';
-      }));
-      if (!child) {
-        // 兜底：用 desc 含「笔记/视频」的卡片
-        let desc = tags[i].desc && tags[i].desc();
-        if (desc && (desc.indexOf('笔记') === 0 || desc.indexOf('视频') === 0)) {
-          childs.push({
-            content: desc,
-            tag: tags[i],
-            isLiving: !!tags[i].findOne(UiSelector().className('android.widget.TextView').text('直播中'))
-          });
+      let myTextTags = children.find(UiSelector().className('android.widget.TextView').filter(function (v) {
+        let p = v.parent();
+        if (!p) {
+          return false;
         }
+
+        return v.text() != '赞助' && (p.className() == 'android.widget.FrameLayout' || p.className() == 'android.widget.LinearLayout') && v.bounds().centerY() > p.bounds().centerY();
+      }));
+
+      let child = myTextTags[myTextTags.length - 1];
+      if (!child) {
+        Log.log('child为null', child);
         continue;
       }
       childs.push({
@@ -244,21 +428,6 @@ let Search = {
         tag: tags[i],
         isLiving: tags[i].findOne(UiSelector().className('android.widget.TextView').text('直播中')) ? true : false
       });
-    }
-
-    // 再补一层：直接找 desc 开头为笔记/视频的 FrameLayout
-    if (!childs.length) {
-      let noteTags = UiSelector().className('android.widget.FrameLayout').isVisibleToUser(true).filter(function (v) {
-        let d = v.desc && v.desc();
-        return d && (d.indexOf('笔记') === 0 || d.indexOf('视频') === 0);
-      }).find();
-      for (let j in noteTags) {
-        childs.push({
-          content: noteTags[j].desc(),
-          tag: noteTags[j],
-          isLiving: false
-        });
-      }
     }
     return childs;
   },
