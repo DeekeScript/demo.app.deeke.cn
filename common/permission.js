@@ -56,10 +56,11 @@ function ensureMedia() {
     return true;
   }
   if (Access.isMediaPermissionPermanentlyDenied()) {
-    return confirmOpen('媒体权限已被禁止，请在设置中手动开启', function () {
+    return confirmOpen('文件/照片权限已被禁止，请在设置中手动开启', function () {
       Access.openPermissionSettings();
     });
   }
+  // 弹出系统授权框；授权结果异步，这里只能返回 false，调用方勿再 toast「请授权」
   Access.requestMediaPermissions();
   return false;
 }

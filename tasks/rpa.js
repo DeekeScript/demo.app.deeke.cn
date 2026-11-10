@@ -4,6 +4,7 @@ let scripts = require('../common/scripts.js');
 let smart = require('../common/smartScripts.js');
 let params = require('../common/params.js');
 let logger = require('../common/logger.js');
+let device = require('../common/device.js');
 let machine = require('../common/machine.js');
 let statistics = require('../common/statistics.js');
 let tCommon = require('../app/dy/Common.js');
@@ -344,6 +345,14 @@ let task = {
     }
 
     logger.info('rpa', '开始评论截流II');
+    try {
+      let env = device.runtimeInfo();
+      logger.info('rpa', '设备 ' + env.phoneText);
+      logger.info('rpa', '系统 ' + env.androidText);
+      logger.info('rpa', '抖音 ' + env.douyinText);
+    } catch (eEnv) {
+      logger.warn('rpa', '环境信息读取失败：' + ((eEnv && eEnv.message) || eEnv));
+    }
     logger.info('rpa', '参数 ' + params.summary());
     if (conf.hidEnabled) {
       try {

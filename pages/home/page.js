@@ -274,14 +274,9 @@ Page({
       permission.ensureFloat();
       return;
     }
-    if (!permission.ensureStorage()) {
-      logger.warn('run', '文件权限未开启');
-      this.toast('请允许文件权限后，再点开始运行');
-      return;
-    }
+    // 评论配图写相册需要媒体权限；request 会立刻返回 false，此时系统框已弹出，不再 toast 打扰
     if (!permission.ensureMedia()) {
-      logger.warn('run', '媒体权限未开启');
-      this.toast('请允许照片权限后，再点开始运行');
+      logger.warn('run', '文件/照片权限未开启，已发起申请');
       return;
     }
     if (!this.hasStopHint()) {
