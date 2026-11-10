@@ -71,6 +71,8 @@
           "type": "button",
           "text": "开始运行",
           "size": "md",
+          "loading": "{{running}}",
+          "loadingText": "启动中",
           "onTap": "onRun",
           "style": { "background": "#0B6E6A", "color": "#FFFFFF", "radius": 10, "width": "100%" }
         },

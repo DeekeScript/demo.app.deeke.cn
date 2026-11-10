@@ -29,7 +29,8 @@ Page({
     stopHintOpen: false,
     guideOpen: false,
     updateOpen: false,
-    updateTitle: '发现新版本'
+    updateTitle: '发现新版本',
+    running: false
   },
 
   refreshTargetCard() {
@@ -150,7 +151,7 @@ Page({
     this.rememberTargetRemind();
     this._skipTargetGate = true;
     this.setData({ targetDialogOpen: false, dismissTargetRemind: false });
-    this.onRun();
+    this.runChecked();
   },
 
   onGoParams() {
@@ -191,19 +192,30 @@ Page({
   onConfirmStopHint() {
     Storage.put(config.storagePrefix + 'run.stopHint', '1');
     this.setData({ stopHintOpen: false });
-    this.onRun();
+    this.runChecked();
+  },
+
+  beginRunLoading() {
+    if (this._runningTimer) {
+      clearTimeout(this._runningTimer);
+      this._runningTimer = null;
+    }
+    this._runningUntil = Date.now() + 3000;
+    this.setData({ running: true });
+    let that = this;
+    this._runningTimer = setTimeout(function () {
+      that._runningTimer = null;
+      that._runningUntil = 0;
+      that.setData({ running: false });
+    }, 3000);
   },
 
   onRun() {
-    if (this._inRun) {
+    if (this.data.running || Date.now() < (this._runningUntil || 0)) {
       return;
     }
-    this._inRun = true;
-    try {
-      this.runChecked();
-    } finally {
-      this._inRun = false;
-    }
+    this.beginRunLoading();
+    this.runChecked();
   },
 
   runChecked() {
@@ -260,6 +272,16 @@ Page({
     if (!Access.isFloatWindowsEnabled()) {
       logger.warn('run', '悬浮窗未开启');
       permission.ensureFloat();
+      return;
+    }
+    if (!permission.ensureStorage()) {
+      logger.warn('run', '文件权限未开启');
+      this.toast('请允许文件权限后，再点开始运行');
+      return;
+    }
+    if (!permission.ensureMedia()) {
+      logger.warn('run', '媒体权限未开启');
+      this.toast('请允许照片权限后，再点开始运行');
       return;
     }
     if (!this.hasStopHint()) {

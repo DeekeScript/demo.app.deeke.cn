@@ -25,26 +25,6 @@ module.exports = {
     return String(path || '').indexOf('content://') === 0;
   },
 
-  ensureMediaPermission() {
-    try {
-      if (Access.hasMediaReadPermission()) {
-        return true;
-      }
-    } catch (e) {
-      return true;
-    }
-    try {
-      if (Access.isMediaPermissionPermanentlyDenied()) {
-        Access.openPermissionSettings();
-        return false;
-      }
-    } catch (e2) {}
-    try {
-      Access.requestMediaPermissions();
-    } catch (e3) {}
-    return false;
-  },
-
   /**
    * 把话术图落到应用缓存，得到 saveImage 能读的文件路径。
    * imageUploader 存的是 content://，不能直接当文件路径。
@@ -141,7 +121,6 @@ module.exports = {
       Log.log('stageLocalImage：路径为空');
       return null;
     }
-    this.ensureMediaPermission();
 
     let filePath = this.materialize(src);
     if (!filePath) {
