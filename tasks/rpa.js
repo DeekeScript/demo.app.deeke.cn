@@ -390,6 +390,7 @@ let task = {
         }
         logger.error('rpa', '异常: ' + ((e && e.message) || e));
         tCommon.closeAlert(1);
+        tCommon.backHome();
       }
     }
     Engines.closeAll();
