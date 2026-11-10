@@ -8,7 +8,7 @@ const Video = {
         let startY = h * (0.80 + Math.random() * 0.05);
         let endY = h * (0.20 + Math.random() * 0.05);
         let duration = 250 + Math.random() * 150;
-        return Gesture.swipe(x, startY, x, endY, duration);
+        return Common.swipeAt(x, startY, x, endY, duration);
     },
 
     getCommentTag() {
@@ -27,7 +27,7 @@ const Video = {
 
     openComment(type) {
         let comment = this.getCommentTag();
-        let res = comment.click();
+        let res = Common.click(comment);
         if (type) {
             Common.sleep(2000 + 1500 * Math.random());
         } else {

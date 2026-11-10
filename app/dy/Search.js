@@ -19,7 +19,7 @@ const Search = {
             FloatDialogs.show('请10秒内输入搜索关键字');
             Common.sleep(10000);
         } else {
-            iptTag.setText(keyword);
+            Common.inputText(iptTag, keyword);
         }
 
         Common.sleep(1000 + 500 * Math.random());
@@ -54,7 +54,7 @@ const Search = {
         }
 
         console.log('进入用户或者视频：', videoTag);
-        videoTag.parent().click();
+        Common.click(videoTag.parent());
         Common.sleep(3500 + 1500 * Math.random());
 
         if (config) {
@@ -72,7 +72,7 @@ const Search = {
                 }
 
                 Common.log('filterTag', filterTag);
-                filterTag.click();
+                Common.click(filterTag);
                 Common.sleep(1000);
 
                 let textConfig = {
@@ -98,12 +98,12 @@ const Search = {
                     let tag = UiSelector(false).text(textConfig[i][config[i]]).filter(v => {
                         return v.bounds().top > baseTopTag.bounds().top + baseTopTag.bounds().height();
                     }).findOne();
-                    tag.parent().click();
+                    Common.click(tag.parent());
                     Common.sleep(1000 + 1000 * Math.random());
                 }
 
                 Common.sleep(3000 + 1000 * Math.random());
-                Gesture.click(filterTag.parent().bounds().left + 10 * Math.random(), filterTag.parent().bounds().top + 10 * Math.random());
+                Common.tapAt(filterTag.parent().bounds().left + 10 * Math.random(), filterTag.parent().bounds().top + 10 * Math.random());
                 Common.sleep(1000);
             }
         }

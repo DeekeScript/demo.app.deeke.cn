@@ -60,10 +60,24 @@ let task = {
 
   pickOne(list) {
     if (!list || !list.length) {
+      return null;
+    }
+    return list[Math.floor(Math.random() * list.length)] || null;
+  },
+
+  /** 从启用的评论话术里抽一张配图 */
+  pickCommentImage() {
+    let list = scripts.enabledByType('comment') || [];
+    let withImg = [];
+    for (let i = 0; i < list.length; i++) {
+      if (list[i] && list[i].image) {
+        withImg.push(list[i].image);
+      }
+    }
+    if (!withImg.length) {
       return '';
     }
-    let i = Math.floor(Math.random() * list.length);
-    return list[i] || '';
+    return withImg[Math.floor(Math.random() * withImg.length)] || '';
   },
 
   getMsg(type, input) {
@@ -86,16 +100,20 @@ let task = {
       }
       let gen = smart.generate(type === 1 ? 'dm' : 'comment', payload);
       if (gen.ok && gen.text) {
-        return { msg: gen.text };
+        let image = type === 0 ? this.pickCommentImage() : '';
+        logger.info('rpa', (type === 1 ? '智能私信' : '智能评论') + (image ? '（含配图）' : ''));
+        return { msg: gen.text, image: image };
       }
       logger.warn('rpa', (type === 1 ? '智能私信' : '智能评论') + '失败：' + (gen.message || '') + '，改用自定义话术');
     }
-    let list = scripts.enabledByType(type === 1 ? 'dm' : 'comment');
-    let msg = this.pickOne(list);
-    if (!msg) {
+    let item = this.pickOne(scripts.enabledByType(type === 1 ? 'dm' : 'comment'));
+    if (!item) {
       return false;
     }
-    return { msg: msg };
+    return {
+      msg: item.content || '',
+      image: type === 1 ? '' : (item.image || '')
+    };
   },
 
   includesKw(str, kw) {
@@ -172,10 +190,10 @@ let task = {
 
         for (let k in comments) {
           if (firstComment && Math.random() * 100 <= conf.firstCommentRate) {
-            let firstMsg = this.msgText(0, title);
-            if (firstMsg) {
-              DyComment.backMsg(comments[k], firstMsg);
-              logger.info('rpa', '首评');
+            let first = this.getMsg(0, title);
+            if (first && (first.msg || first.image)) {
+              DyComment.backMsg(comments[k], first.msg, first.image);
+              logger.info('rpa', '首评' + (first.image ? '（图片）' : ''));
               tCommon.sleep(1000);
               comments = DyComment.getList();
             }
@@ -211,10 +229,10 @@ let task = {
               continue;
             }
           } else if (opRate <= zanCommentRate + backCommentRate) {
-            let reply = this.msgText(0, title);
-            if (reply) {
-              DyComment.backMsg(comments[k], reply);
-              logger.info('rpa', '回复评论');
+            let reply = this.getMsg(0, title);
+            if (reply && (reply.msg || reply.image)) {
+              DyComment.backMsg(comments[k], reply.msg, reply.image);
+              logger.info('rpa', '回复评论' + (reply.image ? '（图片）' : ''));
               refresh = true;
             }
           } else {
@@ -327,6 +345,14 @@ let task = {
 
     logger.info('rpa', '开始评论截流II');
     logger.info('rpa', '参数 ' + params.summary());
+    if (conf.hidEnabled) {
+      try {
+        Hid.initBluetooth();
+        logger.info('rpa', Hid.connectAndWait(true, 0) ? ('HID：' + String(Hid.getName() || '')) : 'HID 失败，回退普通点击');
+      } catch (e) {
+        logger.warn('rpa', 'HID 连接异常：' + ((e && e.message) || e));
+      }
+    }
     showRunBar();
 
     Engines.executeScript('unit/dialogClose.js');

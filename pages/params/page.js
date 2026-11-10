@@ -164,6 +164,10 @@ Page({
     this.persist(extra);
   },
 
+  onOpenHid() {
+    this.navigate({ page: 'pages/hid' });
+  },
+
   onAutoSave(e) {
     let extra = {};
     if (e && e.name) {

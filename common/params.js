@@ -29,7 +29,8 @@ module.exports = {
       privateRate: 0,
       focusRate: 0,
       firstCommentRate: 0,
-      intervalSec: 5
+      intervalSec: 5,
+      hidEnabled: false
     };
   },
 
@@ -51,7 +52,8 @@ module.exports = {
       privateRate: this.num(saved.privateRate, d.privateRate),
       focusRate: this.num(saved.focusRate, d.focusRate),
       firstCommentRate: this.num(saved.firstCommentRate, d.firstCommentRate),
-      intervalSec: this.num(saved.intervalSec, d.intervalSec)
+      intervalSec: this.num(saved.intervalSec, d.intervalSec),
+      hidEnabled: saved.hidEnabled === true
     };
   },
 
@@ -66,6 +68,8 @@ module.exports = {
   save(data) {
     let d = this.defaults();
     let src = data || {};
+    let prev = Storage.getObj(this.key) || {};
+    let hidEnabled = src.hidEnabled != null ? src.hidEnabled === true : prev.hidEnabled === true;
     Storage.putObj(this.key, {
       videoSort: this.num(src.videoSort, d.videoSort),
       videoTime: this.num(src.videoTime, d.videoTime),
@@ -78,7 +82,8 @@ module.exports = {
       privateRate: this.num(src.privateRate, d.privateRate),
       focusRate: this.num(src.focusRate, d.focusRate),
       firstCommentRate: this.num(src.firstCommentRate, d.firstCommentRate),
-      intervalSec: this.num(src.intervalSec, d.intervalSec)
+      intervalSec: this.num(src.intervalSec, d.intervalSec),
+      hidEnabled: hidEnabled
     });
     this.markConfigured();
   },

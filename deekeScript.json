@@ -1,14 +1,15 @@
 {
   "name": "获客助手",
   "packageName": "cn.deeke.demo.app",
-  "versionCode": "102",
-  "versionName": "1.0.2",
+  "versionCode": "103",
+  "versionName": "1.0.3",
   "icon": "img/logo.png",
   "homePage": "pages/home",
   "pages": [
     { "id": "scripts", "file": "pages/scripts", "title": "话术" },
     { "id": "apiKey", "file": "pages/apiKey", "title": "获取 API Key" },
     { "id": "params", "file": "pages/params", "title": "设置" },
+    { "id": "hid", "file": "pages/hid", "title": "HID 设置" },
     { "id": "pay", "file": "pages/pay", "title": "激活APP" },
     { "id": "target", "file": "pages/target", "title": "适配下载" },
     { "id": "logs", "file": "pages/logs", "title": "诊断日志" },

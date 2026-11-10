@@ -1,4 +1,137 @@
+let params = require('../../common/params.js');
+let logger = require('../../common/logger.js');
+
 const Common = {
+    _hidSkipUntil: 0,
+
+    /** 同时写入脚本日志和诊断日志，方便区分 HID / 无障碍 */
+    clickLog(message) {
+        let line = String(message == null ? '' : message);
+        try {
+            Log.log(line);
+        } catch (e) {}
+        try {
+            logger.info('click', line);
+        } catch (e2) {}
+    },
+
+    /** 设置页「启用 HID」 */
+    useHid() {
+        try {
+            return params.load().hidEnabled === true;
+        } catch (e) {
+            return false;
+        }
+    },
+
+    ensureHidConnected() {
+        if (!this.useHid()) {
+            return false;
+        }
+        try {
+            if (Hid.isConnected()) {
+                return true;
+            }
+            let now = Date.now();
+            if (now < (this._hidSkipUntil || 0)) {
+                this.clickLog('HID 近期连接失败，本次改用无障碍');
+                return false;
+            }
+            Hid.initBluetooth();
+            if (!Hid.connectAndWait(true, 0, 5000)) {
+                this._hidSkipUntil = now + 60000;
+                this.clickLog('HID 连接失败，60 秒内改用无障碍');
+                return false;
+            }
+            this._hidSkipUntil = 0;
+            this.clickLog('HID 已连接：' + String(Hid.getName() || ''));
+            return true;
+        } catch (e) {
+            this._hidSkipUntil = Date.now() + 60000;
+            this.clickLog('HID 连接异常，改用无障碍：' + ((e && e.message) || e));
+            return false;
+        }
+    },
+
+    /**
+     * 坐标点击：开启 HID 时 Hid.tap，否则 Gesture.click。
+     */
+    tapAt(x, y) {
+        let xi = Math.round(Number(x) || 0);
+        let yi = Math.round(Number(y) || 0);
+        let w = Device.width();
+        let h = Device.height();
+        if (xi < 0 || yi < 0 || xi > w || yi > h) {
+            this.clickLog('跳过点击，坐标不在屏内 x=' + xi + ' y=' + yi);
+            return false;
+        }
+        if (this.useHid() && this.ensureHidConnected()) {
+            this.clickLog('HID点击 x=' + xi + ' y=' + yi);
+            try {
+                Hid.tap(xi, yi);
+                return true;
+            } catch (e) {
+                this.clickLog('HID点击失败，改用无障碍：' + ((e && e.message) || e));
+            }
+        }
+        this.clickLog('无障碍点击 x=' + xi + ' y=' + yi);
+        return Gesture.click(xi, yi);
+    },
+
+    /**
+     * 输入：开启 HID 时先点中再 Hid.paste，否则 setText。
+     */
+    inputText(tag, text) {
+        if (!tag) {
+            return false;
+        }
+        let t = String(text == null ? '' : text);
+        if (!t) {
+            return true;
+        }
+        if (this.useHid() && this.ensureHidConnected()) {
+            try {
+                this.click(tag, 0.15);
+                this.sleep(400);
+                this.clickLog('HID粘贴 长度=' + t.length);
+                Hid.paste(t);
+                return true;
+            } catch (e) {
+                this.clickLog('HID粘贴失败，改用无障碍输入：' + ((e && e.message) || e));
+            }
+        }
+        this.clickLog('无障碍输入 setText 长度=' + t.length);
+        try {
+            tag.setText(t);
+            return true;
+        } catch (e2) {
+            this.clickLog('无障碍输入失败：' + ((e2 && e2.message) || e2));
+            return false;
+        }
+    },
+
+    /**
+     * 坐标滑动：开启 HID 时 Hid.swipe，否则 Gesture.swipe。
+     */
+    swipeAt(x1, y1, x2, y2, duration) {
+        let a = Math.round(Number(x1) || 0);
+        let b = Math.round(Number(y1) || 0);
+        let c = Math.round(Number(x2) || 0);
+        let d = Math.round(Number(y2) || 0);
+        let ms = Math.round(Number(duration) || 300);
+        if (this.useHid() && this.ensureHidConnected()) {
+            try {
+                this.clickLog('HID滑动 (' + a + ',' + b + ')->(' + c + ',' + d + ')');
+                Hid.swipe(a, b, c, d);
+                return true;
+            } catch (e) {
+                this.clickLog('HID滑动失败，改用无障碍：' + ((e && e.message) || e));
+            }
+        }
+        this.clickLog('无障碍滑动 (' + a + ',' + b + ')->(' + c + ',' + d + ')');
+        return Gesture.swipe(a, b, c, d, ms);
+    },
+
     /**
      * 通过ID获取控件
      * @param {string} name 
@@ -43,13 +176,13 @@ const Common = {
         //卡在top的上下
         if (tag.bounds().top <= top && tag.bounds().top + tag.bounds().height() > top) {
             let topY = tag.bounds().top + tag.bounds().height() - top;
-            Gesture.click(tag.bounds().left + tag.bounds().width() * Math.random(), (tag.bounds().top + 1) + (topY - 1) * Math.random());
+            this.tapAt(tag.bounds().left + tag.bounds().width() * Math.random(), (tag.bounds().top + 1) + (topY - 1) * Math.random());
             return true;
         }
 
         if (tag.bounds().top < bottom && tag.bounds().top + tag.bounds().height() >= bottom) {
             let topY = bottom - tag.bounds().top;
-            Gesture.click(tag.bounds().left + tag.bounds().width() * Math.random(), tag.bounds().top + (topY - 1) * Math.random());
+            this.tapAt(tag.bounds().left + tag.bounds().width() * Math.random(), tag.bounds().top + (topY - 1) * Math.random());
             return true;
         }
         return false;
@@ -114,13 +247,13 @@ const Common = {
         let height = tag.bounds().height() * (rate + Math.random() * p);
 
         try {
-            return Gesture.click(tag.bounds().left + Math.floor(width), tag.bounds().top + Math.floor(height));
+            return this.tapAt(tag.bounds().left + Math.floor(width), tag.bounds().top + Math.floor(height));
         } catch (e) {
             this.log(e);
             try {
-                return Gesture.click(tag.bounds().left + Math.floor(width), tag.bounds().top + 1);
-            } catch (e) {
-                this.log(e);
+                return this.tapAt(tag.bounds().left + Math.floor(width), tag.bounds().top + 1);
+            } catch (e2) {
+                this.log(e2);
                 return false;
             }
         }
@@ -187,7 +320,18 @@ const Common = {
 
         this.log('返回次数： ' + i);
         while (i--) {
-            Gesture.back();
+            if (this.useHid() && this.ensureHidConnected()) {
+                try {
+                    this.clickLog('HID返回');
+                    Hid.back();
+                } catch (e) {
+                    this.clickLog('HID返回失败，改用无障碍');
+                    Gesture.back();
+                }
+            } else {
+                this.clickLog('无障碍返回');
+                Gesture.back();
+            }
             if (randTime) {
                 this.sleep(time + randTime * Math.random());
                 continue;
@@ -254,8 +398,7 @@ const Common = {
 
         // duration 随机化，200~300ms 左右
         const duration = 200 + 100 * Math.random();
-        Gesture.swipe(x, startY, x, endY, duration);
-        return true;
+        return this.swipeAt(x, startY, x, endY, duration);
     },
 
     /**
@@ -392,7 +535,7 @@ const Common = {
             for (let i = 0; i < cancelTexts.length; i++) {
                 let cancelTag = UiSelector().text(cancelTexts[i]).clickable(true).filter(f).isVisibleToUser(true).findOne();
                 if (cancelTag) {
-                    cancelTag.click();
+                    this.click(cancelTag);
                     this.log('点击了取消按钮', cancelTag);
                     return;
                 }

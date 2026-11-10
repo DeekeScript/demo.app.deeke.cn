@@ -30,7 +30,7 @@ const User = {
             return false;
         }
 
-        settingTag.click();
+        Common.click(settingTag);
         Log.log("私信");
         Common.sleep(700 + 500 * Math.random());
 
@@ -39,7 +39,7 @@ const User = {
             throw new Error('找不到发私信按钮');
         }
 
-        let res = sendTag.parent().click();
+        let res = Common.click(sendTag.parent());
         Common.sleep(2000 + 1000 * Math.random());
         return res;
     },
@@ -56,11 +56,11 @@ const User = {
             if (!textTag) {
                 throw new Error('找不到发私信输入框');
             }
-            textTag.setText(msg);
+            Common.inputText(textTag, msg);
             Common.sleep(500 + 500 * Math.random());
 
             let sendTextTag = UiSelector().desc('发送').isVisibleToUser(true).clickable(true).findOne();
-            if (!sendTextTag || !sendTextTag.click()) {
+            if (!sendTextTag || !Common.click(sendTextTag)) {
                 throw new Error('发送消息失败');
             }
 
@@ -127,7 +127,7 @@ const User = {
         }
 
         if (focusTag) {
-            let res = focusTag.click();
+            let res = Common.click(focusTag);
             statistics.focus();
             Common.sleep(500 + 500 * Math.random());
             return res;

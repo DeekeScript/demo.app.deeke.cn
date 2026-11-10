@@ -29,13 +29,32 @@ module.exports = {
       return null;
     }
     let type = item.type === 'comment' ? 'comment' : 'dm';
+    let content = String(item.content || '').trim();
+    let image = '';
+    if (type === 'comment') {
+      image = String(item.image || item.imagePath || '').trim();
+      if (Array.isArray(item.photos) && item.photos.length) {
+        image = String(item.photos[0] || '').trim() || image;
+      }
+    }
+    if (!content && !image) {
+      return null;
+    }
+    if (type === 'dm' && !content) {
+      return null;
+    }
+    let hasImage = type === 'comment' && !!image;
     return {
-      content: String(item.content || '').trim(),
+      content: content,
+      image: image,
+      hasImage: hasImage,
+      showImage: hasImage,
       type: type,
       typeLabel: type === 'comment' ? '评论' : '私信',
       typeBg: type === 'comment' ? '#EEF2FF' : '#E8F6F4',
       typeColor: type === 'comment' ? '#3D5AFE' : '#0B6E6A',
-      enabled: item.enabled === true
+      enabled: item.enabled === true,
+      previewText: content || '（仅图片）'
     };
   },
 
@@ -49,17 +68,18 @@ module.exports = {
         type: 'dm',
         enabled: dmList[i].enabled !== false
       });
-      if (n && n.content) {
+      if (n) {
         list.push(n);
       }
     }
     for (let j = 0; j < commentList.length; j++) {
       let n2 = this.normalizeItem({
         content: commentList[j].content,
+        image: commentList[j].image || '',
         type: 'comment',
         enabled: commentList[j].enabled !== false
       });
-      if (n2 && n2.content) {
+      if (n2) {
         list.push(n2);
       }
     }
@@ -82,7 +102,7 @@ module.exports = {
     let list = [];
     for (let i = 0; i < raw.length; i++) {
       let n = this.normalizeItem(raw[i]);
-      if (n && n.content) {
+      if (n) {
         list.push(n);
       }
     }
@@ -94,9 +114,10 @@ module.exports = {
     let arr = list || [];
     for (let i = 0; i < arr.length; i++) {
       let n = this.normalizeItem(arr[i]);
-      if (n && n.content) {
+      if (n) {
         out.push({
           content: n.content,
+          image: n.type === 'comment' ? n.image : '',
           type: n.type,
           enabled: n.enabled
         });
@@ -123,8 +144,11 @@ module.exports = {
     let list = this.load();
     let out = [];
     for (let i = 0; i < list.length; i++) {
-      if (list[i].enabled && list[i].type === type && list[i].content) {
-        out.push(list[i].content);
+      if (list[i].enabled && list[i].type === type && (list[i].content || list[i].image)) {
+        out.push({
+          content: list[i].content || '',
+          image: type === 'comment' ? (list[i].image || '') : ''
+        });
       }
     }
     return out;

@@ -5,7 +5,10 @@ Page({
   data: {
     newType: 'dm',
     newContent: '',
+    newPhotos: [],
     newEnabled: true,
+    showAddImage: false,
+    addContentHint: '私信请填写文字',
     filter: 'all',
     rows: [],
     empty: false,
@@ -75,6 +78,8 @@ Page({
     trialKind: '',
     trialText: '',
     showTrial: false,
+    viewerOpen: false,
+    viewerUrl: '',
     _ready: false
   },
 
@@ -224,6 +229,9 @@ Page({
       }
       shown.push({
         content: all[i].content,
+        previewText: all[i].previewText,
+        image: all[i].image || '',
+        showImage: all[i].hasImage === true,
         type: all[i].type,
         typeLabel: all[i].typeLabel,
         typeBg: all[i].typeBg,
@@ -411,7 +419,10 @@ Page({
       addOpen: true,
       newType: 'dm',
       newContent: '',
-      newEnabled: true
+      newPhotos: [],
+      newEnabled: true,
+      showAddImage: false,
+      addContentHint: '私信请填写文字'
     });
   },
 
@@ -419,18 +430,76 @@ Page({
     this.setData({ addOpen: false });
   },
 
-  onAdd() {
-    let text = (this.data.newContent || '').trim();
-    if (!text) {
-      this.toast('请输入话术内容');
+  onNewTypeChange(e) {
+    let type = e && e.value != null ? String(e.value) : (this.data.newType || 'dm');
+    let isComment = type === 'comment';
+    this.setData({
+      newType: type,
+      showAddImage: isComment,
+      addContentHint: isComment ? '可空；文字和图片至少填一项' : '私信请填写文字',
+      newPhotos: isComment ? (this.data.newPhotos || []) : []
+    });
+  },
+
+  onNewPhotos(e) {
+    if (this.data.newType !== 'comment') {
+      this.setData({ newPhotos: [] });
       return;
     }
+    let photos = e && e.value != null ? e.value : [];
+    if (!Array.isArray(photos)) {
+      photos = [];
+    }
+    this.setData({ newPhotos: photos });
+  },
+
+  onPreviewImage(e) {
+    let item = e && e.item ? e.item : null;
+    let src = '';
+    if (item && item.image) {
+      src = String(item.image || '').trim();
+    }
+    if (!src && e && e.value) {
+      src = String(e.value || '').trim();
+    }
+    if (!src) {
+      return;
+    }
+    this.setData({
+      viewerOpen: true,
+      viewerUrl: src
+    });
+  },
+
+  onCloseViewer() {
+    this.setData({
+      viewerOpen: false,
+      viewerUrl: ''
+    });
+  },
+
+  onAdd() {
+    let text = (this.data.newContent || '').trim();
     let type = this.data.newType === 'comment' ? 'comment' : 'dm';
+    let image = '';
+    if (type === 'comment') {
+      let photos = this.data.newPhotos || [];
+      if (Array.isArray(photos) && photos.length) {
+        image = String(photos[0] || '').trim();
+      }
+      if (!text && !image) {
+        this.toast('文字和图片至少填写一项');
+        return;
+      }
+    } else if (!text) {
+      this.toast('私信必须填写文字');
+      return;
+    }
     let enabled = this.data.newEnabled !== false;
     let list = scripts.load();
-    list.push({ content: text, type: type, enabled: enabled });
+    list.push({ content: text, image: type === 'comment' ? image : '', type: type, enabled: enabled });
     scripts.save(list);
-    this.setData({ addOpen: false, newContent: '', newEnabled: true });
+    this.setData({ addOpen: false, newContent: '', newPhotos: [], newEnabled: true, showAddImage: false });
     this.refresh();
     this.toast(enabled ? '已添加' : '已添加（停用）');
   },

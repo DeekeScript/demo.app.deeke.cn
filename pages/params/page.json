@@ -3,7 +3,13 @@
     "text": "设置",
     "fontSize": 17,
     "color": "#FFFFFF",
-    "background": "#0B6E6A"
+    "background": "#0B6E6A",
+    "right": [
+      {
+        "icon": "img/ic_hid.svg",
+        "onTap": "onOpenHid"
+      }
+    ]
   },
   "style": {
     "background": "#EEF2F1",

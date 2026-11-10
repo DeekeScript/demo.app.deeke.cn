@@ -186,6 +186,18 @@
                     }
                   },
                   {
+                    "type": "image",
+                    "showIf": "item.showImage",
+                    "src": "{{item.image}}",
+                    "fit": "cover",
+                    "onTap": "onPreviewImage",
+                    "style": {
+                      "width": 48,
+                      "height": 48,
+                      "radius": 8
+                    }
+                  },
+                  {
                     "type": "column",
                     "style": {
                       "weight": 1,
@@ -194,7 +206,7 @@
                     "children": [
                       {
                         "type": "text",
-                        "text": "{{item.content}}",
+                        "text": "{{item.previewText}}",
                         "style": {
                           "fontSize": 14,
                           "color": "#1A2B2A"
@@ -1335,6 +1347,68 @@
   ],
   "popups": [
     {
+      "showIf": "viewerOpen",
+      "position": "center",
+      "mask": true,
+      "closeOnMask": false,
+      "width": "100%",
+      "height": "100%",
+      "style": {
+        "background": "#111111",
+        "radius": 0,
+        "padding": 16,
+        "paddingTop": 40,
+        "gap": 16
+      },
+      "body": [
+        {
+          "type": "row",
+          "style": {
+            "width": "100%",
+            "valign": "center",
+            "paddingBottom": 8
+          },
+          "children": [
+            {
+              "type": "text",
+              "text": "预览",
+              "style": {
+                "weight": 1,
+                "fontSize": 15,
+                "color": "#FFFFFF",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "button",
+              "text": "×",
+              "size": "sm",
+              "onTap": "onCloseViewer",
+              "style": {
+                "width": 40,
+                "height": 40,
+                "radius": 20,
+                "background": "#FFFFFF",
+                "color": "#111111",
+                "fontSize": 22,
+                "align": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "src": "{{viewerUrl}}",
+          "fit": "contain",
+          "style": {
+            "width": "100%",
+            "height": 560,
+            "radius": 8
+          }
+        }
+      ]
+    },
+    {
       "showIf": "addOpen",
       "position": "bottom",
       "style": {
@@ -1383,6 +1457,7 @@
           "type": "radio",
           "name": "newType",
           "label": "类型",
+          "onChange": "onNewTypeChange",
           "options": [
             {
               "label": "私信",
@@ -1400,11 +1475,41 @@
         {
           "type": "textarea",
           "name": "newContent",
-          "label": "内容",
-          "hint": "输入一条话术",
+          "label": "文字",
+          "hint": "{{addContentHint}}",
           "minLines": 3,
           "variant": "box",
           "size": "sm"
+        },
+        {
+          "type": "column",
+          "showIf": "showAddImage",
+          "style": {
+            "width": 148,
+            "gap": 6
+          },
+          "children": [
+            {
+              "type": "text",
+              "text": "配图（仅评论）",
+              "style": {
+                "fontSize": 14,
+                "color": "#1A2B2A"
+              }
+            },
+            {
+              "type": "imageUploader",
+              "name": "newPhotos",
+              "max": 1,
+              "columns": 1,
+              "addText": "+",
+              "onChange": "onNewPhotos",
+              "style": {
+                "width": 148,
+                "height": 148
+              }
+            }
+          ]
         },
         {
           "type": "switch",

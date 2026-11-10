@@ -3,6 +3,7 @@ let CommentNew = require('./CommentNew.js');
 let storage = require('../../common/storage.js');
 let statistics = require('../../common/statistics.js');
 let Voice = require('../../service/Voice.js');
+let gallery = require('../../common/gallery.js');
 
 const Comment = {
     /** @type {UiObject|undefined}  */
@@ -153,7 +154,7 @@ const Comment = {
      */
     clickZan(data) {
         let zanTag = this.getZanTag(data.tag);
-        zanTag && zanTag.parent() && zanTag.parent().click();
+        zanTag && zanTag.parent() && Common.click(zanTag.parent());
         statistics.zanComment();
         return true;
     },
@@ -314,7 +315,7 @@ const Comment = {
         if (!closeTag) {
             return false;
         }
-        return closeTag.click();
+        return Common.click(closeTag);
     },
 
     /**
@@ -325,46 +326,109 @@ const Comment = {
     intoUserPage(data) {
         let headTag = this.getAvatarTag(data.tag);
         Log.log('headTag', headTag);
-        let res = headTag.click();
+        let res = Common.click(headTag);
         Common.sleep(3000 + 1000 * Math.random());
         return res;
     },
 
+    findEditableInput() {
+        return UiSelector().className('android.widget.EditText').filter(function (v) {
+            return v && v.isEditable();
+        }).isVisibleToUser(true).findOne();
+    },
+
+    /**
+     * 评论框已打开时插入话术配图，再把焦点交回输入框。
+     * @param {string} imagePath
+     * @returns {boolean}
+     */
+    attachScriptImage(imagePath) {
+        let image = String(imagePath || '').trim();
+        if (!image) {
+            return false;
+        }
+        Log.log('评论配图：' + image);
+        let ok = false;
+        try {
+            ok = gallery.pickForComment(image);
+        } catch (e) {
+            Log.log('评论配图异常：' + ((e && e.message) || e));
+            ok = false;
+        }
+        if (!ok) {
+            gallery.deleteLastStaged();
+            return false;
+        }
+        let iptTag = this.findEditableInput();
+        if (iptTag) {
+            try {
+                Common.click(iptTag);
+            } catch (e2) {
+                Common.click(iptTag, 0.2);
+            }
+            Common.sleep(200);
+        }
+        return true;
+    },
+
     /**
      * 回复
-     * @param {{tag:UiObject}} data 
-     * @param {string} msg 
+     * @param {{tag:UiObject}} data
+     * @param {string} msg
+     * @param {string} [imagePath]
      */
-    backMsg(data, msg) {
+    backMsg(data, msg, imagePath) {
         let backTag = this.getBackTag(data.tag);
         Log.log(backTag.bounds());
-        backTag.click();
+        Common.click(backTag);
         Common.sleep(2500 + 500 * Math.random());
 
-        let iptTag = UiSelector().className('android.widget.EditText').filter(v => {
-            return v.isEditable();
-        }).isVisibleToUser(true).findOne();
+        let iptTag = this.findEditableInput();
 
         if (!iptTag) {
             Common.back(1, 1000, 0);
             Log.log('没有找到输入框');
             return true;
         }
-        iptTag.setText(msg);
+
+        let text = msg == null ? '' : String(msg);
+        let image = String(imagePath || '').trim();
+        let attached = false;
+        if (image) {
+            attached = this.attachScriptImage(image);
+            iptTag = this.findEditableInput() || iptTag;
+        }
+        if (text && iptTag) {
+            Common.inputText(iptTag, text);
+        } else if (!attached && iptTag) {
+            Common.inputText(iptTag, text);
+        }
         Common.sleep(500 + Math.random() * 1000);
 
-        let submitTag = UiSelector().className('android.widget.TextView').text('发送').isVisibleToUser(true).findOne();
-        let res = Common.click(submitTag);
-        Common.sleep(2000 * Math.random());
+        let res = false;
+        try {
+            let submitTag = UiSelector().className('android.widget.TextView').text('发送').isVisibleToUser(true).findOne();
+            res = Common.click(submitTag);
+            if (attached) {
+                Common.sleep(3000 + 500 * Math.random());
+            } else {
+                Common.sleep(2000 * Math.random());
+            }
+        } finally {
+            if (attached) {
+                gallery.deleteLastStaged();
+            }
+        }
         return res;
     },
 
     /**
      * 评论视频
-     * @param {string} msg 
+     * @param {string} msg
+     * @param {string} [imagePath]
      * @returns boolean
      */
-    commentMsg(msg) {
+    commentMsg(msg, imagePath) {
         let iptTag = UiSelector().className('android.widget.EditText').isVisibleToUser(true).filter(v => {
             return v.isEditable();
         }).findOne();
@@ -378,7 +442,7 @@ const Comment = {
         }
 
         if (iptTag.isClickable()) {
-            iptTag.click();
+            Common.click(iptTag);
             Log.log('输入框点击成功');
         } else {
             Common.click(iptTag, 0.2);
@@ -390,12 +454,18 @@ const Comment = {
             return v.isEditable();
         }).findOne();
 
-        //获取是否评论图片
-        Log.log("带图评论概率：" + storage.get("setting_comment_with_photo", "int"));
-        if (storage.get("setting_comment_with_photo", "int") >= Math.random() * 100) {
-            this.commentImage();
-            iptTag.click();
-            Common.sleep(100);
+        let image = String(imagePath || '').trim();
+        let attached = false;
+        if (image) {
+            attached = this.attachScriptImage(image);
+            iptTag = this.findEditableInput() || iptTag;
+        } else {
+            Log.log("带图评论概率：" + storage.get("setting_comment_with_photo", "int"));
+            if (storage.get("setting_comment_with_photo", "int") >= Math.random() * 100) {
+                this.commentImage();
+                Common.click(iptTag);
+                Common.sleep(100);
+            }
         }
 
         Log.log('msg', msg);
@@ -404,6 +474,9 @@ const Comment = {
             if (!tag) {
                 FloatDialogs.toastLong('找不到语音评论按钮');
                 Common.log('找不到语音评论按钮');
+                if (attached) {
+                    gallery.deleteLastStaged();
+                }
                 if (UiSelector().text('发送').isVisibleToUser(true).findOne()) {
                     Common.back(1);
                     Common.log('返回');
@@ -420,18 +493,33 @@ const Comment = {
             if (!voiceTag) {
                 FloatDialogs.toastLong('找不到"按住 说话"按钮');
                 Common.log('找不到"按住 说话"按钮');
+                if (attached) {
+                    gallery.deleteLastStaged();
+                }
                 return false;
             }
             Voice.tts(voiceTag, msg);
-        } else {
-            iptTag.setText(msg);
+        } else if (msg && iptTag) {
+            Common.inputText(iptTag, msg);
+        } else if (!attached && iptTag) {
+            Common.inputText(iptTag, msg);
         }
 
         Common.sleep(500 + Math.random() * 1000);
 
-        let btnTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).text('发送').findOne();
-        Common.click(btnTag, 0.2);
-        Common.sleep(500 + 500 * Math.random());
+        try {
+            let btnTag = UiSelector().className('android.widget.TextView').isVisibleToUser(true).text('发送').findOne();
+            Common.click(btnTag, 0.2);
+            if (attached) {
+                Common.sleep(3000 + 500 * Math.random());
+            } else {
+                Common.sleep(500 + 500 * Math.random());
+            }
+        } finally {
+            if (attached) {
+                gallery.deleteLastStaged();
+            }
+        }
         statistics.comment();
 
         //查看dg0位置有没有下来
@@ -463,7 +551,7 @@ const Comment = {
             customTag = UiSelector().desc('自定义表情').isVisibleToUser(true).findOne();
         }
 
-        customTag.click();
+        Common.click(customTag);
         Common.sleep(1000 + 500 * Math.random());
 
         console.log("开始找表情");
@@ -478,7 +566,7 @@ const Comment = {
         let rand = Math.round(Math.random() * (imgs.length - 1));
         console.log('点击第几个：' + rand);
         console.log(imgs[rand]);
-        let res = imgs[rand].click();
+        let res = Common.click(imgs[rand]);
         Common.sleep(1000);
         return res;
     },
