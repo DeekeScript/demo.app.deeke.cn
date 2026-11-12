@@ -24,7 +24,8 @@ Storage.putObj(resultKey, {
 
 try {
   Hid.initBluetooth();
-  if (!Hid.connectAndWait(true, 0)) {
+  // 第三参是超时。只传 (true, 0) 时 0 会变成一直等待，探测脚本占住引擎，开始运行无法再启动。
+  if (!Hid.connectAndWait(true, 0, 8000)) {
     writeResult(false, '无法连接 HID。请确认设备名为 DeekeScript-*、已配对且在附近');
   } else {
     let name = String(Hid.getName() || '').trim();

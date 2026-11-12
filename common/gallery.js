@@ -128,6 +128,7 @@ module.exports = {
       return true;
     } catch (e) {
       try {
+        Common.actLog('[无障碍点击] 节点 click');
         tag.click();
         return true;
       } catch (e2) {

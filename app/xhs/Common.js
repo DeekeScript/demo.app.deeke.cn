@@ -1,4 +1,5 @@
 let params = require('../../common/params.js');
+let logger = require('../../common/logger.js');
 
 let Common = {
     //封装的方法
@@ -8,6 +9,21 @@ let Common = {
     },
 
     _hidSkipUntil: 0,
+
+    /**
+     * 动作日志：诊断文件 + 控制台都写。
+     * Log.log 只进 Deeke 日志文件，不出现在控制台。
+     */
+    actLog(message) {
+        let text = String(message == null ? '' : message);
+        try {
+            logger.info('act', text);
+        } catch (e) {
+            try {
+                console.log(text);
+            } catch (e2) {}
+        }
+    },
 
     /** 设置页「启用 HID」开关 */
     useHid() {
@@ -60,29 +76,29 @@ let Common = {
             }
             let now = Date.now();
             if (now < (this._hidSkipUntil || 0)) {
-                Log.log('[HID点击] 近期连接失败，暂用普通点击');
+                this.actLog('[无障碍] 近期 HID 连接失败，点击和输入改走无障碍');
                 return false;
             }
             Hid.initBluetooth();
             // 短超时，避免每次点击卡几十秒
             if (!Hid.connectAndWait(true, 0, 5000)) {
                 this._hidSkipUntil = now + 60000;
-                Log.log('[HID点击] 连接失败，60 秒内回退普通点击');
+                this.actLog('[无障碍] HID 连接失败，60 秒内点击和输入改走无障碍');
                 return false;
             }
             this._hidSkipUntil = 0;
-            Log.log('[HID点击] 已连接：' + String(Hid.getName() || ''));
+            this.actLog('[HID点击] 已连接：' + String(Hid.getName() || ''));
             return true;
         } catch (e) {
             this._hidSkipUntil = Date.now() + 60000;
-            Log.log('[HID点击] 连接异常：' + ((e && e.message) || e));
+            this.actLog('[HID点击] 连接异常：' + ((e && e.message) || e));
             return false;
         }
     },
 
     /**
-     * 统一点击：开启 HID 时用 Hid.tap，否则 Gesture.click。
-     * 日志带 [HID点击] / [普通点击] 标识。
+     * 统一点击：开启 HID 且已连接时用 Hid.tap，否则 Gesture.click（无障碍）。
+     * 每次点击打 [HID点击] 或 [无障碍点击]。
      */
     tapAt(x, y) {
         let xi = Math.round(Number(x) || 0);
@@ -90,21 +106,21 @@ let Common = {
         let w = Device.width();
         let h = Device.height();
         if (xi < 0 || yi < 0 || xi > w || yi > h) {
-            Log.log('[跳过点击] 坐标不在屏内 x=' + xi + ' y=' + yi);
+            this.actLog('[跳过点击] 坐标不在屏内 x=' + xi + ' y=' + yi);
             return false;
         }
         if (this.useHid() && this.ensureHidConnected()) {
-            Log.log('[HID点击] x=' + xi + ' y=' + yi);
             try {
+                this.actLog('[HID点击] x=' + xi + ' y=' + yi);
                 Hid.tap(xi, yi);
                 return true;
             } catch (e) {
-                Log.log('[HID点击] 异常，回退普通点击：' + ((e && e.message) || e));
+                this.actLog('[无障碍点击] HID 异常回退 x=' + xi + ' y=' + yi + ' ' + ((e && e.message) || e));
                 Gesture.click(xi, yi);
                 return false;
             }
         }
-        Log.log('[普通点击] x=' + xi + ' y=' + yi);
+        this.actLog('[无障碍点击] x=' + xi + ' y=' + yi);
         Gesture.click(xi, yi);
         return true;
     },
@@ -225,7 +241,7 @@ let Common = {
 
     click(tag, rate) {
         if (!this.isOnScreen(tag)) {
-            Log.log('[跳过点击] 控件不可见或不在屏内');
+            this.actLog('[跳过点击] 控件不可见或不在屏内');
             return false;
         }
         if (!rate) {
@@ -263,7 +279,8 @@ let Common = {
     },
 
     /**
-     * 统一输入：开启 HID 时先聚焦再 Hid.paste，否则 setText。
+     * 统一输入：开启 HID 且已连接时 Hid.paste，否则无障碍 setText。
+     * 每次输入打 [HID输入] 或 [无障碍输入]。
      */
     inputText(tag, text) {
         if (!tag) {
@@ -284,19 +301,19 @@ let Common = {
                     this.click(tag, 0.15);
                     this.sleep(500);
                 }
-                Log.log('[HID粘贴] 长度=' + t.length);
+                this.actLog('[HID输入] 粘贴 长度=' + t.length);
                 Hid.paste(t);
                 return true;
             } catch (e) {
-                Log.log('[HID粘贴] 异常，回退 setText：' + ((e && e.message) || e));
+                this.actLog('[无障碍输入] HID 粘贴异常，改 setText：' + ((e && e.message) || e));
             }
         }
         try {
-            Log.log('[普通输入] setText 长度=' + t.length);
+            this.actLog('[无障碍输入] setText 长度=' + t.length);
             tag.setText(t);
             return true;
         } catch (e2) {
-            Log.log('[普通输入] setText 失败：' + ((e2 && e2.message) || e2));
+            this.actLog('[无障碍输入] setText 失败：' + ((e2 && e2.message) || e2));
             return false;
         }
     },
@@ -315,7 +332,7 @@ let Common = {
             try {
                 // swipex 时长不能砍太狠：ms/4 时视频流经常滑不动
                 let hidMs = Math.max(120, Math.floor(ms * 0.85));
-                Log.log('[HID滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ') ms=' + hidMs);
+                this.actLog('[HID滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ') ms=' + hidMs);
                 if (typeof Hid.swipex === 'function') {
                     Hid.swipex(a, b, c, d, hidMs);
                 } else {
@@ -323,10 +340,10 @@ let Common = {
                 }
                 return true;
             } catch (e) {
-                Log.log('[HID滑动] 异常，回退 Gesture：' + ((e && e.message) || e));
+                this.actLog('[无障碍滑动] HID 异常回退 (' + a + ',' + b + ')->(' + c + ',' + d + ') ' + ((e && e.message) || e));
             }
         }
-        Log.log('[普通滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ')');
+        this.actLog('[无障碍滑动] (' + a + ',' + b + ')->(' + c + ',' + d + ')');
         Gesture.swipe(a, b, c, d, ms);
         return true;
     },

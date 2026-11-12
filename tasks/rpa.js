@@ -307,20 +307,25 @@ let task = {
 
     gallery.cleanupRecent();
     logger.info('rpa', '开始 ' + params.summary());
-    if (conf.hidEnabled) {
-      try {
-        Hid.initBluetooth();
-        logger.info('rpa', Hid.connectAndWait(true, 0) ? ('HID：' + String(Hid.getName() || '')) : 'HID 失败，回退普通点击');
-      } catch (e) { logger.warn('rpa', 'HID 异常'); }
-    }
     showRunBar();
     System.setAccessibilityMode('fast');
 
+    // 先打开小红书。connectAndWait(true, 0) 的 0 会一直等，HID 没配对时任务卡死、小红书不会起来。
+    let hidTried = false;
     while (true) {
       if (taskStopped()) break;
       try {
         tCommon.openApp();
         try { Events.emit('rpa_app_opened'); } catch (eEmit) {}
+        if (conf.hidEnabled && !hidTried) {
+          hidTried = true;
+          try {
+            Hid.initBluetooth();
+            logger.info('rpa', Hid.connectAndWait(true, 0, 5000) ? ('HID：' + String(Hid.getName() || '')) : 'HID 失败，点击和输入改走无障碍');
+          } catch (eHid) {
+            logger.warn('rpa', 'HID 异常，点击和输入改走无障碍');
+          }
+        }
         if (this.testTask(input, conf.intervalSec, conf)) {
           finished = true;
           gallery.cleanupRecent();
